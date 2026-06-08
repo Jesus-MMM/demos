@@ -4,33 +4,38 @@
 
 ```
 +---------------------------+
-|       GRUB (bootloader)   |  <- Carga el kernel en memoria
+|       GRUB (bootloader)   |  Carga el kernel en memoria
 +---------------------------+
-|   loader.s (ensamblador)  |  <- Configura el stack y llama a C
+|   loader.s (ensamblador)  |  Configura stack, llama a C
 +---------------------------+
-|    kernelmain.c (kernel)  |  <- Punto de entrada en C
+|    kernelmain.c (entry)   |  Desactiva cursor + llama splash
 +---------------------------+
-|      Librerias (lib/)     |  <- Funciones de soporte (io, util)
+|       splash.c            |  Orquesta la animacion
 +---------------------------+
-|      Hardware (VGA)       |  <- Pantalla, puertos E/S
+|   big_text.c / timer.c    |  Letras grandes, delay, caja
++---------------------------+
+|    io.c / asm.h / util    |  Framebuffer VGA, puertos, util
++---------------------------+
+|      Hardware (VGA)       |  Pantalla, puertos E/S
 +---------------------------+
 ```
 
 ## Modo de ejecucion
 
-DemOS opera en **32 bits (protegido)** desde el inicio. GRUB se encarga de cambiar el CPU a modo protegido antes de transferir el control al kernel.
+DemOS opera en **32 bits (protegido)** desde el inicio. GRUB cambia el CPU a modo protegido antes de transferir el control al kernel.
 
 ## Espacio de direccionamiento
 
-- El kernel se carga en la direccion `0x00100000` (1 MB), como exige la especificacion Multiboot.
-- La pila del kernel se reserva en el BSS con 4 KB de tamaño.
+- Kernel cargado en `0x00100000` (1 MB) — especificacion Multiboot.
+- Pila del kernel: 4 KB reservados en BSS.
 
 ## Flujo de datos
 
-1. **GRUB** lee `grub.cfg` y carga `kernel.elf` en memoria.
-2. **loader.s** recibe el control, configura el stack y llama a `kernel_main()`.
-3. **kernel_main()** usa las funciones de `io.c` para escribir en el framebuffer VGA.
-4. El texto se renderiza directamente en la memoria de video en `0xB8000`.
+1. **GRUB** lee `grub.cfg` y carga `kernel.elf`.
+2. **loader.s** configura el stack y llama a `kernel_main()`.
+3. **kernel_main()** desactiva el cursor y llama a `animate_splash()`.
+4. **animate_splash()** usa `draw_box()` y `draw_big_char()` (de `big_text.c`) y `delay()` (de `timer.c`) para animar.
+5. `draw_box()` y `draw_big_char()` escriben en el framebuffer VGA en `0xB8000`.
 
 ## Navegacion
 

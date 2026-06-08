@@ -7,9 +7,10 @@
 #define CRTC_DATA_PORT 0x3D5
 #define CURSOR_POS_HIGH_BYTE_CMD 0x0E
 #define CURSOR_POS_LOW_BYTE_CMD 0x0F
+#define CURSOR_STYLE_START_CMD 0x0A
+#define CURSOR_STYLE_END_CMD 0x0B
 #define SCREEN_START_POS_HIGH_BYTE_CMD 0x0C
 #define SCREEN_START_POS_LOW_BYTE_CMD 0x0D
-
 
 #define BLACK           0x0
 #define BLUE            0x1
@@ -28,8 +29,14 @@
 #define LIGHTBROWN      0xE
 #define WHITE           0xF
 
+typedef enum {BIG, SMALL, DISABLE, ENABLE} CursorStyle;
+
 void move_cursor(uint16_t pos);
 void scroll(uint16_t row);
 
 void write_letter_to_buffer(uint8_t letter, uint16_t row, uint16_t col, uint8_t fg_color, uint8_t bg_color);
+void write_letter_to_screen(const char c, uint16_t pos);
 void write_to_screen(const char *buf, uint16_t len);
+void print_byte(uint8_t *pbyte, uint32_t pos);
+
+void style_cursor(CursorStyle cstyle);

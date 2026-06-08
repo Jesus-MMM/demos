@@ -1,6 +1,6 @@
 # Librerias del sistema
 
-DemOS implementa sus propias librerias porque no puede usar la libc estandar (no hay sistema operativo anfitrion).
+DemOS implementa sus propias librerias porque no puede usar la libc estandar (no hay SO anfitrion).
 
 ---
 
@@ -28,23 +28,19 @@ typedef uint32_t                uintptr_t;
 
 ### ¿Por que definir tipos personalizados?
 
-Los tipos estandar (`int`, `long`, etc.) tienen tamanos **dependientes de la plataforma** (en unas son 16 bits, en otras 32). Para un SO necesitamos tipos con tamanos **exactos y predecibles**:
+Los tipos estandar (`int`, `long`) tienen tamanos dependientes de la plataforma. Para un SO necesitamos tamanos exactos:
 
 | Tipo | Tamano | Rango |
 |------|--------|-------|
 | `uint8_t` | 1 byte | 0 a 255 |
 | `uint16_t` | 2 bytes | 0 a 65535 |
-| `uint32_t` | 4 bytes | 0 a 4,294,967,295 |
+| `uint32_t` | 4 bytes | 0 a 2^32-1 |
 | `uint64_t` | 8 bytes | 0 a 2^64-1 |
-| `int8_t` | 1 byte | -128 a 127 |
-| `int16_t` | 2 bytes | -32,768 a 32,767 |
-| `int32_t` | 4 bytes | -2,147,483,648 a 2,147,483,647 |
-| `int64_t` | 8 bytes | -2^63 a 2^63-1 |
-| `uintptr_t` | 4 bytes (32 bits) | Entero capaz de almacenar una direccion de memoria |
+| `uintptr_t` | 4 bytes | Entero que almacena una direccion |
 
 ### `#pragma once`
 
-Directiva que evita que el archivo se incluya mas de una vez (equivale a un `#ifndef` guard).
+Evita inclusion multiple del archivo.
 
 ---
 
@@ -59,9 +55,7 @@ Directiva que evita que el archivo se incluya mas de una vez (equivale a un `#if
 static inline void outb(uint16_t port, uint8_t value)
 {
     __asm__ volatile (
-        "outb %0, %1"
-        :
-        : "a"(value), "Nd"(port)
+        "outb %0, %1" : : "a"(value), "Nd"(port)
     );
 }
 
@@ -69,22 +63,18 @@ static inline uint8_t inb(uint16_t port)
 {
     uint8_t ret;
     __asm__ volatile(
-        "inb %1, %0"
-        : "=a" (ret)
-        : "Nd" (port)
+        "inb %1, %0" : "=a" (ret) : "Nd" (port)
     );
     return ret;
 }
 ```
 
-### ¿Que hacen estas funciones?
-
-Permiten comunicarse directamente con los puertos de E/S del hardware x86:
+### ¿Que hacen?
 
 | Funcion | Instruccion | Proposito |
 |---------|-------------|-----------|
-| `outb(port, value)` | `outb` | Envia 1 byte al puerto especificado |
-| `inb(port)` | `inb` | Lee 1 byte desde el puerto especificado |
+| `outb(port, value)` | `outb` | Envia 1 byte al puerto E/S |
+| `inb(port)` | `inb` | Lee 1 byte desde el puerto E/S |
 
 ### Sintaxis de ensamblador inline en GCC
 
@@ -94,16 +84,11 @@ __asm__ volatile ( "instruccion" : salida : entrada );
 
 | Elemento | Significado |
 |----------|-------------|
-| `__asm__` | Palabra clave de GCC para ensamblador inline |
-| `volatile` | Evita que el compilador optimice/reordene la instruccion |
-| `"a"(value)` | Coloca `value` en el registro `AX` (o `EAX`) |
-| `"Nd"(port)` | Coloca `port` en el registro `DX` |
-| `"=a"(ret)` | Toma el resultado del registro `AX` y lo asigna a `ret` |
-
-### `static inline`
-
-- **`static`**: La funcion solo es visible en el archivo donde se incluye.
-- **`inline`**: El compilador reemplaza la llamada con el codigo directamente (sin llamada de funcion), importante para operaciones de bajo nivel.
+| `__asm__` | GCC inline assembly keyword |
+| `volatile` | Evita optimizacion/reordenamiento |
+| `"a"(value)` | Coloca `value` en AX |
+| `"Nd"(port)` | Coloca `port` en DX |
+| `"=a"(ret)` | Toma AX como resultado |
 
 ---
 
@@ -124,30 +109,170 @@ int64_t strlen(const char *str);
 
 int64_t strlen(const char *str)
 {
-    if (str == NULL)
-        return -1;
-
+    if (str == NULL) return -1;
     const char *start = str;
-    while (*str != '\0')
-        str++;
-
+    while (*str != '\0') str++;
     return (int64_t)(str - start);
+}
+```
+
+Recorre la cadena hasta `'\0'` y retorna la diferencia de punteros. Retorna `-1` si la entrada es NULL.
+
+---
+
+## 4. timer.h / timer.c - delay()
+
+**Archivo:** `include/timer.h` y `lib/timer.c`
+
+```c
+// timer.h
+#pragma once
+#include "types.h"
+void delay(uint32_t iterations);
+```
+
+```c
+// timer.c
+#include "timer.h"
+
+void delay(uint32_t iterations)
+{
+    for (volatile uint32_t i = 0; i < iterations; i++);
 }
 ```
 
 ### Funcionamiento
 
-1. Guarda el puntero inicial.
-2. Avanza caracter por caracter hasta encontrar `'\0'` (null terminator).
-3. Resta la direccion final menos la inicial para obtener la longitud.
+Bucle de espera activa (busy-wait). **`volatile`** evita que el compilador optimice el bucle y lo elimine.
 
-### Manejo de errores
+No hay temporizadores ni interrupciones configuradas en DemOS, por lo que esta es la unica forma de crear pausas. Los valores tipicos:
 
-- Si `str` es `NULL`, retorna `-1` para indicar error (la libc estandar devuelve `0` o crashea).
+| Uso | Iteraciones | Efecto aprox. (QEMU) |
+|-----|-------------|----------------------|
+| Transicion rapida | 15,000,000 | ~0.15s |
+| Pausa entre letras | 30,000,000 | ~0.3s |
+| Pulso colectivo | 40,000,000 | ~0.4s |
+| Pausa larga | 60,000,000 | ~0.6s |
 
-### ¿Por que `int64_t` en lugar de `size_t`?
+---
 
-En sistemas estandar, `strlen` devuelve `size_t` (unsigned). DemOS usa `int64_t` para poder retornar `-1` en caso de error, ya que no tenemos `size_t` definido.
+## 5. big_text.h / big_text.c - Letras grandes y cajas
+
+**Archivo:** `include/big_text.h` y `lib/big_text.c`
+
+Proporciona glyphs (mapas de bits) para letras de 5x5, dibujo de cajas y renderizado de caracteres grandes.
+
+### Constantes
+
+```c
+#define CHAR_W 5
+#define CHAR_H 5
+```
+
+Cada letra se define como una matriz de 5x5 donde `1` = bloque lleno, `0` = espacio:
+
+```
+Glyph 'D' (5x5):      Glyph 'e' (5x5):
+████                  █████
+█   █                █
+█   █                █████
+█   █                █
+████                  █████
+```
+
+### Funciones
+
+#### `draw_box()`
+
+```c
+void draw_box(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t color);
+```
+
+Dibuja una caja con bordes dobles usando los caracteres de CP-437:
+
+- `0xC9` (`╔`) = esquina superior izquierda
+- `0xBB` (`╗`) = esquina superior derecha
+- `0xC8` (`╚`) = esquina inferior izquierda
+- `0xBC` (`╝`) = esquina inferior derecha
+- `0xCD` (`═`) = linea horizontal
+- `0xBA` (`║`) = linea vertical
+
+#### `draw_big_char()`
+
+```c
+void draw_big_char(const uint8_t (*glyph)[CHAR_W], uint16_t r0, uint16_t c0, uint8_t color);
+```
+
+Renderiza un glyph de 5x5 en la posicion `(r0, c0)`. Usa `0xDB` (`█`) para los pixeles llenos y espacio para los vacios.
+
+### Glyphs disponibles
+
+```c
+extern const uint8_t glyph_D[CHAR_H][CHAR_W];
+extern const uint8_t glyph_e[CHAR_H][CHAR_W];
+extern const uint8_t glyph_m[CHAR_H][CHAR_W];
+extern const uint8_t glyph_O[CHAR_H][CHAR_W];
+extern const uint8_t glyph_S[CHAR_H][CHAR_W];
+```
+
+---
+
+## 6. splash.h / splash.c - Animacion de bienvenida
+
+**Archivo:** `include/splash.h` y `lib/splash.c`
+
+### Declaracion
+
+```c
+void animate_splash(void);
+```
+
+### Macros de layout
+
+Calculan las posiciones centradas para la caja y el texto:
+
+```c
+#define N_LETTERS 5                    // "DemOS"
+#define TXT_W (5*5 + 4) = 29          // Ancho del texto
+#define TXT_H 5                       // Alto del texto
+#define PAD 3                         // Padding interno de la caja
+#define B_W 37                        // Ancho total de la caja
+#define B_H 9                         // Alto total de la caja
+#define B_C 21                        // Columna inicial de la caja (centrada)
+#define B_R 8                         // Fila inicial de la caja (centrada)
+#define T_C 25                        // Columna inicial del texto
+#define T_R 10                        // Fila inicial del texto
+```
+
+### Algoritmo de animacion
+
+```
+1. draw_box(B_C, B_R, B_W, B_H, GREEN)     → caja centrada
+2. Para cada letra i en "DemOS":
+     a. draw_big_char(glyph[i], DARKGREY)   → fantasma gris
+     b. delay(30000000)
+     c. draw_big_char(glyph[i], GREEN)      → verde medio
+     d. delay(15000000)
+     e. draw_big_char(glyph[i], LIGHTGREEN) → verde brillante
+     f. delay(15000000)
+3. delay(60000000)                           → pausa
+4. 2 veces:
+     a. Todas las letras en GREEN
+     b. delay(40000000)
+     c. Todas en LIGHTGREEN
+     d. delay(40000000)
+5. Todas en LIGHTGREEN (estado final)
+```
+
+### Dependencias
+
+`splash.c` incluye y usa:
+
+| Modulo | Funcion usada |
+|--------|---------------|
+| `big_text.h` | `draw_box()`, `draw_big_char()`, glyphs |
+| `timer.h` | `delay()` |
+| `io.h` | Constantes de color (`GREEN`, `LIGHTGREEN`, `DARKGREY`, `BLACK`) |
 
 ---
 

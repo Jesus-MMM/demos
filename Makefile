@@ -4,7 +4,7 @@ CODEDIRS = ./ ./lib/
 CC = gcc
 DEPFLAGS = -MP -MD
 NOFLAGS = -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -ffreestanding 
-CFLAGS = -m32 -Wall -Wextra -Werror -g $(foreach D, $(INCDIRS), -I$(D)) $(DEPFLAGS) $(NOFLAGS)
+CFLAGS = -m32 -Wall -Wextra -Werror -Wno-error=unused-variable -g $(foreach D, $(INCDIRS), -I$(D)) $(DEPFLAGS) $(NOFLAGS)
 
 LDFLAGS = -T link.ld -melf_i386
 AS = nasm

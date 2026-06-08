@@ -38,6 +38,11 @@ void scroll(uint16_t row)
     outb(CRTC_DATA_PORT, pos_low_byte);
 }
 
+void write_letter_to_screen(const char c, uint16_t pos)
+{
+    write_letter_to_buffer(c, 0, pos, WHITE, BLACK);
+}
+
 void write_to_screen(const char *buf, uint16_t len)
 {
     for (uint32_t i=0; i<len; i++)
@@ -45,4 +50,50 @@ void write_to_screen(const char *buf, uint16_t len)
         write_letter_to_buffer(buf[i], 0, i, WHITE, BLACK);
     }
     move_cursor(len);
+}
+
+void print_byte(uint8_t *pbyte, uint32_t pos)
+{
+    for (int16_t bit=0; bit < 8; bit++) 
+    {
+        uint8_t mask = (uint8_t) 0x1 << (7-bit);
+        if (*pbyte & mask)
+        {
+            write_letter_to_screen('1', pos + bit);
+        }
+        else{
+            write_letter_to_screen('0', pos+bit);
+        }
+    }
+}
+
+void style_cursor(CursorStyle cstyle)
+{
+    uint8_t start;
+    switch (cstyle)
+    {
+    case BIG:
+        outb(CRTC_CMD_PORT, CURSOR_STYLE_START_CMD);
+        outb(CRTC_DATA_PORT, 0x00);
+        break;
+
+    case SMALL:
+        outb(CRTC_CMD_PORT, CURSOR_STYLE_START_CMD);
+        outb(CRTC_DATA_PORT, 0x0C);
+        break;
+
+    case DISABLE:
+        outb(CRTC_CMD_PORT, CURSOR_STYLE_START_CMD);
+        start = inb(CRTC_DATA_PORT);
+        outb(CRTC_DATA_PORT, start|0x20);
+        break;
+
+    case ENABLE:
+        outb(CRTC_CMD_PORT, CURSOR_STYLE_START_CMD);
+        start = inb(CRTC_DATA_PORT);
+        outb(CRTC_DATA_PORT, start & 0xBF);
+        break;
+    
+    default:
+    }   
 }
