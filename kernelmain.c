@@ -1,3 +1,7 @@
+/* kernelmain.c - Punto de entrada principal del kernel.
+   Llamado desde el archivo de arranque en ensamblador (loader.s).
+   Inicializa el sistema y lanza la pantalla de presentacion. */
+
 #include "io.h"
 #include "splash.h"
 

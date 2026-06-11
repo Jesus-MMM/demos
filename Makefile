@@ -1,9 +1,9 @@
 INCDIRS = ./include/
-CODEDIRS = ./ ./lib/
+CODEDIRS = . lib/
 
 CC = gcc
 DEPFLAGS = -MP -MD
-NOFLAGS = -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -ffreestanding 
+NOFLAGS = -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nodefaultlibs -ffreestanding
 CFLAGS = -m32 -Wall -Wextra -Werror -Wno-error=unused-variable -g $(foreach D, $(INCDIRS), -I$(D)) $(DEPFLAGS) $(NOFLAGS)
 
 LDFLAGS = -T link.ld -melf_i386
@@ -46,12 +46,24 @@ $(BUILDDIR)/loader.o: loader.s
 	mkdir -p $(dir $@)
 	$(AS) $(ASFLAGS) $< -o $@
 
+.PHONY: lint format tidy check
+
+format:
+	clang-format -i $(CFILES) $(wildcard include/*.h)
+
+tidy:
+	clang-tidy $(CFILES) -- $(CFLAGS)
+
+cppcheck:
+	cppcheck --enable=all -I ./include/ --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=staticFunction $(CFILES)
+
+lint: format tidy cppcheck
+
 runqemu: all
 	qemu-system-i386 -cdrom DemOS.iso -serial stdio
 
 cleanrunqemu: clean all
 	qemu-system-i386 -cdrom DemOS.iso -serial stdio
-
 
 clean:
 	rm -rf $(BUILDDIR) DemOS.iso iso/
