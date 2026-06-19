@@ -3,10 +3,6 @@
 
 #include "util_lib.h"
 
-/** strlen - Calcula la longitud de una cadena terminada en '\0'.
- * @str: puntero a la cadena. Si es NULL retorna -1.
- * Retorna: la cantidad de caracteres antes del terminador nulo,
- *          o -1 si la cadena es NULL. */
 int64_t strlen(const char *str)
 {
     if (str == NULL) {

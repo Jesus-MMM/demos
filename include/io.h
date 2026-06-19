@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "asm.h"
 #include "types.h"
 
 /* Direccion del framebuffer VGA en modo texto color */
