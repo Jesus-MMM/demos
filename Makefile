@@ -13,7 +13,7 @@ ASFLAGS = -f elf32
 BUILDDIR = build
 
 CFILES = $(foreach D, $(CODEDIRS), $(wildcard $(D)/*.c))
-SFILES = loader.s
+SFILES = loader.s interruptstubs.s
 
 OBJECTS = $(addprefix $(BUILDDIR)/, $(CFILES:.c=.o) $(SFILES:.s=.o))
 DEPFILES = $(OBJECTS:.o=.d)
@@ -45,6 +45,10 @@ $(BUILDDIR)/%.o: %.s
 $(BUILDDIR)/loader.o: loader.s
 	mkdir -p $(dir $@)
 	$(AS) $(ASFLAGS) $< -o $@
+
+$(BUILDDIR)/interruptstubs.o: interruptstubs.s
+	mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: lint format tidy check
 

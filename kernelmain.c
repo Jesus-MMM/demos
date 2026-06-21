@@ -7,19 +7,15 @@
 #include "splash.h"
 #include "util_lib.h"
 #include "gdt.h"
+#include "interrupts.h"
 
 int kernel_main()
 {
+    static global_descriptor_table gdt;
 
     serial_init(COM1_BASE_ADDRESS);
-
-    const char *test = "Inicializando DEMOS";
-
-    global_descriptor_table gdt;
-
     init_gdt(&gdt);
-
-    serial_write_string(COM1_BASE_ADDRESS, test, strlen(test));
+    init_interrupt_manager(&gdt);
 
     style_cursor(DISABLE);
     animate_splash();
