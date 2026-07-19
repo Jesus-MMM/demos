@@ -1,5 +1,6 @@
 #include "interrupts.h"
 #include "asm.h"
+#include "keyboard.h"
 
 gate_descriptor interrupt_descriptor_table[256];
 
@@ -55,7 +56,6 @@ void init_interrupt_manager(global_descriptor_table *gdt)
     set_interrupt_descriptor_table_entry(0x21, code_segment, &handle_interrupt_request0x01, 0,
                                          IDT_INTERRUPT_GATE);
 
-    
     outb(0x20, 0x11);
     outb(0xA0, 0x11);
 
@@ -64,7 +64,7 @@ void init_interrupt_manager(global_descriptor_table *gdt)
 
     outb(0x21, 0x04);
     outb(0xA1, 0x02);
-    
+
     outb(0x21, 0x01);
     outb(0xA1, 0x01);
 
@@ -72,28 +72,34 @@ void init_interrupt_manager(global_descriptor_table *gdt)
     outb(0xA1, 0xFF);
 
     idt_pointer idt;
-    idt.size = 256 * sizeof(gate_descriptor) - 1;
+    idt.size = (256 * sizeof(gate_descriptor)) - 1;
     idt.base = (uint32_t)interrupt_descriptor_table;
 
     asm volatile("lidt %0" : : "m"(idt));
     asm volatile("sti");
 }
 
-uint32_t handle_interrupt(uint8_t interrupt_number, uint32_t stack_pointer)
+uint32_t handle_interrupt(uint8_t interrupt_number, uint32_t stack_pointer) // NOLINT(bugprone-easily-swappable-parameters)
 {
+
+    if (interrupt_number != 0x20) {
+        serial_write_string(COM1_BASE_ADDRESS, "INTERRUPT ", 10);
+        char digit = (char)('0' + interrupt_number);
+        serial_write_string(COM1_BASE_ADDRESS, &digit, 1);
+    }
+
     if (interrupt_number < 0x20) {
         serial_write_string(COM1_BASE_ADDRESS, "EXCEPCION ", 10);
-        char digit = '0' + interrupt_number;
+        char digit = (char)('0' + interrupt_number);
         serial_write_string(COM1_BASE_ADDRESS, &digit, 1);
         serial_write_string(COM1_BASE_ADDRESS, " - HALT\n", 8);
         asm volatile("cli; hlt");
     }
 
-    serial_write_string(COM1_BASE_ADDRESS, "INTERRUPT ", 10);
+    if (interrupt_number == 0x21) {
+        stack_pointer = keyboard_handler(stack_pointer);
+    }
 
-    char digit = '0' + interrupt_number;
-    serial_write_string(COM1_BASE_ADDRESS, &digit, 1);
-    
     outb(0x20, 0x20);
     if (interrupt_number >= 0x28) {
         outb(0xA0, 0x20);

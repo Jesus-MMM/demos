@@ -47,7 +47,9 @@ void init_gdt(global_descriptor_table *gdt)
     serial_write_string(COM1_BASE_ADDRESS, "[GDT] Ready\n", 12);
 }
 
-void init_segment_descriptor(SegmentDescriptor *sd, uint32_t base, uint32_t limit, uint8_t type)
+void init_segment_descriptor(SegmentDescriptor *sd, uint32_t base, // NOLINT(bugprone-easily-swappable-parameters)
+                             uint32_t limit, // NOLINT(bugprone-easily-swappable-parameters)
+                             uint8_t type) // NOLINT(bugprone-easily-swappable-parameters)
 {
     if (limit <= 65536) {
         sd->flags_and_limit_high = 0x40;

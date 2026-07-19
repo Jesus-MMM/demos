@@ -92,5 +92,6 @@ void style_cursor(CursorStyle cstyle)
         break;
 
     default:
+        break;
     }
 }

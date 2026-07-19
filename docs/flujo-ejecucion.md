@@ -20,8 +20,12 @@ loader.s (ensamblador)
     |  Llama a kernel_main()
     v
 kernelmain.c (entry point)
-    |  Desactiva cursor (style_cursor DISABLE)
-    |  Llama a animate_splash()
+    |  serial_init()          → inicializa UART 16550
+    |  init_gdt()             → configura segmentos de memoria
+    |  init_interrupt_manager() → configura IDT + PIC 8259A
+    |  keyboard_init()        → activa driver PS/2
+    |  style_cursor(DISABLE)  → oculta cursor
+    |  animate_splash()       → animacion de bienvenida
     v
 splash.c (animacion)
     |  draw_box() → caja centrada con bordes dobles
@@ -38,6 +42,10 @@ io.c / framebuffer VGA
     v
 PANTALLA VGA
     |  Caja con "DemOS" en letras grandes, verde brillante
+    v
+keyboard listo
+    |  Cualquier tecla genera IRQ 1
+    |  keyboard_handler() escribe el caracter en pantalla
     v
 BUCLE INFINITO (loader.s .hang)
 ```
@@ -77,8 +85,16 @@ loader:
 ```c
 int kernel_main()
 {
-    style_cursor(DISABLE);    // Oculta cursor parpadeante
-    animate_splash();         // Anima la pantalla de bienvenida
+    serial_init(COM1_BASE_ADDRESS);    // Inicializar UART
+    init_gdt(&gdt);                    // Configurar segmentos
+    init_interrupt_manager(&gdt);      // Configurar IDT + PIC
+
+    style_cursor(DISABLE);             // Oculta cursor parpadeante
+    animate_splash();                  // Anima la pantalla de bienvenida
+
+    keyboard_set_cursor(0, 0);         // Cursor en esquina superior izquierda
+    style_cursor(SMALL);               // Habilitar cursor visible
+    keyboard_init();                   // Activar driver PS/2
     return 0;
 }
 ```
@@ -152,18 +168,23 @@ Donde `atributo = (fondo << 4) | frente`, que para verde sobre negro es `0x02`.
          │                                     │
          └─────────────────────────────────────┘
 
-Cursor: oculto (DISABLE)
-CPU: bucle infinito en loader.s:.hang
+Cursor: SMALL (visible en fila 0, columna 0)
+Keyboard: habilitado (IRQ 1 → keyboard_handler)
+CPU: bucle infinito en loader.s:.hang, interrupciones activas
 ```
 
 ## Resumen de tecnologias involucradas
 
 | Tecnologia | Uso en DemOS |
 |------------|--------------|
-| **x86 Assembly (NASM)** | Cabecera Multiboot, configuracion de pila |
-| **C (GCC)** | Logica del kernel, modulos splash/big_text/timer/io |
+| **x86 Assembly (NASM)** | Cabecera Multiboot, configuracion de pila, interrupt stubs |
+| **C (GCC)** | Logica del kernel, modulos splash/big_text/timer/io/keyboard/serial |
 | **GRUB** | Gestor de arranque |
 | **VGA Text Mode (CP-437)** | Caracteres, bloques, bordes dobles en pantalla |
+| **GDT** | Segmentos de memoria en modo protegido |
+| **IDT / PIC 8259A** | Manejo de interrupciones y excepciones |
+| **UART 16550** | Puerto serie para depuracion |
+| **PS/2 Controller** | Driver de teclado (scancodes → ASCII) |
 | **Puertos E/S (x86)** | Control de cursor y scroll via CRTC |
 | **Framebuffer (0xB8000)** | Escritura directa en memoria de video |
 | **Linker Script** | Organizacion de secciones en memoria |

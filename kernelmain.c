@@ -8,6 +8,7 @@
 #include "util_lib.h"
 #include "gdt.h"
 #include "interrupts.h"
+#include "keyboard.h"
 
 int kernel_main()
 {
@@ -17,7 +18,12 @@ int kernel_main()
     init_gdt(&gdt);
     init_interrupt_manager(&gdt);
 
-    style_cursor(DISABLE);
-    animate_splash();
+    // style_cursor(DISABLE);
+    // animate_splash();
+
+    keyboard_set_cursor(0, 0);
+    style_cursor(SMALL);
+    keyboard_init();
+
     return 0;
 }

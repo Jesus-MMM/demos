@@ -6,19 +6,23 @@ El `Makefile` automatiza todo el proceso de compilacion, enlazado y generacion d
 
 ```makefile
 INCDIRS = ./include/
-CODEDIRS = ./ ./lib/
+CODEDIRS = . lib/
 
 CC = gcc
-CFLAGS = -m32 -Wall -Wextra -Werror -g \
-         $(foreach D, $(INCDIRS), -I$(D)) \
-         -MP -MD \
-         -nostdlib -nostdinc -fno-builtin \
-         -fno-stack-protector -nostartfiles \
-         -nodefaultlibs -ffreestanding
+DEPFLAGS = -MP -MD
+NOFLAGS = -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nodefaultlibs -ffreestanding
+CFLAGS = -m32 -Wall -Wextra -Werror -Wno-error=unused-variable -g $(foreach D, $(INCDIRS), -I$(D)) $(DEPFLAGS) $(NOFLAGS)
 
+LDFLAGS = -T link.ld -melf_i386
 AS = nasm
 ASFLAGS = -f elf32
-LDFLAGS = -T link.ld -melf_i386
+
+BUILDDIR = build
+
+CFILES = $(foreach D, $(CODEDIRS), $(wildcard $(D)/*.c))
+SFILES = loader.s interruptstubs.s
+
+OBJECTS = $(addprefix $(BUILDDIR)/, $(CFILES:.c=.o) $(SFILES:.s=.o))
 ```
 
 ## Desglose de banderas
@@ -38,6 +42,7 @@ LDFLAGS = -T link.ld -melf_i386
 | `-nodefaultlibs` | No vincula bibliotecas por defecto |
 | `-ffreestanding` | Modo autonomo (sin SO anfitrion) |
 | `-MP -MD` | Genera dependencias automaticas (archivos .d) |
+| `-Wno-error=unused-variable` | No tratar variables sin usar como error |
 
 ### Ensamblador (`ASFLAGS`)
 
@@ -60,6 +65,22 @@ LDFLAGS = -T link.ld -melf_i386
 | `make runqemu` | Compila y ejecuta en QEMU |
 | `make clean` | Elimina `build/`, `iso/` y `DemOS.iso` |
 | `make cleanrunqemu` | Limpia, recompila y ejecuta |
+| `make format` | Formatea codigo con clang-format |
+| `make tidy` | Analiza codigo con clang-tidy |
+| `make cppcheck` | Analiza codigo con cppcheck |
+| `make lint` | Ejecuta format + tidy + cppcheck |
+
+## Archivos fuente
+
+El Makefile descubre automaticamente los archivos `.c` en los directorios `.` (raiz) y `lib/`:
+
+| Tipo | Archivos | Compilador |
+|------|----------|------------|
+| C | `kernelmain.c`, `lib/*.c` | `gcc -m32` |
+| Ensamblador | `loader.s` | `nasm -f elf32` |
+| Ensamblador | `interruptstubs.s` | `gcc -m32` (ensamblador GNU) |
+
+> **Nota**: `interruptstubs.s` se compila con `gcc` en lugar de `nasm` porque usa la sintaxis GNU (GAS) con macros `.macro`, no sintaxis NASM.
 
 ## Generacion de la ISO
 
