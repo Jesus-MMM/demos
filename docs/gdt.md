@@ -1,4 +1,4 @@
-# Tabla de Descriptores Globales - GDT (gdt.h / gdt.c)
+# Tabla de Descriptores Globales - GDT (include/kernel/gdt.h / src/kernel/gdt.c)
 
 ## Que es la GDT?
 
@@ -108,7 +108,7 @@ Los selectores son los offsets de cada descriptor dentro de la GDT:
 
 Estos valores se cargan en los registros de segmento del CPU (`CS`, `DS`, `ES`, `FS`, `GS`, `SS`).
 
-## gdt.c - Implementacion
+## src/kernel/gdt.c - Implementacion
 
 ### `init_gdt()` - Inicializacion completa
 

@@ -6,23 +6,27 @@
 +---------------------------+
 |       GRUB (bootloader)   |  Carga el kernel en memoria
 +---------------------------+
-|   loader.s (ensamblador)  |  Configura stack, llama a C
+| asm/loader.s (ensamblador)|  Configura stack, llama a C
 +---------------------------+
-|    kernelmain.c (entry)   |  Inicia GDT, IDT, teclado, splash
+| src/kernel/main.c (entry) |  Inicia GDT, IDT, teclado, splash
 +---------------------------+
-|   GDT (gdt.c)             |  Segmentos de codigo y datos (32 bits)
+| GDT (src/kernel/gdt.c)    |  Segmentos de codigo y datos (32 bits)
 +---------------------------+
-|   IDT / PIC (interrupts)  |  Tabla de interrupciones, PIC 8259A
+| IDT / PIC (interrupts)    |  Tabla de interrupciones, PIC 8259A
 +---------------------------+
-|   keyboard (keyboard.c)   |  Driver PS/2, scancodes → ASCII
+| keyboard (keyboard.c)     |  Driver PS/2, scancodes → ASCII
 +---------------------------+
-|       splash.c            |  Orquesta la animacion
+| mouse (src/drivers/       |  Driver PS/2, paquetes de movimiento
+|        mouse.c)           |
 +---------------------------+
-|   big_text.c / timer.c    |  Letras grandes, delay, caja
+|    src/util/splash.c      |  Orquesta la animacion
 +---------------------------+
-|    io.c / asm.h / util    |  Framebuffer VGA, puertos, util
+| big_text.c / timer.c      |  Letras grandes, delay, caja
 +---------------------------+
-|   serial (serial.c)       |  Puerto serie UART 16550 (debug)
+|  vga.c / asm.h / util     |  Framebuffer VGA, puertos, util
++---------------------------+
+| serial (src/drivers/      |  Puerto serie UART 16550 (debug)
+|         serial.c)         |
 +---------------------------+
 |      Hardware (VGA/PS/2)  |  Pantalla, teclado, puertos E/S
 +---------------------------+
@@ -40,12 +44,12 @@ DemOS opera en **32 bits (protegido)** desde el inicio. GRUB cambia el CPU a mod
 ## Flujo de datos
 
 1. **GRUB** lee `grub.cfg` y carga `kernel.elf`.
-2. **loader.s** configura el stack y llama a `kernel_main()`.
+2. **asm/loader.s** configura el stack y llama a `kernel_main()`.
 3. **kernel_main()** inicializa la **GDT** (segmentos de codigo/datos).
 4. **kernel_main()** inicializa la **IDT** y el **PIC 8259A** (mapeo de IRQs).
 5. **kernel_main()** inicializa el **driver del teclado PS/2** (IRQ 1).
 6. **kernel_main()** desactiva el cursor y llama a `animate_splash()`.
-7. **animate_splash()** usa `draw_box()` y `draw_big_char()` (de `big_text.c`) y `delay()` (de `timer.c`) para animar.
+7. **animate_splash()** usa `draw_box()` y `draw_big_char()` (de `src/util/big_text.c`) y `delay()` (de `src/drivers/timer.c`) para animar.
 8. `draw_box()` y `draw_big_char()` escriben en el framebuffer VGA en `0xB8000`.
 9. El **teclado** queda habilitado: cualquier tecla presionada genera IRQ 1 → `keyboard_handler()` → caracter en pantalla.
 
@@ -63,3 +67,4 @@ DemOS opera en **32 bits (protegido)** desde el inicio. GRUB cambia el CPU a mod
 | [GDT](gdt.md) |
 | [Sistema de interrupciones](interrupts.md) |
 | [Driver de teclado](keyboard.md) |
+| [Driver de mouse](mouse.md) |

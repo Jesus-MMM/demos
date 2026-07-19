@@ -1,7 +1,7 @@
 /* util_lib.c - Implementacion de funciones de utilidad para el kernel.
    Proporciona operaciones comunes sin depender de la libc estandar. */
 
-#include "util_lib.h"
+#include "util/util_lib.h"
 
 int64_t strlen(const char *str)
 {

@@ -6,7 +6,7 @@ El `Makefile` automatiza todo el proceso de compilacion, enlazado y generacion d
 
 ```makefile
 INCDIRS = ./include/
-CODEDIRS = . lib/
+CODEDIRS = src/kernel src/drivers src/util
 
 CC = gcc
 DEPFLAGS = -MP -MD
@@ -20,7 +20,7 @@ ASFLAGS = -f elf32
 BUILDDIR = build
 
 CFILES = $(foreach D, $(CODEDIRS), $(wildcard $(D)/*.c))
-SFILES = loader.s interruptstubs.s
+SFILES = asm/loader.s asm/interruptstubs.s
 
 OBJECTS = $(addprefix $(BUILDDIR)/, $(CFILES:.c=.o) $(SFILES:.s=.o))
 ```
@@ -72,15 +72,15 @@ OBJECTS = $(addprefix $(BUILDDIR)/, $(CFILES:.c=.o) $(SFILES:.s=.o))
 
 ## Archivos fuente
 
-El Makefile descubre automaticamente los archivos `.c` en los directorios `.` (raiz) y `lib/`:
+El Makefile descubre automaticamente los archivos `.c` en los directorios `src/kernel/`, `src/drivers/` y `src/util/`:
 
 | Tipo | Archivos | Compilador |
 |------|----------|------------|
-| C | `kernelmain.c`, `lib/*.c` | `gcc -m32` |
-| Ensamblador | `loader.s` | `nasm -f elf32` |
-| Ensamblador | `interruptstubs.s` | `gcc -m32` (ensamblador GNU) |
+| C | `src/kernel/*.c`, `src/drivers/*.c`, `src/util/*.c` | `gcc -m32` |
+| Ensamblador | `asm/loader.s` | `nasm -f elf32` |
+| Ensamblador | `asm/interruptstubs.s` | `gcc -m32` (ensamblador GNU) |
 
-> **Nota**: `interruptstubs.s` se compila con `gcc` en lugar de `nasm` porque usa la sintaxis GNU (GAS) con macros `.macro`, no sintaxis NASM.
+> **Nota**: `asm/interruptstubs.s` se compila con `gcc` en lugar de `nasm` porque usa la sintaxis GNU (GAS) con macros `.macro`, no sintaxis NASM.
 
 ## Generacion de la ISO
 

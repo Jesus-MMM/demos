@@ -94,7 +94,7 @@ __asm__ volatile ( "instruccion" : salida : entrada );
 
 ## 3. util_lib.h / util_lib.c - strlen
 
-**Archivo:** `include/util_lib.h` y `lib/util_lib.c`
+**Archivo:** `include/util/util_lib.h` y `src/util/util_lib.c`
 
 ```c
 // util_lib.h
@@ -122,7 +122,7 @@ Recorre la cadena hasta `'\0'` y retorna la diferencia de punteros. Retorna `-1`
 
 ## 4. timer.h / timer.c - delay()
 
-**Archivo:** `include/timer.h` y `lib/timer.c`
+**Archivo:** `include/drivers/timer.h` y `src/drivers/timer.c`
 
 ```c
 // timer.h
@@ -158,7 +158,7 @@ No hay temporizadores ni interrupciones configuradas en DemOS, por lo que esta e
 
 ## 5. big_text.h / big_text.c - Letras grandes y cajas
 
-**Archivo:** `include/big_text.h` y `lib/big_text.c`
+**Archivo:** `include/util/big_text.h` y `src/util/big_text.c`
 
 Proporciona glyphs (mapas de bits) para letras de 5x5, dibujo de cajas y renderizado de caracteres grandes.
 
@@ -219,7 +219,7 @@ extern const uint8_t glyph_S[CHAR_H][CHAR_W];
 
 ## 6. splash.h / splash.c - Animacion de bienvenida
 
-**Archivo:** `include/splash.h` y `lib/splash.c`
+**Archivo:** `include/util/splash.h` y `src/util/splash.c`
 
 ### Declaracion
 
@@ -272,7 +272,41 @@ Calculan las posiciones centradas para la caja y el texto:
 |--------|---------------|
 | `big_text.h` | `draw_box()`, `draw_big_char()`, glyphs |
 | `timer.h` | `delay()` |
-| `io.h` | Constantes de color (`GREEN`, `LIGHTGREEN`, `DARKGREY`, `BLACK`) |
+| `vga.h` | Constantes de color (`GREEN`, `LIGHTGREEN`, `DARKGREY`, `BLACK`) |
+
+---
+
+## 7. mouse.h / mouse.c - Driver de mouse PS/2
+
+**Archivo:** `include/drivers/mouse.h` y `src/drivers/mouse.c`
+
+### Declaracion
+
+```c
+void mouse_init(void);
+uint32_t mouse_handler(uint32_t esp);
+void mouse_set_cursor(uint16_t row, uint16_t col);
+```
+
+### Funcionamiento
+
+El driver de mouse maneja IRQ 12 (interrupcion `0x2C`) y procesa paquetes de 3 bytes del mouse PS/2:
+
+| Byte | Contenido |
+|------|-----------|
+| 0 | Botones (bit 0=izq, bit 1=der, bit 2=central) + flags |
+| 1 | Movimiento X (offset desde ultimo paquete) |
+| 2 | Movimiento Y (offset desde ultimo paquete) |
+
+Actualmente implementa un **cursor visual** que invierte los colores VGA en la posicion del mouse.
+
+### Dependencias
+
+| Modulo | Funcion usada |
+|--------|---------------|
+| `asm.h` | `inb()`, `outb()` |
+| `vga.h` | Acceso directo a framebuffer VGA (`0xB8000`) |
+| `serial.h` | `serial_write_string()` (mensaje de activacion) |
 
 ---
 

@@ -1,4 +1,4 @@
-# VGA y Framebuffer (io.c / io.h)
+# VGA y Framebuffer (src/drivers/vga.c / include/drivers/vga.h)
 
 ## ¿Que es el framebuffer VGA?
 
@@ -66,7 +66,7 @@ Bit:    7   6   5   4  |  3   2   1   0
 | `BROWN` (0x6) | Marron | `LIGHTBROWN` (0xE) | Marron claro |
 | `LIGHTGREY` (0x7) | Gris claro | `WHITE` (0xF) | Blanco |
 
-## io.h - Definiciones y constantes
+## vga.h - Definiciones y constantes
 
 ```c
 #define FRAMEBUFFER 0x000B8000
@@ -91,7 +91,7 @@ Bit:    7   6   5   4  |  3   2   1   0
 | `0x0D` | Byte bajo del inicio de pantalla (scroll) |
 | `0x0A` | Registro de inicio de cursor (estilo) |
 
-## io.c - Implementacion
+## vga.c - Implementacion
 
 ### `write_letter_to_buffer()` — funcion base
 

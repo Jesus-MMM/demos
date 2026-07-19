@@ -1,19 +1,20 @@
-# Kernel principal (kernelmain.c)
+# Kernel principal (src/kernel/main.c)
 
 ## Proposito
 
-`kernelmain.c` es el punto de entrada del kernel en C. Sirve como orquestador minimo que delega toda la logica visual a los modulos especializados.
+`src/kernel/main.c` es el punto de entrada del kernel en C. Sirve como orquestador minimo que delega toda la logica visual a los modulos especializados.
 
 ## Contenido completo
 
 ```c
-#include "io.h"
-#include "serial.h"
-#include "splash.h"
-#include "util_lib.h"
-#include "gdt.h"
-#include "interrupts.h"
-#include "keyboard.h"
+#include "drivers/vga.h"
+#include "drivers/serial.h"
+#include "util/splash.h"
+#include "util/util_lib.h"
+#include "kernel/gdt.h"
+#include "kernel/interrupts.h"
+#include "drivers/keyboard.h"
+#include "drivers/mouse.h"
 
 int kernel_main()
 {
@@ -23,12 +24,14 @@ int kernel_main()
     init_gdt(&gdt);
     init_interrupt_manager(&gdt);
 
-    style_cursor(DISABLE);
-    animate_splash();
+    // style_cursor(DISABLE);
+    // animate_splash();
 
     keyboard_set_cursor(0, 0);
     style_cursor(SMALL);
     keyboard_init();
+    mouse_init();
+    asm volatile("sti");
 
     return 0;
 }
@@ -40,13 +43,13 @@ int kernel_main()
 
 | Include | Proposito |
 |---------|-----------|
-| `#include "io.h"` | `style_cursor()` para el cursor, constantes de color |
-| `#include "serial.h"` | `serial_init()` para el puerto serie (depuracion) |
-| `#include "splash.h"` | `animate_splash()` para la animacion de bienvenida |
-| `#include "util_lib.h"` | Funciones de utilidad |
-| `#include "gdt.h"` | `init_gdt()` para la Tabla de Descriptores Globales |
-| `#include "interrupts.h"` | `init_interrupt_manager()` para la IDT y PIC |
-| `#include "keyboard.h"` | `keyboard_init()`, `keyboard_set_cursor()` |
+| `#include "drivers/vga.h"` | `style_cursor()` para el cursor, constantes de color |
+| `#include "drivers/serial.h"` | `serial_init()` para el puerto serie (depuracion) |
+| `#include "util/splash.h"` | `animate_splash()` para la animacion de bienvenida |
+| `#include "util/util_lib.h"` | Funciones de utilidad |
+| `#include "kernel/gdt.h"` | `init_gdt()` para la Tabla de Descriptores Globales |
+| `#include "kernel/interrupts.h"` | `init_interrupt_manager()` para la IDT y PIC |
+| `#include "drivers/keyboard.h"` | `keyboard_init()`, `keyboard_set_cursor()` |
 
 ### `style_cursor(DISABLE)`
 
@@ -58,7 +61,15 @@ Despues de la animacion, posiciona el cursor en la esquina superior izquierda y 
 
 ### `keyboard_init()`
 
-Inicializa el controlador PS/2: drena el buffer de datos, configura el byte de habilitacion de IRQ1, y envia `0xF4` para activar el escaneo del teclado. A partir de este punto, cualquier tecla presionada genera una IRQ 1 que el kernel atiende.
+Inicializa el controlador PS/2 del teclado: drena el buffer de datos, configura el byte de habilitacion de IRQ1 con guards IBF/OBF, y envia `0xF4` para activar el escaneo.
+
+### `mouse_init()`
+
+Inicializa el controlador PS/2 del mouse: habilita el segundo puerto PS/2, configura IRQ12 en el byte de control, y envia `0xF4` via el prefijo `0xD4` para activar el envio de paquetes.
+
+### `asm volatile("sti")`
+
+Habilita las interrupciones del CPU. Se llama despues de inicializar teclado y mouse para evitar que interrupciones lleguen antes de que los handlers esten listos.
 
 ### Funcion `kernel_main()`
 
@@ -70,14 +81,15 @@ El kernel principal se mantiene propositivamente minimalista. Toda la logica com
 
 | Modulo | Responsabilidad |
 |--------|-----------------|
-| `gdt.c` | Tabla de Descriptores Globales (segmentos de memoria) |
-| `interrupts.c` | IDT, PIC 8259A, despacho de interrupciones |
-| `keyboard.c` | Driver de teclado PS/2 (scancodes → ASCII → pantalla) |
-| `serial.c` | Puerto serie UART 16550 (depuracion) |
-| `splash.c` | Animacion y layout centrado |
-| `big_text.c` | Letras grandes 5x5, dibujo de cajas |
-| `timer.c` | Espera activa (delay) |
-| `io.c` | Escritura directa en framebuffer VGA |
+| `src/kernel/gdt.c` | Tabla de Descriptores Globales (segmentos de memoria) |
+| `src/kernel/interrupts.c` | IDT, PIC 8259A, despacho de interrupciones |
+| `src/drivers/keyboard.c` | Driver de teclado PS/2 (scancodes → ASCII → pantalla) |
+| `src/drivers/mouse.c` | Driver de mouse PS/2 (IRQ 12, movimiento y botones) |
+| `src/drivers/serial.c` | Puerto serie UART 16550 (depuracion) |
+| `src/util/splash.c` | Animacion y layout centrado |
+| `src/util/big_text.c` | Letras grandes 5x5, dibujo de cajas |
+| `src/drivers/timer.c` | Espera activa (delay) |
+| `src/drivers/vga.c` | Escritura directa en framebuffer VGA |
 
 ## Navegacion
 

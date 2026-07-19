@@ -2,12 +2,12 @@
    Puerto de datos: 0x60
    Puerto de comando: 0x64
    Traduce scancodes Set 1 a caracteres ASCII y los escribe
-   en el framebuffer VGA usando las funciones de io.h. */
+   en el framebuffer VGA usando las funciones de vga.h. */
 
-#include "keyboard.h"
+#include "drivers/keyboard.h"
 #include "asm.h"
-#include "io.h"
-#include "serial.h"
+#include "drivers/vga.h"
+#include "drivers/serial.h"
 
 #define KB_DATA_PORT    0x60
 #define KB_COMMAND_PORT 0x64
@@ -83,10 +83,16 @@ void keyboard_init(void)
     }
 
     outb(KB_COMMAND_PORT, 0xAE);
+
+    while (inb(KB_COMMAND_PORT) & 0x2) {}
     outb(KB_COMMAND_PORT, 0x20);
+    while (!(inb(KB_COMMAND_PORT) & 0x1)) {}
     uint8_t status = (inb(KB_DATA_PORT) | 1) & ~0x10;
+    while (inb(KB_COMMAND_PORT) & 0x2) {}
     outb(KB_COMMAND_PORT, 0x60);
+    while (inb(KB_COMMAND_PORT) & 0x2) {}
     outb(KB_DATA_PORT, status);
+    while (inb(KB_COMMAND_PORT) & 0x2) {}
     outb(KB_DATA_PORT, 0xF4);
 
     serial_write_string(COM1_BASE_ADDRESS, "[KB] Keyboard activated\n", 24);
@@ -152,10 +158,6 @@ uint32_t keyboard_handler(uint32_t esp)
         case 0x0E: c = '\b'; break;
 
         default:
-            serial_write_string(COM1_BASE_ADDRESS, "KB 0x", 5);
-            serial_write(COM1_BASE_ADDRESS, "0123456789ABCDEF"[key >> 4]);
-            serial_write(COM1_BASE_ADDRESS, "0123456789ABCDEF"[key & 0xF]);
-            serial_write(COM1_BASE_ADDRESS, '\n');
             break;
     }
 

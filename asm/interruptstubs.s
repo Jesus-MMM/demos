@@ -29,6 +29,7 @@ handle_interrupt_request\num:
 
 handle_interrupt_request 0x00
 handle_interrupt_request 0x01
+handle_interrupt_request 0x0C
 
 handle_interrupt_exception_no_err 0x00
 handle_interrupt_exception_no_err 0x01
@@ -129,6 +130,7 @@ ignore_interrupt_request:
     pushl %eax
     movb $0x20, %al
     outb %al, $0x20
+    outb %al, $0xA0
     popl %eax
     iret
 

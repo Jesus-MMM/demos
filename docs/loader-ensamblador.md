@@ -1,8 +1,8 @@
-# Loader en ensamblador (loader.s)
+# Loader en ensamblador (asm/loader.s)
 
 ## Proposito
 
-El archivo `loader.s` es el **verdadero punto de entrada** del kernel. Esta escrito en ensamblador x86 (NASM) porque necesitamos control directo sobre:
+El archivo `asm/loader.s` es el **verdadero punto de entrada** del kernel. Esta escrito en ensamblador x86 (NASM) porque necesitamos control directo sobre:
 
 1. La **cabecera Multiboot** que GRUB requiere para identificar el kernel.
 2. La configuracion de la **pila (stack)** antes de llamar a codigo C.

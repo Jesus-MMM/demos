@@ -1,4 +1,4 @@
-# Sistema de interrupciones - IDT / PIC 8259A (interrupts.h / interrupts.c / interruptstubs.s)
+# Sistema de interrupciones - IDT / PIC 8259A (include/kernel/interrupts.h / src/kernel/interrupts.c / asm/interruptstubs.s)
 
 ## Que es el sistema de interrupciones?
 
@@ -10,6 +10,7 @@ Las **interrupciones** son mecanismos que permiten al CPU responder a eventos (t
         Hardware                CPU                    Kernel
      +-----------+         +----------+          +-----------+
      | Teclado   |-------->|  IRQ 1   |--------->| keyboard  |
+     | Mouse     |-------->|  IRQ 12  |--------->| mouse     |
      | PIT Timer |-------->|  IRQ 0   |--------->| (futuro)  |
      | Errores   |-------->| Excep.   |--------->| handler   |
      +-----------+         +----------+          +-----------+
@@ -24,7 +25,7 @@ Las **interrupciones** son mecanismos que permiten al CPU responder a eventos (t
 | Tipo | Vector | Origen | Ejemplo |
 |------|--------|--------|---------|
 | **Excepcion** | `0x00 - 0x1F` | CPU (errores internos) | Division por cero (0x00), Page Fault (0x0E) |
-| **IRQ** (Hardware) | `0x20 - 0x2F` | Dispositivos externos | Teclado (IRQ 1), Timer (IRQ 0) |
+| **IRQ** (Hardware) | `0x20 - 0x2F` | Dispositivos externos | Teclado (IRQ 1), Mouse (IRQ 12), Timer (IRQ 0) |
 
 ## PIC 8259A - Controlador de interrupciones programable
 
@@ -56,6 +57,7 @@ Antes:  IRQ 0 → INT 0x08 (colisiona con Doble Fallo)
 
 Despues: IRQ 0 → INT 0x20 (timer, sin colision)
          IRQ 1 → INT 0x21 (teclado, sin colision)
+         IRQ 12 → INT 0x2C (mouse, sin colision)
 ```
 
 ### Secuencia de inicializacion ICW
@@ -81,18 +83,28 @@ outb(0x21, 0x01);   outb(0xA1, 0x01);
 Despues de ICW, se envia una mascara que decide que IRQs estan habilitadas:
 
 ```c
-outb(0x21, 0xFC);   // Maestro: solo IRQ 0 y 1 habilitadas
-outb(0xA1, 0xFF);   // Esclavo: todas deshabilitadas
+outb(0x21, 0xF8);   // Maestro: IRQ 0, 1 y 2 habilitadas
+outb(0xA1, 0xEF);   // Esclavo: solo IRQ 12 (mouse) habilitada
 ```
 
 ```
-Mascara maestro: 0xFC = 11111100
+Mascara maestro: 0xF8 = 11111000
                         │││││││└── IRQ 0 habilitada (Timer)
                         ││││││└─── IRQ 1 habilitada (Teclado)
-                        │││││└──── IRQ 2 deshabilitada
+                        │││││└──── IRQ 2 habilitada (Cascada → esclavo)
                         ││││└───── IRQ 3 deshabilitada
                   ...       (el resto deshabilitado)
+
+Mascara esclavo: 0xEF = 11101111
+                         │││││││└── IRQ 8 deshabilitada
+                         ││││││└─── IRQ 9 deshabilitada
+                         │││││└──── IRQ 10 deshabilitada
+                         ││││└───── IRQ 11 deshabilitada
+                         │││└────── IRQ 12 habilitada (Mouse)
+                  ...        (el resto deshabilitado)
 ```
+
+> **Nota**: IRQ 2 debe estar habilitada en el PIC maestro porque el mouse (IRQ 12) esta conectado al PIC esclavo a traves de IRQ 2 (cascada). Sin esta habilitacion, ninguna interrupcion del esclavo llegaria al CPU.
 
 ## IDT - Tabla de Descriptores de Interrupcion
 
@@ -129,9 +141,10 @@ DemOS configura 3 tipos de entradas en la IDT:
 | `0x00 - 0x1F` | `exception_handler_table` | Excepciones del CPU |
 | `0x20` | `handle_interrupt_request0x00` | IRQ 0 (Timer) |
 | `0x21` | `handle_interrupt_request0x01` | IRQ 1 (Teclado) |
-| `0x22 - 0xFF` | `ignore_interrupt_request` | Sin handler (solo EOI) |
+| `0x2C` | `handle_interrupt_request0x0C` | IRQ 12 (Mouse) |
+| Resto | `ignore_interrupt_request` | Sin handler (solo EOI) |
 
-## interruptstubs.s - Stubs en ensamblador
+## asm/interruptstubs.s - Stubs en ensamblador
 
 Los **interrupt stubs** son funciones en ensamblador que sirven de puente entre el CPU y el manejador en C. Son necesarias porque el CPU:
 
@@ -236,7 +249,7 @@ ignore_interrupt_request:
 
 Para interrupciones sin handler real, solo envia el **EOI (End of Interrupt)** y retorna.
 
-## interrupts.c - Manejador en C
+## src/kernel/interrupts.c - Manejador en C
 
 ### `init_interrupt_manager()` - Configuracion de la IDT
 
@@ -255,25 +268,26 @@ void init_interrupt_manager(global_descriptor_table *gdt)
         set_interrupt_descriptor_table_entry(i, code_segment,
             exception_handler_table[i], 0, 0xE);
 
-    // Configurar IRQ 0 (Timer) y IRQ 1 (Teclado)
+    // Configurar IRQ 0 (Timer), IRQ 1 (Teclado) y IRQ 12 (Mouse)
     set_interrupt_descriptor_table_entry(0x20, code_segment,
         &handle_interrupt_request0x00, 0, 0xE);
     set_interrupt_descriptor_table_entry(0x21, code_segment,
         &handle_interrupt_request0x01, 0, 0xE);
+    set_interrupt_descriptor_table_entry(0x2C, code_segment,
+        &handle_interrupt_request0x0C, 0, 0xE);
 
     // Inicializar PICs (remapeo + mascara)
     outb(0x20, 0x11);  outb(0xA0, 0x11);
     outb(0x21, 0x20);  outb(0xA1, 0x28);
     outb(0x21, 0x04);  outb(0xA1, 0x02);
     outb(0x21, 0x01);  outb(0xA1, 0x01);
-    outb(0x21, 0xFC);  outb(0xA1, 0xFF);
+    outb(0x21, 0xF8);  outb(0xA1, 0xEF);
 
-    // Cargar IDT y habilitar interrupciones
+    // Cargar IDT (sti se llama en kernel_main despues de init de dispositivos)
     idt_pointer idt;
     idt.size = (256 * sizeof(gate_descriptor)) - 1;
     idt.base = (uint32_t)interrupt_descriptor_table;
     asm volatile("lidt %0" : : "m"(idt));
-    asm volatile("sti");   // Habilitar interrupciones
 }
 ```
 
@@ -303,19 +317,18 @@ void set_interrupt_descriptor_table_entry(uint8_t interrupt_number,
 ```c
 uint32_t handle_interrupt(uint8_t interrupt_number, uint32_t stack_pointer)
 {
-    // Excepciones: imprimir y detener CPU
+    // Excepciones: detener CPU
     if (interrupt_number < 0x20) {
-        serial_write_string(COM1_BASE_ADDRESS, "EXCEPCION ", 10);
-        char digit = (char)('0' + interrupt_number);
-        serial_write_string(COM1_BASE_ADDRESS, &digit, 1);
         asm volatile("cli; hlt");
     }
 
     // Despacho a handlers especificos
     if (interrupt_number == 0x21) {
         stack_pointer = keyboard_handler(stack_pointer);
-    } else {
-        serial_write_string(COM1_BASE_ADDRESS, "INTERRUPT ", 10);
+    }
+
+    if (interrupt_number == 0x2C) {
+        stack_pointer = mouse_handler(stack_pointer);
     }
 
     // Enviar EOI al PIC
@@ -332,11 +345,11 @@ uint32_t handle_interrupt(uint8_t interrupt_number, uint32_t stack_pointer)
 ```
 handle_interrupt(num, esp)
     │
-    ├─ Si num < 0x20: Excepcion → imprimir y HLT
+    ├─ Si num < 0x20: Excepcion → CLI + HLT
     │
     ├─ Si num == 0x21: keyboard_handler(esp)
     │
-    ├─ Si num != 0x21: imprimir "INTERRUPT"
+    ├─ Si num == 0x2C: mouse_handler(esp)
     │
     ├─ Enviar EOI (0x20) al PIC maestro
     └─ Si num >= 0x28: enviar EOI al PIC esclavo
@@ -355,17 +368,17 @@ if (interrupt_number >= 0x28)
 ## Flujo completo de una interrupcion
 
 ```
-1. Hardware genera IRQ 1 (teclado)
-2. PIC maestro recibe la IRQ
-3. PIC verifica mascara (IRQ 1 habilitada → 0xFC tiene bit 1 = 0)
-4. PIC envia INT 0x21 al CPU
-5. CPU busca entrada 0x21 en la IDT
-6. CPU ejecuta handle_interrupt_request0x01 (stub en ensamblador)
+1. Hardware genera IRQ 1 (teclado) o IRQ 12 (mouse)
+2. PIC recibe la IRQ
+3. PIC verifica mascara (IRQ habilitada)
+4. PIC envia INT al CPU (0x21 para teclado, 0x2C para mouse)
+5. CPU busca entrada en la IDT
+6. CPU ejecuta el stub en ensamblador correspondiente
 7. Stub guarda registros (pusha), segmentos (push ds/es/fs/gs)
-8. Stub llama a handle_interrupt(0x21, esp)
-9. handle_interrupt despacha a keyboard_handler(esp)
-10. keyboard_handler lee scancode de puerto 0x60
-11. keyboard_handler escribe caracter en pantalla
+8. Stub llama a handle_interrupt(num, esp)
+9. handle_interrupt despacha al handler (keyboard_handler o mouse_handler)
+10. Handler lee datos del puerto correspondiente (0x60)
+11. Handler procesa datos (escribe en pantalla / mueve cursor)
 12. handle_interrupt envia EOI al PIC
 13. handle_interrupt retorna nuevo ESP
 14. Stub restaura registros y segmentos
@@ -383,3 +396,4 @@ if (interrupt_number >= 0x28)
 |--------------|
 | [Loader en ensamblador](loader-ensamblador.md) |
 | [Puerto serie](serial.md) |
+| [Driver de mouse](mouse.md) |

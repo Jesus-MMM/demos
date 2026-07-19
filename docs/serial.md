@@ -1,4 +1,4 @@
-# Puerto serie - UART 16550 (serial.h / serial.c)
+# Puerto serie - UART 16550 (include/drivers/serial.h / src/drivers/serial.c)
 
 ## Que es el puerto serie?
 

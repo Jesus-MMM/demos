@@ -24,7 +24,7 @@ SECTIONS {
 
 ### `ENTRY(loader)`
 
-Define el **punto de entrada** del kernel: la etiqueta `loader` definida en `loader.s`. Sin esto, el enlazador usaria `_start` por defecto.
+Define el **punto de entrada** del kernel: la etiqueta `loader` definida en `asm/loader.s`. Sin esto, el enlazador usaria `_start` por defecto.
 
 ### `. = 0x00100000;`
 
@@ -32,7 +32,7 @@ Establece la **direccion base** del kernel en `0x00100000` (1 MB). Esta es la di
 
 ### `.multiboot ALIGN(4)`
 
-Contiene la **cabecera Multiboot** (definida en `loader.s`). Debe estar alineada a 4 bytes y aparecer en los primeros 8 KB del kernel para que GRUB la reconozca.
+Contiene la **cabecera Multiboot** (definida en `asm/loader.s`). Debe estar alineada a 4 bytes y aparecer en los primeros 8 KB del kernel para que GRUB la reconozca.
 
 ### `.text ALIGN(0x1000)`
 

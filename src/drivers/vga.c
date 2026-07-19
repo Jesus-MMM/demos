@@ -1,7 +1,7 @@
-/* io.c - Implementacion de operaciones de E/S sobre el framebuffer VGA
+/* vga.c - Implementacion de operaciones de E/S sobre el framebuffer VGA
    y el controlador CRTC para modo texto 80x25. */
 
-#include "io.h"
+#include "drivers/vga.h"
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 void write_letter_to_buffer(uint8_t letter, uint16_t row, uint16_t col, uint8_t fg_color,

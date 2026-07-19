@@ -1,4 +1,4 @@
-# Driver de teclado PS/2 (keyboard.h / keyboard.c)
+# Driver de teclado PS/2 (include/drivers/keyboard.h / src/drivers/keyboard.c)
 
 ## Que es el driver de teclado?
 
@@ -103,7 +103,7 @@ void keyboard_set_cursor(uint16_t row, uint16_t col);
 | `keyboard_handler()` | Manejador de IRQ 1, llamado desde `handle_interrupt()` |
 | `keyboard_set_cursor()` | Establece la posicion del cursor de escritura en pantalla |
 
-## keyboard.c - Implementacion
+## src/drivers/keyboard.c - Implementacion
 
 ### Variables globales
 
@@ -123,10 +123,16 @@ void keyboard_init(void)
         inb(KB_DATA_PORT);
 
     outb(KB_COMMAND_PORT, 0xAE);         // Activar teclado PS/2
+
+    while (inb(KB_COMMAND_PORT) & 0x2) {}
     outb(KB_COMMAND_PORT, 0x20);         // Leer configuracion del controlador
+    while (!(inb(KB_COMMAND_PORT) & 0x1)) {}
     uint8_t status = (inb(KB_DATA_PORT) | 1) & ~0x10;
+    while (inb(KB_COMMAND_PORT) & 0x2) {}
     outb(KB_COMMAND_PORT, 0x60);         // Escribir nueva configuracion
+    while (inb(KB_COMMAND_PORT) & 0x2) {}
     outb(KB_DATA_PORT, status);
+    while (inb(KB_COMMAND_PORT) & 0x2) {}
     outb(KB_DATA_PORT, 0xF4);            // Habilitar escaneo
 }
 ```
@@ -137,11 +143,18 @@ void keyboard_init(void)
 |------|----------|---------|
 | 1. Drenar buffer | Leer y descartar datos pendientes | Evitar scancodes residuales |
 | 2. `0xAE` al `0x64` | Habilitar el teclado | Asegurar que el teclado este activo |
-| 3. `0x20` al `0x64` | Leer byte de configuracion | Obtener el estado actual |
-| 4. `\| 1` y `& ~0x10` | Bit 1 = 1 (habilitar IRQ1), bit 4 = 0 (habilitar clock) | Permitir que el teclado genere interrupciones |
-| 5. `0x60` al `0x64` | Seleccionar registro de configuracion | Indicar que el siguiente dato es configuracion |
-| 6. `status` al `0x60` | Escribir nueva configuracion | Aplicar los cambios |
-| 7. `0xF4` al `0x60` | Habilitar escaneo | El teclado empezara a enviar scancodes |
+| 3. Esperar IBF clear | Verificar que el controlador no esta ocupado | Evitar perder comandos |
+| 4. `0x20` al `0x64` | Leer byte de configuracion | Obtener el estado actual |
+| 5. Esperar OBF set | Verificar que el byte de configuracion esta disponible | Leer datos validos |
+| 6. `\| 1` y `& ~0x10` | Bit 0 = 1 (habilitar IRQ0), bit 4 = 0 (habilitar clock) | Permitir que el teclado genere interrupciones |
+| 7. Esperar IBF clear | Verificar que el controlador no esta ocupado | Evitar perder comandos |
+| 8. `0x60` al `0x64` | Seleccionar registro de configuracion | Indicar que el siguiente dato es configuracion |
+| 9. Esperar IBF clear | Verificar que el controlador limpie el registro | Confirmar seleccion |
+| 10. `status` al `0x60` | Escribir nueva configuracion | Aplicar los cambios |
+| 11. Esperar IBF clear | Verificar que el controlador no esta ocupado | Evitar perder el comando 0xF4 |
+| 12. `0xF4` al `0x60` | Habilitar escaneo | El teclado empezara a enviar scancodes |
+
+> **Nota**: Los guards IBF (bit 1 de `0x64`) y OBF (bit 0 de `0x64`) son criticos. Sin ellos, los comandos se pierden si el controlador esta ocupado procesando un dato anterior.
 
 ### `keyboard_handler()` - Manejo de interrupciones
 
@@ -163,8 +176,7 @@ uint32_t keyboard_handler(uint32_t esp)
         case 0x39: c = ' '; break;
         case 0x0E: c = '\b'; break;
         default:
-            // Scancode desconocido → log al serie
-            break;
+            break;                          // Scancode desconocido → ignorar
     }
 
     if (c != 0)
@@ -183,7 +195,7 @@ keyboard_handler(esp)
     ├─ Si >= 0x80: break code → ignorar, retornar esp
     ├─ Switch: traducir scancode a ASCII
     │   ├─ Si es tecla conocida: asignar caracter
-    │   └─ Si es desconocida: log al serie
+    │   └─ Si es desconocida: ignorar (default: break)
     └─ Si c != 0: keyboard_putchar(c)
 ```
 
@@ -256,14 +268,10 @@ Si el cursor esta en la columna 0, retrocede a la columna 79 de la fila anterior
 
 ```c
 default:
-    serial_write_string(COM1_BASE_ADDRESS, "KB 0x", 5);
-    serial_write(COM1_BASE_ADDRESS, "0123456789ABCDEF"[key >> 4]);
-    serial_write(COM1_BASE_ADDRESS, "0123456789ABCDEF"[key & 0xF]);
-    serial_write(COM1_BASE_ADDRESS, '\n');
     break;
 ```
 
-Los scancodes no reconocidos se imprimen en el puerto serie para depuracion. Ejemplo de salida: `KB 0x1A`.
+Los scancodes no reconocidos se ignoran silenciosamente (sin logging al serie para evitar latencia en la ruta de interrupcion).
 
 ## Flujo completo: tecla presionada
 
@@ -290,17 +298,18 @@ Los scancodes no reconocidos se imprimen en el puerto serie para depuracion. Eje
 | Modulo | Funcion usada |
 |--------|---------------|
 | `asm.h` | `inb()`, `outb()` |
-| `io.h` | `write_letter_to_buffer()`, `move_cursor()`, `scroll()` |
+| `vga.h` | `write_letter_to_buffer()`, `move_cursor()`, `scroll()` |
 | `serial.h` | `serial_write_string()`, `serial_write()` |
 
 ## Navegacion
 
 | Anterior | Siguiente |
 |----------|-----------|
-| [Sistema de interrupciones](interrupts.md) | [Actualizacion de docs existentes](flujo-ejecucion.md) |
+| [Sistema de interrupciones](interrupts.md) | [Driver de mouse](mouse.md) |
 
 | Relacionados |
 |--------------|
 | [Sistema de interrupciones](interrupts.md) |
+| [Driver de mouse](mouse.md) |
 | [VGA y Framebuffer](vga-framebuffer.md) |
 | [Puerto serie](serial.md) |

@@ -1,4 +1,4 @@
-/* io.h - Controlador de pantalla VGA y registro de cursor.
+/* vga.h - Controlador de pantalla VGA y registro de cursor.
    Proporciona funciones para escribir en el framebuffer VGA en modo texto
    de 80x25 y controlar el cursor via puertos CRTC. */
 

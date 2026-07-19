@@ -1,6 +1,6 @@
-#include "gdt.h"
-#include "serial.h"
-#include "util_lib.h"
+#include "kernel/gdt.h"
+#include "drivers/serial.h"
+#include "util/util_lib.h"
 
 typedef struct __attribute__((packed)) {
     uint16_t limit;

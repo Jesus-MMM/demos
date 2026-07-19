@@ -1,7 +1,7 @@
 /* serial.c - Implementacion del controlador de puerto serie (UART 16550)
    para comunicacion de depuracion en modo texto. */
 
-#include "serial.h"
+#include "drivers/serial.h"
 
 void serial_init(uint16_t com)
 {

@@ -1,5 +1,5 @@
 INCDIRS = ./include/
-CODEDIRS = . lib/
+CODEDIRS = src/kernel src/drivers src/util
 
 CC = gcc
 DEPFLAGS = -MP -MD
@@ -13,7 +13,7 @@ ASFLAGS = -f elf32
 BUILDDIR = build
 
 CFILES = $(foreach D, $(CODEDIRS), $(wildcard $(D)/*.c))
-SFILES = loader.s interruptstubs.s
+SFILES = asm/loader.s asm/interruptstubs.s
 
 OBJECTS = $(addprefix $(BUILDDIR)/, $(CFILES:.c=.o) $(SFILES:.s=.o))
 DEPFILES = $(OBJECTS:.o=.d)
@@ -42,18 +42,18 @@ $(BUILDDIR)/%.o: %.s
 	mkdir -p $(dir $@)
 	$(AS) $(ASFLAGS) $< -o $@
 
-$(BUILDDIR)/loader.o: loader.s
+$(BUILDDIR)/asm/loader.o: asm/loader.s
 	mkdir -p $(dir $@)
 	$(AS) $(ASFLAGS) $< -o $@
 
-$(BUILDDIR)/interruptstubs.o: interruptstubs.s
+$(BUILDDIR)/asm/interruptstubs.o: asm/interruptstubs.s
 	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: lint format tidy check
 
 format:
-	clang-format -i $(CFILES) $(wildcard include/*.h)
+	clang-format -i $(CFILES) $(wildcard include/**/*.h)
 
 tidy:
 	clang-tidy $(CFILES) -- $(CFLAGS)

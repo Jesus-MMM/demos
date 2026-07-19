@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "gdt.h"
-#include "serial.h"
+#include "kernel/gdt.h"
+#include "drivers/serial.h"
 #include "types.h"
 
 /** gate_descriptor - Entrada de la IDT de 8 bytes (formato Intel).
