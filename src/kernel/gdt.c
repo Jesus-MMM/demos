@@ -1,6 +1,4 @@
 #include "kernel/gdt.h"
-#include "drivers/serial.h"
-#include "util/util_lib.h"
 
 typedef struct __attribute__((packed)) {
     uint16_t limit;
@@ -25,31 +23,30 @@ void init_gdt(global_descriptor_table *gdt)
     serial_write_string(COM1_BASE_ADDRESS, "[GDT] GDTR loaded\n", 18);
 
     /* far jump para recargar CS con el nuevo code segment descriptor */
-    __asm__ volatile(
-        "ljmp %0, $1f\n"
-        "1:\n"
-        : : "i"(GDT_CODE_SELECTOR)
-    );
+    __asm__ volatile("ljmp %0, $1f\n"
+                     "1:\n"
+                     :
+                     : "i"(GDT_CODE_SELECTOR));
 
     serial_write_string(COM1_BASE_ADDRESS, "[GDT] CS reloaded\n", 18);
 
     /* recargar data segment registers */
-    __asm__ volatile(
-        "mov %0, %%ds\n"
-        "mov %0, %%es\n"
-        "mov %0, %%fs\n"
-        "mov %0, %%gs\n"
-        "mov %0, %%ss\n"
-        : : "r"((uint16_t)GDT_DATA_SELECTOR)
-    );
+    __asm__ volatile("mov %0, %%ds\n"
+                     "mov %0, %%es\n"
+                     "mov %0, %%fs\n"
+                     "mov %0, %%gs\n"
+                     "mov %0, %%ss\n"
+                     :
+                     : "r"((uint16_t)GDT_DATA_SELECTOR));
 
     serial_write_string(COM1_BASE_ADDRESS, "[GDT] DS/ES/FS/GS/SS reloaded\n", 30);
     serial_write_string(COM1_BASE_ADDRESS, "[GDT] Ready\n", 12);
 }
 
-void init_segment_descriptor(SegmentDescriptor *sd, uint32_t base, // NOLINT(bugprone-easily-swappable-parameters)
+void init_segment_descriptor(SegmentDescriptor *sd,
+                             uint32_t base,  // NOLINT(bugprone-easily-swappable-parameters)
                              uint32_t limit, // NOLINT(bugprone-easily-swappable-parameters)
-                             uint8_t type) // NOLINT(bugprone-easily-swappable-parameters)
+                             uint8_t type)   // NOLINT(bugprone-easily-swappable-parameters)
 {
     if (limit <= 65536) {
         sd->flags_and_limit_high = 0x40;
@@ -75,15 +72,12 @@ void init_segment_descriptor(SegmentDescriptor *sd, uint32_t base, // NOLINT(bug
 
 uint32_t segment_descriptor_get_base(SegmentDescriptor *sd)
 {
-    return ((uint32_t)sd->base_high << 24)
-         | ((uint32_t)sd->base_mid << 16)
-         | sd->base_low;
+    return ((uint32_t)sd->base_high << 24) | ((uint32_t)sd->base_mid << 16) | sd->base_low;
 }
 
 uint32_t segment_descriptor_get_limit(SegmentDescriptor *sd)
 {
-    uint32_t limit = ((uint32_t)(sd->flags_and_limit_high & 0xF) << 16)
-                   | sd->limit_low;
+    uint32_t limit = ((uint32_t)(sd->flags_and_limit_high & 0xF) << 16) | sd->limit_low;
 
     if ((sd->flags_and_limit_high & 0xC0) == 0xC0) {
         limit = (limit << 12) | 0xFFF;

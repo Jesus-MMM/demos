@@ -1,7 +1,4 @@
 #include "util/splash.h"
-#include "util/big_text.h"
-#include "drivers/vga.h"
-#include "drivers/timer.h"
 
 #define N_LETTERS 5
 #define TXT_W ((N_LETTERS * CHAR_W) + (N_LETTERS - 1))

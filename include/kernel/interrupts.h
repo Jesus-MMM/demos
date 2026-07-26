@@ -4,9 +4,11 @@
 
 #pragma once
 
-#include "kernel/gdt.h"
+#include "drivers/driver.h"
 #include "drivers/serial.h"
+#include "kernel/gdt.h"
 #include "types.h"
+#include "asm.h"
 
 /** gate_descriptor - Entrada de la IDT de 8 bytes (formato Intel).
  * Describe un manejador de interrupcion o excepcion: direccion del handler,
@@ -18,6 +20,10 @@ typedef struct __attribute__((packed)) {
     uint8_t access;
     uint16_t handler_address_high_bits;
 } gate_descriptor;
+
+/** Instancia global del administrador de drivers.
+   Compartida entre main.c y interrupts.c para el despacho de IRQs. */
+extern driver_manager_t global_driver_manager;
 
 /** Tabla global de descriptores de interrupcion (256 entradas). */
 extern gate_descriptor interrupt_descriptor_table[256];

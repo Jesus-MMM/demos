@@ -1,7 +1,11 @@
+/* interrupts.c - Gestion de interrupciones y excepciones del CPU i386.
+   Inicializa la IDT, remapea el PIC 8259A y despacha interrupciones
+   a los drivers registrados en el administrador centralizado. */
+
 #include "kernel/interrupts.h"
-#include "asm.h"
-#include "drivers/keyboard.h"
-#include "drivers/mouse.h"
+
+/* Instancia global del administrador de drivers, compartida con main.c */
+driver_manager_t global_driver_manager;
 
 gate_descriptor interrupt_descriptor_table[256];
 
@@ -91,12 +95,10 @@ uint32_t handle_interrupt(uint8_t interrupt_number, uint32_t stack_pointer) // N
         asm volatile("cli; hlt");
     }
 
-    if (interrupt_number == 0x21) {
-        stack_pointer = keyboard_handler(stack_pointer);
-    }
-
-    if (interrupt_number == 0x2C) {
-        stack_pointer = mouse_handler(stack_pointer);
+    /* Buscar el driver registrado para este IRQ y despachar */
+    driver_t *drv = driver_manager_get_driver_for_irq(&global_driver_manager, interrupt_number);
+    if (drv && drv->handle_interrupt) {
+        stack_pointer = drv->handle_interrupt(drv, stack_pointer);
     }
 
     outb(0x20, 0x20);

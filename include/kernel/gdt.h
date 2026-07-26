@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "drivers/serial.h"
 #include "types.h"
 
 /** SegmentDescriptor - Descriptor de segmento de 8 bytes (64 bits) formato
