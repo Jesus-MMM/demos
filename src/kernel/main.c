@@ -9,6 +9,7 @@
 #include "drivers/vga.h"
 #include "kernel/gdt.h"
 #include "kernel/interrupts.h"
+#include "kernel/pci.h"
 #include "util/splash.h"
 #include "util/util_lib.h"
 
@@ -36,6 +37,8 @@ int kernel_main()
     /* Crear el driver de raton con handler VGA por defecto */
     mouse_driver_init(&ms_driver, mouse_default_on_move, &ms_driver);
     driver_manager_add(&global_driver_manager, &ms_driver.base);
+
+    select_drivers(&global_driver_manager);
 
     serial_write_string(COM1_BASE_ADDRESS, "[KERNEL] Initializing hardware, Stage 2\n", 39);
 

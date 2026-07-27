@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "util/util_lib.h"
 #include "types.h"
 
 #define MAX_DRIVERS 256

@@ -18,6 +18,8 @@
 #define SERIAL_LINE_CMD_PORT(base_address) ((base_address) + 3)
 #define SERIAL_LINE_STATUS_PORT(base_address) ((base_address) + 5)
 
+static const char hex_chars[] = "0123456789ABCDEF";
+
 /** serial_init - Inicializa el puerto serie en 8N1 con divisor de baudios 1.
  * @com: direccion base del puerto serie (COM1_BASE_ADDRESS o COM2_BASE_ADDRESS) */
 void serial_init(uint16_t com);
@@ -26,6 +28,16 @@ void serial_init(uint16_t com);
  * @com: direccion base del puerto serie
  * @data: byte a transmitir */
 void serial_write(uint16_t com, uint8_t data);
+
+/** serial_write_hex16 - Escribe un valor de 16 bits en formato hexadecimal.
+   @com:   direccion base del puerto serie
+   @value: valor de 16 bits a imprimir (ej. 0xABCD) */
+void serial_write_hex16(uint16_t com, uint16_t value);
+
+/** serial_write_u8 - Escribe un valor de 8 bits en formato decimal.
+   @com:   direccion base del puerto serie
+   @value: valor de 8 bits a imprimir (0-255) */
+void serial_write_u8(uint16_t com, uint8_t value);
 
 /** serial_write_string - Escribe una cadena en el puerto serie.
  * @com: direccion base del puerto serie

@@ -25,3 +25,21 @@ static inline uint8_t inb(uint16_t port)
     __asm__ volatile("inb %1, %0" : "=a"(ret) : "Nd"(port));
     return ret;
 }
+
+/** outl - Escribe un word (32 bits) en un puerto de E/S.
+ * @port:  direccion del puerto (16 bits)
+ * @value: word a escribir (32 bits) */
+static inline void outl(uint16_t port, uint32_t value)
+{
+    __asm__ volatile("outl %0, %1" : : "a"(value), "Nd"(port));
+}
+
+/** inl - Lee un word (32 bits) desde un puerto de E/S.
+ * @port: direccion del puerto (16 bits)
+ * Retorna: el word leido (32 bits). */
+static inline uint32_t inl(uint16_t port)
+{
+    uint32_t ret;
+    __asm__ volatile("inl %1, %0" : "=a"(ret) : "Nd"(port));
+    return ret;
+}

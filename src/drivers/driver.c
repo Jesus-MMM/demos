@@ -23,7 +23,7 @@ void driver_manager_add(driver_manager_t *manager, driver_t *driver)
     manager->num_drivers++;
 
     serial_write_string(COM1_BASE_ADDRESS, "[DRVMGR] Added driver: ", 23);
-    serial_write_string(COM1_BASE_ADDRESS, driver->name, 0);
+    serial_write_string(COM1_BASE_ADDRESS, driver->name, strlen(driver->name));
 
     const char nl[] = "\n";
     serial_write_string(COM1_BASE_ADDRESS, nl, 1);

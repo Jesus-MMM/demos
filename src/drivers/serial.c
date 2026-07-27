@@ -37,6 +37,25 @@ void serial_write_string(uint16_t com, const char *buffer, uint32_t len)
     }
 }
 
+void serial_write_hex16(uint16_t com, uint16_t value)
+{
+    serial_write(com, hex_chars[(value >> 12) & 0xF]);
+    serial_write(com, hex_chars[(value >> 8) & 0xF]);
+    serial_write(com, hex_chars[(value >> 4) & 0xF]);
+    serial_write(com, hex_chars[value & 0xF]);
+}
+
+void serial_write_u8(uint16_t com, uint8_t value)
+{
+    if (value >= 100) {
+        serial_write(com, '0' + (value / 100));
+    }
+    if (value >= 10) {
+        serial_write(com, '0' + ((value / 10) % 10));
+    }
+    serial_write(com, '0' + (value % 10));
+}
+
 char serial_read(uint16_t com)
 {
     while (!is_data_received(com)) {
