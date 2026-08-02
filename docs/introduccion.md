@@ -27,6 +27,7 @@ DemOS/
 │   │   ├── main.c            # Entry point del kernel
 │   │   ├── gdt.c             # GDT, descriptores de segmento
 │   │   └── interrupts.c      # IDT, PIC 8259A, despacho de interrupciones
+│   │   └── pci.c             # Enumeracion PCI, deteccion de dispositivos y drivers
 │   ├── drivers/
 │   │   ├── keyboard.c        # Driver de teclado PS/2
 │   │   ├── mouse.c           # Driver de mouse PS/2
@@ -42,7 +43,8 @@ DemOS/
 │   ├── asm.h                 # Instrucciones in/out (inline asm)
 │   ├── kernel/
 │   │   ├── gdt.h             # Tabla de Descriptores Globales
-│   │   └── interrupts.h      # IDT y manejadores de interrupcion
+│   │   ├── interrupts.h      # IDT y manejadores de interrupcion
+│   │   └── pci.h             # Enumeracion y configuracion del bus PCI
 │   ├── drivers/
 │   │   ├── keyboard.h        # Driver de teclado PS/2
 │   │   ├── mouse.h           # Driver de mouse PS/2
@@ -74,6 +76,7 @@ DemOS/
 | [Puerto serie](serial.md) | UART 16550 para depuracion |
 | [GDT](gdt.md) | Tabla de Descriptores Globales |
 | [Sistema de interrupciones](interrupts.md) | IDT, PIC 8259A, interrupt stubs |
+| [PCI](pci.md) | Enumeracion de bus, BARs, deteccion de dispositivos |
 | [Driver de teclado](keyboard.md) | PS/2 keyboard driver |
 | [Driver de mouse](mouse.md) | PS/2 mouse driver |
 | [VGA y Framebuffer](vga-framebuffer.md) | Como se escribe en pantalla |

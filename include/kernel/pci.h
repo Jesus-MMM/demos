@@ -6,9 +6,20 @@
 
 #pragma once
 
+#include "asm.h"
 #include "drivers/driver.h"
 #include "types.h"
-#include "asm.h"
+
+enum base_address_register_type { memory_mapping = 0, input_output = 1 };
+
+typedef struct {
+
+    uint8_t prefetchable;
+    uint8_t *address;
+    uint32_t size;
+    enum base_address_register_type type;
+
+} base_address_register;
 
 /** pci_device_descriptor - Descriptor de un dispositivo PCI.
    Contiene la informacion basica de identificacion y configuracion
@@ -49,7 +60,8 @@ uint32_t pci_read(uint16_t bus, uint16_t device, uint16_t funtion, uint32_t regi
    @register_offset: offset del registro de configuracion (0-255)
    @value:           valor de 32 bits a escribir
    Return:           0 en caso de exito */
-uint32_t pci_write(uint16_t bus, uint16_t device, uint16_t funtion, uint32_t register_offset, // NOLINT(bugprone-easily-swappable-parameters)
+uint32_t pci_write(uint16_t bus, uint16_t device, uint16_t funtion,
+                   uint32_t register_offset, // NOLINT(bugprone-easily-swappable-parameters)
                    uint32_t value);
 
 /** device_has_functions - Verifica si un dispositivo PCI tiene multiples funciones.
@@ -65,7 +77,7 @@ uint8_t device_has_functions(uint32_t bus, uint16_t device);
    para detectar dispositivos presentes. Para cada uno obtiene su descriptor
    e imprime informacion de depuracion por el puerto serie.
    @manager: puntero al administrador de drivers donde registrar los dispositivos */
-void select_drivers(driver_manager_t* manager);
+void select_drivers(driver_manager_t *manager);
 
 /** get_device_descriptor - Obtiene el descriptor completo de un dispositivo PCI.
    Lee los registros de configuracion del dispositivo para completar
@@ -75,4 +87,15 @@ void select_drivers(driver_manager_t* manager);
    @device: numero de dispositivo en el bus (0-31)
    @funtion: numero de funcion del dispositivo (0-7)
    @out:    puntero al descriptor a rellenar */
-void get_device_descriptor(uint16_t bus, uint16_t device, uint16_t funtion, pci_device_descriptor* out);
+void get_device_descriptor(uint16_t bus, uint16_t device, uint16_t funtion,
+                           pci_device_descriptor *out);
+
+void get_address_register(uint16_t bus, uint16_t device, uint16_t funtion, uint16_t bar,
+                          base_address_register *out);
+                          
+/** get_driver - Identifica el dispositivo PCI y retorna un driver compatible.
+   Lee vendor_id y class_id para reconocer dispositivos conocidos (p.ej.
+   AMD am79c973, VGA) e imprime informacion de depuracion.
+   @device: descriptor del dispositivo PCI a identificar
+   Return: puntero al driver o NULL si no se reconoce el dispositivo */
+driver_t *get_driver(pci_device_descriptor *device);

@@ -390,7 +390,7 @@ if (interrupt_number >= 0x28)
 
 | Anterior | Siguiente |
 |----------|-----------|
-| [GDT](gdt.md) | [Driver de teclado](keyboard.md) |
+| [GDT](gdt.md) | [PCI](pci.md) |
 
 | Relacionados |
 |--------------|

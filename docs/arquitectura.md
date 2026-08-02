@@ -66,5 +66,6 @@ DemOS opera en **32 bits (protegido)** desde el inicio. GRUB cambia el CPU a mod
 | [Librerias del sistema](librerias.md) |
 | [GDT](gdt.md) |
 | [Sistema de interrupciones](interrupts.md) |
+| [PCI](pci.md) |
 | [Driver de teclado](keyboard.md) |
 | [Driver de mouse](mouse.md) |

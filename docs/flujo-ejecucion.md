@@ -23,6 +23,8 @@ src/kernel/main.c (entry point)
     |  serial_init()          → inicializa UART 16550
     |  init_gdt()             → configura segmentos de memoria
     |  init_interrupt_manager() → configura IDT + PIC 8259A
+    |  driver_manager_init()  → inicializa el administrador de drivers
+    |  select_drivers()       → escanea bus PCI, detecta dispositivos y registra drivers
     |  keyboard_init()        → activa driver de teclado PS/2
     |  mouse_init()           → activa driver de mouse PS/2
     |  asm sti()              → habilita interrupciones del CPU
@@ -66,21 +68,31 @@ loader:
 
 ### 4. src/kernel/main.c (C)
 
-```c
+ ```c
 int kernel_main()
 {
-    serial_init(COM1_BASE_ADDRESS);    // Inicializar UART
-    init_gdt(&gdt);                    // Configurar segmentos
-    init_interrupt_manager(&gdt);      // Configurar IDT + PIC
+    static global_descriptor_table gdt;
 
-    // style_cursor(DISABLE);             // Oculta cursor parpadeante
-    // animate_splash();                  // Anima la pantalla de bienvenida
+    serial_init(COM1_BASE_ADDRESS);          // Inicializar UART
+    init_gdt(&gdt);                          // Configurar segmentos
+    init_interrupt_manager(&gdt);            // Configurar IDT + PIC
 
-    keyboard_set_cursor(0, 0);         // Cursor en esquina superior izquierda
-    style_cursor(SMALL);               // Habilitar cursor visible
-    keyboard_init();                   // Activar driver de teclado PS/2
-    mouse_init();                      // Activar driver de mouse PS/2
-    asm volatile("sti");               // Habilitar interrupciones
+    driver_manager_init(&global_driver_manager);  // Inicializar administ. de drivers
+
+    keyboard_driver_init(&kb_driver, keyboard_default_on_key_down, &kb_driver);
+    driver_manager_add(&global_driver_manager, &kb_driver.base);
+
+    mouse_driver_init(&ms_driver, mouse_default_on_move, &ms_driver);
+    driver_manager_add(&global_driver_manager, &ms_driver.base);
+
+    select_drivers(&global_driver_manager);  // Escanear bus PCI y registrar drivers
+
+    driver_manager_activate_all(&global_driver_manager); // Activar drivers
+
+    keyboard_set_cursor(0, 0);               // Cursor en esquina superior izquierda
+    style_cursor(SMALL);                     // Habilitar cursor visible
+
+    asm volatile("sti");                     // Habilitar interrupciones
     return 0;
 }
 ```
@@ -170,6 +182,7 @@ CPU: bucle infinito en asm/loader.s:.hang, interrupciones activas
 | **VGA Text Mode (CP-437)** | Caracteres, bloques, bordes dobles en pantalla |
 | **GDT** | Segmentos de memoria en modo protegido |
 | **IDT / PIC 8259A** | Manejo de interrupciones y excepciones |
+| **PCIe bus** | Enumeracion de dispositivos, lectura de BARs, seleccion de drivers |
 | **UART 16550** | Puerto serie para depuracion |
 | **PS/2 Controller** | Driver de teclado y mouse (scancodes/paquetes → pantalla) |
 | **Puertos E/S (x86)** | Control de cursor y scroll via CRTC |

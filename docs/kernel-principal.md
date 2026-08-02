@@ -49,6 +49,8 @@ int kernel_main()
 | `#include "util/util_lib.h"` | Funciones de utilidad |
 | `#include "kernel/gdt.h"` | `init_gdt()` para la Tabla de Descriptores Globales |
 | `#include "kernel/interrupts.h"` | `init_interrupt_manager()` para la IDT y PIC |
+| `#include "kernel/pci.h"` | `select_drivers()` para la enumeracion del bus PCI |
+| `#include "drivers/driver.h"` | `driver_manager_t`, `driver_t` y `driver_manager_add()` |
 | `#include "drivers/keyboard.h"` | `keyboard_init()`, `keyboard_set_cursor()` |
 
 ### `style_cursor(DISABLE)`
@@ -83,6 +85,7 @@ El kernel principal se mantiene propositivamente minimalista. Toda la logica com
 |--------|-----------------|
 | `src/kernel/gdt.c` | Tabla de Descriptores Globales (segmentos de memoria) |
 | `src/kernel/interrupts.c` | IDT, PIC 8259A, despacho de interrupciones |
+| `src/kernel/pci.c` | Enumeracion PCI, deteccion de dispositivos y drivers |
 | `src/drivers/keyboard.c` | Driver de teclado PS/2 (scancodes → ASCII → pantalla) |
 | `src/drivers/mouse.c` | Driver de mouse PS/2 (IRQ 12, movimiento y botones) |
 | `src/drivers/serial.c` | Puerto serie UART 16550 (depuracion) |
@@ -101,6 +104,7 @@ El kernel principal se mantiene propositivamente minimalista. Toda la logica com
 |--------------|
 | [GDT](gdt.md) |
 | [Sistema de interrupciones](interrupts.md) |
+| [PCI](pci.md) |
 | [Driver de teclado](keyboard.md) |
 | [Puerto serie](serial.md) |
 | [VGA y Framebuffer](vga-framebuffer.md) |

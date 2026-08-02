@@ -305,7 +305,7 @@ Los scancodes no reconocidos se ignoran silenciosamente (sin logging al serie pa
 
 | Anterior | Siguiente |
 |----------|-----------|
-| [Sistema de interrupciones](interrupts.md) | [Driver de mouse](mouse.md) |
+| [PCI](pci.md) | [Driver de mouse](mouse.md) |
 
 | Relacionados |
 |--------------|
