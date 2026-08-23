@@ -49,6 +49,14 @@ int kernel_main()
     keyboard_set_cursor(0, 0);
     style_cursor(SMALL);
 
+    vga_set_mode(320, 200, 8);
+
+    for (uint32_t y = 0; y < 200; y++) {
+        for (uint32_t x = 0; x < 320; x++) {
+            vga_write_pixel(x, y, 0x4);
+        }
+    }
+
     serial_write_string(COM1_BASE_ADDRESS, "[KERNEL] Initializing hardware, Stage 3\n", 39);
 
     /* Habilitar interrupciones - los drivers ya estan listos */

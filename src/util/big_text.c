@@ -1,5 +1,5 @@
 #include "util/big_text.h"
-#include "drivers/vga.h"
+#include "drivers/vga_legacy.h"
 
 const uint8_t glyph_D[CHAR_H][CHAR_W] = {
     {1, 1, 1, 1, 0}, {1, 0, 0, 0, 1}, {1, 0, 0, 0, 1}, {1, 0, 0, 0, 1}, {1, 1, 1, 1, 0},

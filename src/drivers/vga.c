@@ -1,97 +1,115 @@
-/* vga.c - Implementacion de operaciones de E/S sobre el framebuffer VGA
-   y el controlador CRTC para modo texto 80x25. */
-
 #include "drivers/vga.h"
+#include "asm.h"
+#include "drivers/vga_legacy.h"
 
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-void write_letter_to_buffer(uint8_t letter, uint16_t row, uint16_t col, uint8_t fg_color,
-                            uint8_t bg_color)
+void init_vga()
 {
-    volatile uint16_t *framebuffer = (volatile uint16_t *)FRAMEBUFFER;
-
-    uint16_t attribute = (bg_color << 4) | (fg_color & 0x0F);
-    uint16_t character_with_attribute = (attribute << 8) | (letter & 0x00FF);
-
-    uint16_t position = (row * 80) + col;
-    // NOLINTNEXTLINE(clang-analyzer-core.FixedAddressDereference)
-    framebuffer[position] = character_with_attribute;
 }
-
-void move_cursor(uint16_t pos)
+void vga_write_registers(uint8_t *registers)
 {
-    uint16_t pos_low_byte = pos & 0x00FF;
-    uint16_t pos_high_byte = (pos >> 8) & 0x00FF;
+    // misc
+    outb(MISC_PORT, *(registers)++);
 
-    outb(CRTC_CMD_PORT, CURSOR_POS_HIGH_BYTE_CMD);
-    outb(CRTC_DATA_PORT, pos_high_byte);
-    outb(CRTC_CMD_PORT, CURSOR_POS_LOW_BYTE_CMD);
-    outb(CRTC_DATA_PORT, pos_low_byte);
-}
-
-void scroll(uint16_t row)
-{
-    uint16_t pos = 80 * row;
-    uint16_t pos_low_byte = pos & 0x00FF;
-    uint16_t pos_high_byte = (pos >> 8) & 0x00FF;
-
-    outb(CRTC_CMD_PORT, SCREEN_START_POS_HIGH_BYTE_CMD);
-    outb(CRTC_DATA_PORT, pos_high_byte);
-    outb(CRTC_CMD_PORT, SCREEN_START_POS_LOW_BYTE_CMD);
-    outb(CRTC_DATA_PORT, pos_low_byte);
-}
-
-void write_letter_to_screen(const char c, uint16_t pos)
-{
-    write_letter_to_buffer(c, 0, pos, WHITE, BLACK);
-}
-
-void write_to_screen(const char *buf, uint16_t len)
-{
-    for (uint32_t i = 0; i < len; i++) {
-        write_letter_to_buffer(buf[i], 0, i, WHITE, BLACK);
+    // sequencer
+    for (uint8_t i = 0; i < 5; i++) {
+        outb(SEQUENCER_INDEX_PORT, i);
+        outb(SEQUENCER_DATA_PORT, *(registers++));
     }
-    move_cursor(len);
-}
 
-void print_byte(const uint8_t *pbyte, uint32_t pos)
-{
-    for (int16_t bit = 0; bit < 8; bit++) {
-        uint8_t mask = (uint8_t)0x1 << (7 - bit);
-        if (*pbyte & mask) {
-            write_letter_to_screen('1', pos + bit);
-        } else {
-            write_letter_to_screen('0', pos + bit);
-        }
+    // crtc
+    outb(CRTC_INDEX_PORT, 0x03);
+    outb(CRTC_DATA_PORT, inb(CRTC_DATA_PORT) | 0x80);
+    outb(CRTC_INDEX_PORT, 0x11);
+    outb(CRTC_DATA_PORT, inb(CRTC_DATA_PORT) & ~0x80);
+
+    for (uint8_t i = 0; i < 25; i++) {
+        outb(CRTC_INDEX_PORT, i);
+        outb(CRTC_DATA_PORT, *(registers++));
     }
+
+    // gc
+    for (uint8_t i = 0; i < 9; i++) {
+        outb(GRAFIC_CONTROLLER_INDEX_PORT, i);
+        outb(GRAFIC_CONTROLLER_DATA_PORT, *(registers++));
+    }
+
+    // AC
+    for (uint8_t i = 0; i < 21; i++) {
+        inb(ATTRIBUTE_CONTROLLER_RESET_PORT);
+        outb(ATTRIBUTE_CONTROLLER_INDEX_PORT, i);
+        outb(ATTRIBUTE_CONTROLLER_WRITE_PORT, *(registers++));
+    }
+
+    inb(ATTRIBUTE_CONTROLLER_RESET_PORT);
+    outb(ATTRIBUTE_CONTROLLER_INDEX_PORT, 0x20);
 }
 
-void style_cursor(CursorStyle cstyle)
+uint8_t *vga_get_framebuffer_segment()
 {
-    uint8_t start;
-    switch (cstyle) {
-    case BIG:
-        outb(CRTC_CMD_PORT, CURSOR_STYLE_START_CMD);
-        outb(CRTC_DATA_PORT, 0x00);
-        break;
 
-    case SMALL:
-        outb(CRTC_CMD_PORT, CURSOR_STYLE_START_CMD);
-        outb(CRTC_DATA_PORT, 0x0C);
-        break;
+    // NOT FORGET cached_segment = NULL; WHEN ADD MORE MODES OR USING TEXT MODE
+    static uint8_t *cached_segment;
 
-    case DISABLE:
-        outb(CRTC_CMD_PORT, CURSOR_STYLE_START_CMD);
-        start = inb(CRTC_DATA_PORT);
-        outb(CRTC_DATA_PORT, start | 0x20);
-        break;
+    if (cached_segment != NULL) {
+        return cached_segment;
+    }
 
-    case ENABLE:
-        outb(CRTC_CMD_PORT, CURSOR_STYLE_START_CMD);
-        start = inb(CRTC_DATA_PORT);
-        outb(CRTC_DATA_PORT, start & 0xBF);
-        break;
+    outb(GRAFIC_CONTROLLER_INDEX_PORT, 0x06);
+    uint8_t segment_number = ((inb(GRAFIC_CONTROLLER_DATA_PORT) >> 2) & 0x03);
 
+    switch (segment_number) {
     default:
+    case 0:
+        cached_segment = (uint8_t *)0x00000;
+        break;
+    case 1:
+        cached_segment = (uint8_t *)0xA0000;
+        break;
+    case 2:
+        cached_segment = (uint8_t *)0xB0000;
+        break;
+    case 3:
+        cached_segment = (uint8_t *)0xB8000;
         break;
     }
+
+    return cached_segment;
+}
+
+uint8_t vga_support_mode(uint32_t width, uint32_t height, uint32_t color_depth)
+{
+    return width == 320 && height == 200 && color_depth == 8;
+}
+
+uint8_t vga_set_mode(uint32_t width, uint32_t height, uint32_t color_depth)
+{
+
+    if (!vga_support_mode(width, height, color_depth)) {
+        return 0;
+    }
+
+    unsigned char mode_320_200_256[] = {
+        /* MISC
+         */
+        0x63,
+        /* SEQ */
+        0x03, 0x01, 0x0F, 0x00, 0x0E,
+        /* CRTC */
+        0x5F, 0x4F, 0x50, 0x82, 0x54, 0x80, 0xBF, 0x1F, 0x00, 0x41, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x9C, 0x0E, 0x8F, 0x28, 0x40, 0x96, 0xB9, 0xA3, 0xFF,
+        /* GC */
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x05, 0x0F, 0xFF,
+        /* AC */
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,
+        0x0F, 0x41, 0x00, 0x0F, 0x00, 0x00};
+
+    vga_write_registers(mode_320_200_256);
+
+    return 1;
+};
+
+void vga_write_pixel(uint32_t x, uint32_t y, uint8_t color)
+{
+    uint8_t *pixel_address = vga_get_framebuffer_segment() + (320 * y) + x;
+    *pixel_address = color;
 }

@@ -7,7 +7,7 @@
 
 #include "drivers/driver.h"
 #include "drivers/serial.h"
-#include "drivers/vga.h"
+#include "drivers/vga_legacy.h"
 #include "types.h"
 #include "asm.h"
 

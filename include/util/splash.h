@@ -3,7 +3,7 @@
 #pragma once
 
 #include "drivers/timer.h"
-#include "drivers/vga.h"
+#include "drivers/vga_legacy.h"
 #include "util/big_text.h"
 
 /** animate_splash - Muestra una animacion de inicio del sistema operativo
