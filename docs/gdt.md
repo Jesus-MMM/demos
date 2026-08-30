@@ -2,7 +2,7 @@
 
 ## Que es la GDT?
 
-La **GDT (Global Descriptor Table)** es una tabla de 8 entradas que define los **segmentos de memoria** en modo protegido x86. Cada entrada (descriptor) describe un segmento: su direccion base, limite (tamano maximo), y atributos de acceso (lectura, escritura, ejecucion, nivel de privilegio).
+La **GDT (Global Descriptor Table)** es una tabla de 8 entradas que define los **segmentos de memoria** en modo protegido x86. Cada entrada (descriptor) describe un segmento: su direccion base, limite (tamaño maximo), y atributos de acceso (lectura, escritura, ejecucion, nivel de privilegio).
 
 Sin una GDT, el CPU no puede acceder a la memoria en modo protegido porque no tiene forma de validar las direcciones.
 
@@ -40,7 +40,7 @@ Direccion de inicio del segmento en memoria fisica. En DemOS, los segmentos de c
 
 ### Campo `limit` (20 bits)
 
-Tamano maximo del segmento. Se codifica en 20 bits con un factor de granularidad:
+Tamaño maximo del segmento. Se codifica en 20 bits con un factor de granularidad:
 
 | Granularidad | Calculo del limite |
 |-------------|---------------------|
@@ -206,12 +206,12 @@ uint16_t gdt_get_data_selector(global_descriptor_table *gdt);
 
 ```c
 typedef struct __attribute__((packed)) {
-    uint16_t size;     // Tamano de la GDT - 1
+    uint16_t size;     // Tamaño de la GDT - 1
     uint32_t base;     // Direccion base de la GDT
 } gdtr_t;
 ```
 
-El registro GDTR tiene 48 bits: 16 bits de tamano + 32 bits de direccion. La instruccion `LGDT` carga este registro.
+El registro GDTR tiene 48 bits: 16 bits de tamaño + 32 bits de direccion. La instruccion `LGDT` carga este registro.
 
 ## Flujo de inicializacion
 

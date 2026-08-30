@@ -14,7 +14,7 @@ enum base_address_register_type { memory_mapping = 0, input_output = 1 };
 
 typedef struct {
 
-    uint8_t prefetchable;
+    bool prefetchable;
     uint8_t *address;
     uint32_t size;
     enum base_address_register_type type;
@@ -69,8 +69,8 @@ uint32_t pci_write(uint16_t bus, uint16_t device, uint16_t funtion,
    que indica si el dispositivo es multifuncion.
    @bus:    numero de bus (0-255)
    @device: numero de dispositivo en el bus (0-31)
-   Return:  1 si tiene multiples funciones, 0 si es single-function */
-uint8_t device_has_functions(uint32_t bus, uint16_t device);
+   Return:  true si tiene multiples funciones, false si es single-function */
+bool device_has_functions(uint32_t bus, uint16_t device);
 
 /** select_drivers - Escanea el bus PCI y registra drivers para dispositivos encontrados.
    Recorre todos los buses (0-255) y dispositivos (0-31), verificando vendor_id

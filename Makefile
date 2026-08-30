@@ -1,5 +1,5 @@
 INCDIRS = ./include/
-CODEDIRS = src/kernel src/drivers src/util
+CODEDIRS = src/kernel src/drivers src/util src/gui
 
 CC = gcc
 DEPFLAGS = -MP -MD

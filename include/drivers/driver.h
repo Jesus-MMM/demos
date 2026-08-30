@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "util/util_lib.h"
 #include "types.h"
+#include "util/util_lib.h"
 
 #define MAX_DRIVERS 256
 
@@ -15,7 +15,7 @@
 typedef void (*on_key_down_fn)(char c, void *data);
 typedef void (*on_key_up_fn)(char c, void *data);
 typedef void (*on_mouse_move_fn)(int8_t x_offset, int8_t y_offset, void *data);
-typedef void (*on_mouse_button_fn)(uint8_t button, int8_t x, int8_t y, void *data);
+typedef void (*on_mouse_button_fn)(uint8_t button, int8_t x, int8_t y, bool pressed, void *data);
 
 /** driver_t - Estructura base que representa un driver del kernel.
    Cada driver concreto (teclado, mouse, etc.) contiene una de estas

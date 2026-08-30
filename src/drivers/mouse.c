@@ -75,7 +75,8 @@ static uint32_t mouse_handle_interrupt(driver_t *self, uint32_t esp)
     for (uint8_t i = 0; i < 3; i++) {
         if ((ms->buffer[0] & (0x01 << i)) != (ms->buttons & (0x01 << i))) {
             if (ms->on_mouse_button) {
-                ms->on_mouse_button(i, ms->x, ms->y, ms->handler_data);
+                bool pressed = (ms->buffer[0] & (0x01 << i)) != 0;
+                ms->on_mouse_button(i, ms->x, ms->y, pressed, ms->handler_data);
             }
         }
     }

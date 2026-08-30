@@ -76,12 +76,12 @@ uint8_t *vga_get_framebuffer_segment()
     return cached_segment;
 }
 
-uint8_t vga_support_mode(uint32_t width, uint32_t height, uint32_t color_depth)
+bool vga_support_mode(uint32_t width, uint32_t height, uint32_t color_depth)
 {
     return width == 320 && height == 200 && color_depth == 8;
 }
 
-uint8_t vga_set_mode(uint32_t width, uint32_t height, uint32_t color_depth)
+bool vga_set_mode(uint32_t width, uint32_t height, uint32_t color_depth)
 {
 
     if (!vga_support_mode(width, height, color_depth)) {
@@ -108,8 +108,20 @@ uint8_t vga_set_mode(uint32_t width, uint32_t height, uint32_t color_depth)
     return 1;
 };
 
-void vga_write_pixel(uint32_t x, uint32_t y, uint8_t color)
+void vga_write_pixel(int32_t x, int32_t y, uint8_t color)
 {
+    if (x < 0 || 320 <= x || y < 0 || 200 <= y) {
+        return;
+    }
     uint8_t *pixel_address = vga_get_framebuffer_segment() + (320 * y) + x;
     *pixel_address = color;
+}
+
+void vga_fill_rectangle(int32_t x, int32_t y, uint32_t w, uint32_t h, uint8_t color)
+{
+    for (int32_t Y = y; Y < y + (int32_t)h; Y++) {
+        for (int32_t X = x; X < x + (int32_t)w; X++) {
+            vga_write_pixel(X, Y, color);
+        }
+    }
 }

@@ -29,9 +29,9 @@ uint32_t pci_write(uint16_t bus, uint16_t device, uint16_t funtion,
     return 0;
 }
 
-uint8_t device_has_functions(uint32_t bus, uint16_t device)
+bool device_has_functions(uint32_t bus, uint16_t device)
 {
-    return pci_read(bus, device, 0, 0x0E) & (1 << 7);
+    return (pci_read(bus, device, 0, 0x0E) & (1 << 7)) != 0;
 }
 
 static void select_drivers_for_function(uint16_t bus, uint16_t device, uint16_t function,
@@ -97,7 +97,7 @@ void get_address_register(uint16_t bus, uint16_t device, uint16_t funtion,
     out->type = memory_mapping;
     out->address = (uint8_t *)0;
     out->size = 0;
-    out->prefetchable = 0;
+    out->prefetchable = false;
 
     uint32_t header_type = pci_read(bus, device, funtion, 0x0E) & 0x7F;
     uint32_t max_bars = 6 - (4 * header_type);
@@ -113,7 +113,7 @@ void get_address_register(uint16_t bus, uint16_t device, uint16_t funtion,
          * 64-bit (case 2) memory-mapped registers */
     } else /* InputOutput */ {
         out->address = (uint8_t *)(bar_value & ~0x3U); // NOLINT(performance-no-int-to-ptr)
-        out->prefetchable = 0;
+        out->prefetchable = false;
     }
 }
 

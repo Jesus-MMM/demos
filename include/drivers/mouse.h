@@ -4,11 +4,11 @@
 
 #pragma once
 
+#include "asm.h"
 #include "drivers/driver.h"
 #include "drivers/serial.h"
 #include "drivers/vga_legacy.h"
 #include "types.h"
-#include "asm.h"
 
 #define MS_DATA_PORT 0x60
 #define MS_COMMAND_PORT 0x64

@@ -19,7 +19,8 @@ void init_vga();
 void vga_write_registers(uint8_t *registers);
 
 uint8_t *vga_get_framebuffer_segment();
-uint8_t vga_support_mode(uint32_t width, uint32_t height, uint32_t color_depth);
-uint8_t vga_set_mode(uint32_t width, uint32_t height, uint32_t color_depth);
+bool vga_support_mode(uint32_t width, uint32_t height, uint32_t color_depth);
+bool vga_set_mode(uint32_t width, uint32_t height, uint32_t color_depth);
 
-void vga_write_pixel(uint32_t x, uint32_t y, uint8_t color);
+void vga_write_pixel(int32_t x, int32_t y, uint8_t color);
+void vga_fill_rectangle(int32_t x, int32_t y, uint32_t w, uint32_t h, uint8_t color);

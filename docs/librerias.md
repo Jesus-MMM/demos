@@ -30,7 +30,7 @@ typedef uint32_t                uintptr_t;
 
 Los tipos estandar (`int`, `long`) tienen tamanos dependientes de la plataforma. Para un SO necesitamos tamanos exactos:
 
-| Tipo | Tamano | Rango |
+| Tipo | Tamaño | Rango |
 |------|--------|-------|
 | `uint8_t` | 1 byte | 0 a 255 |
 | `uint16_t` | 2 bytes | 0 a 65535 |
