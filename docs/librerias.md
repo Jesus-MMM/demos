@@ -28,7 +28,7 @@ typedef uint32_t                uintptr_t;
 
 ### ¿Por que definir tipos personalizados?
 
-Los tipos estandar (`int`, `long`) tienen tamanos dependientes de la plataforma. Para un SO necesitamos tamanos exactos:
+Los tipos estandar (`int`, `long`) tienen tamaños dependientes de la plataforma. Para un SO necesitamos tamaños exactos:
 
 | Tipo | Tamaño | Rango |
 |------|--------|-------|

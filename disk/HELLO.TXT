@@ -1,0 +1,2 @@
+Hola desde el VFS FAT32.
+Segunda linea del archivo hello.

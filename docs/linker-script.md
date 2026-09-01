@@ -36,7 +36,7 @@ Contiene la **cabecera Multiboot** (definida en `asm/loader.s`). Debe estar alin
 
 ### `.text ALIGN(0x1000)`
 
-Contiene el **codigo ejecutable** del kernel (instrucciones de maquina). Alineado a 4 KB (tamano de pagina).
+Contiene el **codigo ejecutable** del kernel (instrucciones de maquina). Alineado a 4 KB (tamaño de pagina).
 
 ### `.rodata`
 

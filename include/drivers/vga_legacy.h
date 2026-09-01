@@ -77,6 +77,6 @@ void write_to_screen(const char *buf, uint16_t len);
  * @pos: posicion lineal inicial en la fila 0 */
 void print_byte(const uint8_t *pbyte, uint32_t pos);
 
-/** style_cursor - Cambia el estilo (tamano/visibilidad) del cursor de hardware.
+/** style_cursor - Cambia el estilo (tamaño/visibilidad) del cursor de hardware.
  * @cstyle: estilo deseado (BIG, SMALL, DISABLE, ENABLE) */
 void style_cursor(CursorStyle cstyle);

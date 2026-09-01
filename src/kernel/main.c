@@ -7,6 +7,7 @@
 #include "drivers/mouse.h"
 #include "drivers/serial.h"
 #include "drivers/vga.h"
+#include "fs/fstest.h"
 #include "graphic_context.h"
 #include "gui/desktop.h"
 #include "gui/window.h"
@@ -56,6 +57,9 @@ int kernel_main()
 
     /* Activar todos los drivers registrados (PS/2 keyboard + mouse) */
     driver_manager_activate_all(&global_driver_manager);
+
+    /* Probar el filesystem FAT32 montando el disco ATA y validarlo */
+    fs_test_run();
 
     vga_set_mode(320, 200, 8);
     vga_fill_rectangle(0, 0, 320, 200, 0x09);

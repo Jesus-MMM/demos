@@ -3,7 +3,9 @@
 
 #pragma once
 
+#ifndef NULL
 #define NULL 0
+#endif
 
 /* En C23 (y posteriores), bool, true y false ya son palabras clave del
    lenguaje; solo se definen para estandares anteriores. */
