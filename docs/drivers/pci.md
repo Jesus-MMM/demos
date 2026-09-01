@@ -1,3 +1,8 @@
+---
+title: "PCI"
+order: 5
+---
+
 # Controlador PCI - Configuracion del bus periferico (include/kernel/pci.h / src/kernel/pci.c)
 
 ## Que es PCI?
@@ -223,14 +228,3 @@ select_drivers(manager)
 | `drivers/driver.h` | `driver_t`, `driver_manager_t`, `driver_manager_add()` |
 | `drivers/serial.h` | `serial_write_string()`, `serial_write_hex16()`, `serial_write_u8()` |
 | `asm.h` | `outl()`, `inl()` |
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [Sistema de interrupciones](interrupts.md) | [Driver de teclado](keyboard.md) |
-
-| Relacionados |
-|--------------|
-| [Driver de teclado](keyboard.md) |
-| [VGA y Framebuffer](vga-framebuffer.md) |

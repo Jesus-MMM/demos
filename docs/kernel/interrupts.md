@@ -1,3 +1,8 @@
+---
+title: "Sistema de interrupciones"
+order: 5
+---
+
 # Sistema de interrupciones - IDT / PIC 8259A (include/kernel/interrupts.h / src/kernel/interrupts.c / asm/interruptstubs.s)
 
 ## Que es el sistema de interrupciones?
@@ -385,15 +390,3 @@ if (interrupt_number >= 0x28)
 15. Stub ejecuta IRET
 16. CPU reanuda el codigo interrumpido
 ```
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [GDT](gdt.md) | [PCI](pci.md) |
-
-| Relacionados |
-|--------------|
-| [Loader en ensamblador](loader-ensamblador.md) |
-| [Puerto serie](serial.md) |
-| [Driver de mouse](mouse.md) |

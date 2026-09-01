@@ -1,3 +1,8 @@
+---
+title: "Arquitectura general"
+order: 3
+---
+
 # Arquitectura general de DemOS
 
 ## Capas del sistema
@@ -52,20 +57,3 @@ DemOS opera en **32 bits (protegido)** desde el inicio. GRUB cambia el CPU a mod
 7. **animate_splash()** usa `draw_box()` y `draw_big_char()` (de `src/util/big_text.c`) y `delay()` (de `src/drivers/timer.c`) para animar.
 8. `draw_box()` y `draw_big_char()` escriben en el framebuffer VGA en `0xB8000`.
 9. El **teclado** queda habilitado: cualquier tecla presionada genera IRQ 1 → `keyboard_handler()` → caracter en pantalla.
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [Introduccion](introduccion.md) | [Entorno y herramientas](entorno-setup.md) |
-
-| Relacionados |
-|--------------|
-| [Loader en ensamblador](loader-ensamblador.md) |
-| [Kernel principal](kernel-principal.md) |
-| [Librerias del sistema](librerias.md) |
-| [GDT](gdt.md) |
-| [Sistema de interrupciones](interrupts.md) |
-| [PCI](pci.md) |
-| [Driver de teclado](keyboard.md) |
-| [Driver de mouse](mouse.md) |

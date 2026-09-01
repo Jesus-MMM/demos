@@ -1,3 +1,8 @@
+---
+title: "Driver de teclado"
+order: 2
+---
+
 # Driver de teclado PS/2 (include/drivers/keyboard.h / src/drivers/keyboard.c)
 
 ## Que es el driver de teclado?
@@ -300,16 +305,3 @@ Los scancodes no reconocidos se ignoran silenciosamente (sin logging al serie pa
 | `asm.h` | `inb()`, `outb()` |
 | `vga.h` | `write_letter_to_buffer()`, `move_cursor()`, `scroll()` |
 | `serial.h` | `serial_write_string()`, `serial_write()` |
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [PCI](pci.md) | [Driver de mouse](mouse.md) |
-
-| Relacionados |
-|--------------|
-| [Sistema de interrupciones](interrupts.md) |
-| [Driver de mouse](mouse.md) |
-| [VGA y Framebuffer](vga-framebuffer.md) |
-| [Puerto serie](serial.md) |

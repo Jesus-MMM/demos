@@ -1,0 +1,62 @@
+name: Deploy docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/deploy-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download md2site binary
+        run: |
+          curl -fsSL \
+            -o md2site \
+            https://github.com/Jesus-MMM/markdown-to-website/releases/latest/download/md2site-linux-x64
+          chmod +x md2site
+          ./md2site --version
+
+      - name: Init md2site project
+        run: |
+          ./md2site init -o site
+
+      - name: Replace sample docs with project docs
+        run: |
+          rm -rf site/docs
+          cp -r docs site/docs
+
+      - name: Build static site
+        env:
+          MD2SITE_BASE: /demos
+        run: |
+          cp ./md2site site/md2site
+          cd site
+          ./md2site build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

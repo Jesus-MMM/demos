@@ -1,3 +1,8 @@
+---
+title: "Kernel principal"
+order: 3
+---
+
 # Kernel principal (src/kernel/main.c)
 
 ## Proposito
@@ -93,19 +98,3 @@ El kernel principal se mantiene propositivamente minimalista. Toda la logica com
 | `src/util/big_text.c` | Letras grandes 5x5, dibujo de cajas |
 | `src/drivers/timer.c` | Espera activa (delay) |
 | `src/drivers/vga.c` | Escritura directa en framebuffer VGA |
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [Loader en ensamblador](loader-ensamblador.md) | [Librerias del sistema](librerias.md) |
-
-| Relacionados |
-|--------------|
-| [GDT](gdt.md) |
-| [Sistema de interrupciones](interrupts.md) |
-| [PCI](pci.md) |
-| [Driver de teclado](keyboard.md) |
-| [Puerto serie](serial.md) |
-| [VGA y Framebuffer](vga-framebuffer.md) |
-| [Flujo de ejecucion](flujo-ejecucion.md) |

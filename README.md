@@ -13,15 +13,13 @@ make runqemu
 
 ## Documentacion
 
-| # | Documento | Descripcion |
-|---|-----------|-------------|
-| 1 | [Introduccion](docs/introduccion.md) | Que es DemOS y estructura del proyecto |
-| 2 | [Arquitectura](docs/arquitectura.md) | Capas del sistema y flujo de datos |
-| 3 | [Entorno y setup](docs/entorno-setup.md) | Herramientas y comandos |
-| 4 | [Makefile](docs/makefile.md) | Sistema de compilacion |
-| 5 | [Linker script](docs/linker-script.md) | Script de enlace y mapa de memoria |
-| 6 | [Loader (ensamblador)](docs/loader-ensamblador.md) | Punto de entrada en NASM |
-| 7 | [Kernel principal](docs/kernel-principal.md) | Entry point en C |
-| 8 | [Librerias](docs/librerias.md) | Tipos, E/S, timer, big_text, splash |
-| 9 | [VGA Framebuffer](docs/vga-framebuffer.md) | Escritura en pantalla |
-| 10 | [Flujo de ejecucion](docs/flujo-ejecucion.md) | Recorrido completo del codigo |
+La documentacion esta disponible en el sitio web generado con [md2site](https://github.com/Jesus-MMM/markdown-to-website): [https://Jesus-MMM.github.io/demos/](https://Jesus-MMM.github.io/demos/)
+
+Tambien puedes consultarla directamente desde el repositorio en [docs/](docs/):
+
+| Seccion | Contenido |
+|---------|-----------|
+| [Introduccion](docs/introduccion/index.md) | Que es DemOS, entorno, arquitectura y flujo de ejecucion |
+| [Kernel](docs/kernel/index.md) | Loader, linker script, kernel principal, GDT, interrupciones y librerias |
+| [Drivers](docs/drivers/index.md) | VGA, teclado, mouse, puerto serie y controlador PCI |
+| [Build](docs/build/index.md) | Sistema de compilacion con Makefile |

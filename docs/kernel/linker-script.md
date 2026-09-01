@@ -1,3 +1,8 @@
+---
+title: "Script de enlace"
+order: 2
+---
+
 # Script de enlace (link.ld)
 
 ## Que es un linker script?
@@ -62,13 +67,3 @@ Direccion    Seccion        Contenido
 0x00102000   .data          (variables inicializadas)
 0x00103000   .bss           Pila del kernel (4 KB)
 ```
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [Sistema de compilacion](makefile.md) | [Loader en ensamblador](loader-ensamblador.md) |
-
-| Relacionados |
-|--------------|
-| [Makefile](makefile.md) |

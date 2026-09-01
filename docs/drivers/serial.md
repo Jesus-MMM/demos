@@ -1,3 +1,8 @@
+---
+title: "Puerto serie"
+order: 4
+---
+
 # Puerto serie - UART 16550 (include/drivers/serial.h / src/drivers/serial.c)
 
 ## Que es el puerto serie?
@@ -170,14 +175,3 @@ qemu-system-i386 -cdrom DemOS.iso -serial stdio
 ```
 
 Todos los `serial_write_string()` se imprimen en la terminal donde se ejecuto QEMU.
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [Librerias del sistema](librerias.md) | [GDT](gdt.md) |
-
-| Relacionados |
-|--------------|
-| [Sistema de interrupciones](interrupts.md) |
-| [Driver de teclado](keyboard.md) |

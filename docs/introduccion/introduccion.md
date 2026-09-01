@@ -1,3 +1,8 @@
+---
+title: "Introducción a DemOS"
+order: 1
+---
+
 # Introduccion a DemOS
 
 **DemOS** es un sistema operativo minimalista desarrollado desde cero con fines educativos.
@@ -62,22 +67,3 @@ DemOS/
 ├── iso/                      # Imagen ISO
 └── DemOS.iso                 # ISO booteable final
 ```
-
-## Navegacion
-
-| Documento | Descripcion |
-|-----------|-------------|
-| [Arquitectura general](arquitectura.md) | Vision general del sistema |
-| [Entorno y herramientas](entorno-setup.md) | Requisitos para compilar y ejecutar |
-| [Sistema de compilacion](makefile.md) | Explicacion del Makefile |
-| [Loader en ensamblador](loader-ensamblador.md) | El punto de entrada del kernel |
-| [Kernel principal](kernel-principal.md) | Corazon del sistema operativo |
-| [Librerias del sistema](librerias.md) | Tipos, E/S, timer, big_text, splash |
-| [Puerto serie](serial.md) | UART 16550 para depuracion |
-| [GDT](gdt.md) | Tabla de Descriptores Globales |
-| [Sistema de interrupciones](interrupts.md) | IDT, PIC 8259A, interrupt stubs |
-| [PCI](pci.md) | Enumeracion de bus, BARs, deteccion de dispositivos |
-| [Driver de teclado](keyboard.md) | PS/2 keyboard driver |
-| [Driver de mouse](mouse.md) | PS/2 mouse driver |
-| [VGA y Framebuffer](vga-framebuffer.md) | Como se escribe en pantalla |
-| [Flujo de ejecucion](flujo-ejecucion.md) | Recorrido completo del codigo |

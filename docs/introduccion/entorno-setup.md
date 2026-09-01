@@ -1,3 +1,8 @@
+---
+title: "Entorno y herramientas"
+order: 2
+---
+
 # Entorno de desarrollo y herramientas
 
 ## Requisitos
@@ -36,13 +41,3 @@ make clean      # Limpia archivos generados
 file build/kernel.elf
 # Debe mostrar: ELF 32-bit MSB executable, Intel 80386
 ```
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [Arquitectura](arquitectura.md) | [Sistema de compilacion](makefile.md) |
-
-| Relacionados |
-|--------------|
-| [Sistema de compilacion (Makefile)](makefile.md) |

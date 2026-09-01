@@ -1,3 +1,8 @@
+---
+title: "VGA y framebuffer"
+order: 1
+---
+
 # VGA y Framebuffer (src/drivers/vga.c / include/drivers/vga.h)
 
 ## ¿Que es el framebuffer VGA?
@@ -196,14 +201,3 @@ void style_cursor(CursorStyle cstyle)
 ```
 
 Controla el registro `0x0A` (Cursor Start) del CRTC. Para desactivar, escribe `start | 0x20` (bit 5 = deshabilitar). Para habilitar, escribe `start & 0xBF` (bit 6 = habilitar).
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [Librerias del sistema](librerias.md) | [Flujo de ejecucion](flujo-ejecucion.md) |
-
-| Relacionados |
-|--------------|
-| [Kernel principal](kernel-principal.md) |
-| [Librerias del sistema](librerias.md) |

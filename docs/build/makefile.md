@@ -1,3 +1,8 @@
+---
+title: "Makefile"
+order: 1
+---
+
 # Sistema de compilacion (Makefile)
 
 ## Vision general
@@ -95,13 +100,3 @@ all: $(BUILDDIR)/kernel.elf
 Pasos:
 1. Copia `grub.cfg` y `kernel.elf` a `iso/boot/`
 2. `grub-mkrescue` genera una ISO booteable compatible con la especificacion de GRUB
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [Entorno y herramientas](entorno-setup.md) | [Loader en ensamblador](loader-ensamblador.md) |
-
-| Relacionados |
-|--------------|
-| [Script de enlace (link.ld)](linker-script.md) |

@@ -1,3 +1,8 @@
+---
+title: "Driver de mouse"
+order: 3
+---
+
 # Driver de mouse PS/2 (include/drivers/mouse.h / src/drivers/mouse.c)
 
 ## Que es el driver de mouse?
@@ -212,14 +217,3 @@ Bit 0 = izquierdo, Bit 1 = derecho, Bit 2 = central. Actualmente no realiza ning
 | `asm.h` | `inb()`, `outb()` |
 | `drivers/vga.h` | Acceso directo a framebuffer VGA (`0xB8000`) |
 | `drivers/serial.h` | `serial_write_string()` (mensaje de activacion) |
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [Driver de teclado](keyboard.md) | [Puerto serie](serial.md) |
-
-| Relacionados |
-|--------------|
-| [Sistema de interrupciones](interrupts.md) |
-| [VGA y Framebuffer](vga-framebuffer.md) |

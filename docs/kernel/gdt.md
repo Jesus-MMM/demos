@@ -1,3 +1,8 @@
+---
+title: "GDT"
+order: 4
+---
+
 # Tabla de Descriptores Globales - GDT (include/kernel/gdt.h / src/kernel/gdt.c)
 
 ## Que es la GDT?
@@ -233,14 +238,3 @@ init_gdt()
     ├─ ljmp GDT_CODE_SELECTOR (recargar CS)
     └─ mov GDT_DATA_SELECTOR → DS/ES/FS/GS/SS
 ```
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [Puerto serie](serial.md) | [Sistema de interrupciones](interrupts.md) |
-
-| Relacionados |
-|--------------|
-| [Sistema de interrupciones](interrupts.md) |
-| [Arquitectura general](arquitectura.md) |

@@ -1,3 +1,8 @@
+---
+title: "Flujo de ejecución"
+order: 4
+---
+
 # Flujo de ejecucion completo
 
 Este documento traza el recorrido del codigo desde que el CPU se enciende hasta que la animacion aparece en pantalla.
@@ -191,13 +196,3 @@ CPU: bucle infinito en asm/loader.s:.hang, interrupciones activas
 | **Makefile** | Automatizacion de compilacion |
 | **QEMU** | Emulacion para pruebas |
 | **Multiboot spec** | Estandar de interfaz kernel-bootloader |
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [VGA y Framebuffer](vga-framebuffer.md) | [Volver al inicio](introduccion.md) |
-
----
-
-**Fin de la documentacion de DemOS**

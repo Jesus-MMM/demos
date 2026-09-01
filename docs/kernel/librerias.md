@@ -1,3 +1,8 @@
+---
+title: "Librerías del sistema"
+order: 6
+---
+
 # Librerias del sistema
 
 DemOS implementa sus propias librerias porque no puede usar la libc estandar (no hay SO anfitrion).
@@ -309,13 +314,3 @@ Actualmente implementa un **cursor visual** que invierte los colores VGA en la p
 | `serial.h` | `serial_write_string()` (mensaje de activacion) |
 
 ---
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [Kernel principal](kernel-principal.md) | [VGA y Framebuffer](vga-framebuffer.md) |
-
-| Relacionados |
-|--------------|
-| [VGA y Framebuffer](vga-framebuffer.md) |

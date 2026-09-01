@@ -1,3 +1,8 @@
+---
+title: "Loader en ensamblador"
+order: 1
+---
+
 # Loader en ensamblador (asm/loader.s)
 
 ## Proposito
@@ -114,13 +119,3 @@ DemOS usa **NASM** (sintaxis Intel), que es mas legible que la sintaxis AT&T de 
 | Mover | `mov esp, stack` | `movl $stack, %esp` |
 | Llamar | `call kernel_main` | `call kernel_main` |
 | Saltar | `jmp .hang` | `jmp .hang` |
-
-## Navegacion
-
-| Anterior | Siguiente |
-|----------|-----------|
-| [Script de enlace](linker-script.md) | [Kernel principal](kernel-principal.md) |
-
-| Relacionados |
-|--------------|
-| [Flujo de ejecucion](flujo-ejecucion.md) |
