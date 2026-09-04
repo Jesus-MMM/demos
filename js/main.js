@@ -270,6 +270,10 @@
     }
     function download() {
       var out = /xmlns=/.test(svg) ? svg : svg.replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
+      // El SVG descargado debe ser XML válido: autocerrar <br> como <br/>.
+      out = String(out).replace(/<br\b([^>]*)>/gi, function (m, attrs) {
+        return /\/>$/.test(m) ? m : "<br" + attrs + "/>";
+      });
       var blob = new Blob([out], { type: "image/svg+xml;charset=utf-8" });
       var url = URL.createObjectURL(blob);
       var a = document.createElement("a");
@@ -331,7 +335,13 @@
   // style inline que fuerce un ancho (p. ej. max-width de Mermaid). Así el
   // canvas de zoom/pan recibe un SVG con tamaño real y se puede desplazar.
   function stringToSvg(str) {
-    var doc = new DOMParser().parseFromString(str, "image/svg+xml");
+    // Mermaid emite <br> (HTML) sin autocerrar dentro de las etiquetas de los
+    // nodos; el parser XML (image/svg+xml) exige <br/>. Se normaliza antes de
+    // parsear para evitar el error "XML Parsing Error: mismatched tag".
+    var xml = String(str).replace(/<br\b([^>]*)>/gi, function (m, attrs) {
+      return /\/>$/.test(m) ? m : "<br" + attrs + "/>";
+    });
+    var doc = new DOMParser().parseFromString(xml, "image/svg+xml");
     var svg = doc.documentElement;
     svg.removeAttribute("style");
     var vb = svg.getAttribute("viewBox");
