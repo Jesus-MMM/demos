@@ -129,8 +129,7 @@
 </ol>
 <h2>Estructura de un descriptor de segmento</h2>
 <p>Cada descriptor de la GDT es una estructura de <strong>8 bytes</strong> (64 bits):</p>
-<div class="diagram diagram-mermaid"><pre class="mermaid">%%{init: {"themeVariables": {"fontSize": "16px"}} }%%
-flowchart LR
+<div class="diagram diagram-mermaid"><pre class="mermaid">flowchart LR
     subgraph DESC["Descriptor de segmento (8 bytes)"]
         direction LR
         B0["Bytes 0-1&#x3C;br/>&#x3C;b>Limit Low&#x3C;/b>"]

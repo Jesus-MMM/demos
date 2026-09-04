@@ -24,7 +24,6 @@ Aunque GRUB ya configura un modo protegido básico, DemOS crea su propia GDT par
 Cada descriptor de la GDT es una estructura de **8 bytes** (64 bits):
 
 ```mermaid
-%%{init: {"themeVariables": {"fontSize": "16px"}} }%%
 flowchart LR
     subgraph DESC["Descriptor de segmento (8 bytes)"]
         direction LR
