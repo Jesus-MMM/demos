@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>PCI · M2W Documentación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation" aria-expanded="false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="/demos/" class="brand">
+          <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheen" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClip">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClip)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGrad)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheen)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadow)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">W</text>
+    </g>
+  </svg>
+          <span class="brand-text">M2W Documentación</span>
+        </a>
+      </div>
+  
+      <div class="header-search">
+        <div class="search-box">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="navSearch" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+          <kbd class="search-kbd">/</kbd>
+        </div>
+      </div>
+  
+      <div class="header-right">
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" class="header-icon-link" aria-label="GitHub repository" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+        </a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar"><nav class="nav" id="docsNav" aria-label="Documentation navigation">
+  <div class="nav-search-mobile">
+    <div class="search-box">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="navSearchMobile" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+    </div>
+  </div>
+  <div class="nav-scroll" id="navScroll">
+    <ul class="nav-menu"><li class="section"><a href="/demos/">DemOS</a></li><li class="has-children"><a href="/demos/introduccion/" class="section">Introducción</a><ul><li><a href="/demos/introduccion/introduccion/">Introducción a DemOS</a></li><li><a href="/demos/introduccion/entorno-setup/">Entorno y herramientas</a></li><li><a href="/demos/introduccion/arquitectura/">Arquitectura general</a></li><li><a href="/demos/introduccion/flujo-ejecucion/">Flujo de ejecución</a></li></ul></li><li class="has-children"><a href="/demos/kernel/" class="section">Kernel</a><ul><li><a href="/demos/kernel/loader-ensamblador/">Loader en ensamblador</a></li><li><a href="/demos/kernel/linker-script/">Script de enlace</a></li><li><a href="/demos/kernel/kernel-principal/">Kernel principal</a></li><li><a href="/demos/kernel/gdt/">GDT</a></li><li><a href="/demos/kernel/interrupts/">Sistema de interrupciones</a></li><li><a href="/demos/kernel/driver-manager/">Administrador de drivers</a></li><li><a href="/demos/kernel/librerias/">Librerías del sistema</a></li></ul></li><li class="has-children"><a href="/demos/drivers/" class="active section">Drivers</a><ul><li><a href="/demos/drivers/vga-framebuffer/">VGA modo texto</a></li><li><a href="/demos/drivers/vga-grafico/">VGA modo gráfico</a></li><li><a href="/demos/drivers/keyboard/">Driver de teclado</a></li><li><a href="/demos/drivers/mouse/">Driver de mouse</a></li><li><a href="/demos/drivers/serial/">Puerto serie</a></li><li><a href="/demos/drivers/timer/">Temporizador</a></li><li><a href="/demos/drivers/ata/">Disco ATA/IDE</a></li><li class="active"><a href="/demos/drivers/pci/">PCI</a></li></ul></li><li class="has-children"><a href="/demos/filesystem/" class="section">Filesystem</a><ul><li><a href="/demos/filesystem/vfs/">VFS</a></li><li><a href="/demos/filesystem/fat32/">FAT32</a></li><li><a href="/demos/filesystem/fstest/">Pruebas del filesystem</a></li></ul></li><li class="has-children"><a href="/demos/gui/" class="section">GUI</a><ul><li><a href="/demos/gui/overview/">GUI: ventanas y escritorio</a></li><li><a href="/demos/gui/widget/">Sistema de widgets</a></li><li><a href="/demos/gui/desktop/">Escritorio</a></li><li><a href="/demos/gui/window/">Ventanas</a></li><li><a href="/demos/gui/graphic-context/">Contexto gráfico</a></li></ul></li><li class="has-children"><a href="/demos/utilidades/" class="section">Utilidades</a><ul><li><a href="/demos/utilidades/png/">Decodificador PNG</a></li><li><a href="/demos/utilidades/big-text/">Texto grande</a></li><li><a href="/demos/utilidades/splash/">Splash</a></li><li><a href="/demos/utilidades/util-lib/">Utilidades varias</a></li><li><a href="/demos/utilidades/types-asm/">Tipos y E/S</a></li></ul></li><li class="has-children"><a href="/demos/build/" class="section">Build</a><ul><li><a href="/demos/build/makefile/">Makefile</a></li></ul></li></ul>
+  </div>
+  <div class="nav-empty" id="navEmpty" hidden>
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <p>No results found</p>
+  </div>
+</nav>
+</aside>
+    <main class="content">
+      <article><h1>Controlador PCI — Configuración del bus periférico (<code>include/kernel/pci.h</code> / <code>src/kernel/pci.c</code>)</h1>
+<h2>Qué es PCI</h2>
+<p><strong>PCI (Peripheral Component Interconnect)</strong> es un bus de datos que conecta los dispositivos (tarjetas de video, controladores, etc.) al CPU/motherboard. En lugar de usar direcciones de memoria arbitrarias, los dispositivos PCI exponen un <strong>espacio de configuración</strong>: un conjunto de registros (256 bytes) accesibles mediante dos puertos de E/S del x86.</p>
+<h2>Por qué necesita DemOS un controlador PCI</h2>
+<p>DemOS usa PCI para:</p>
+<ol>
+<li><strong>Detectar dispositivos</strong> conectados al bus (VGA, controladores, etc.).</li>
+<li><strong>Leer su dirección de E/S</strong> (I/O ports) a través de los <strong>Base Address Registers (BAR)</strong>.</li>
+<li><strong>Seleccionar e instalar drivers</strong> compatibles en el <code>driver_manager_t</code>.</li>
+</ol>
+<p>El escaneo es iniciado desde <code>main.c</code> llamando a <code>select_drivers(&#x26;global_driver_manager)</code> durante la fase de inicialización del kernel.</p>
+<h2>Espacio de configuración PCI</h2>
+<table>
+<thead>
+<tr>
+<th>Registro</th>
+<th>Offset</th>
+<th>Tamaño</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x00</code></td>
+<td>0</td>
+<td>16</td>
+<td><code>vendor_id</code> (0x0000/0xFFFF = slot vacío)</td>
+</tr>
+<tr>
+<td><code>0x02</code></td>
+<td>2</td>
+<td>16</td>
+<td><code>device_id</code></td>
+</tr>
+<tr>
+<td><code>0x08</code></td>
+<td>8</td>
+<td>8</td>
+<td><code>revision_id</code></td>
+</tr>
+<tr>
+<td><code>0x09</code></td>
+<td>9</td>
+<td>8</td>
+<td><code>interface_id</code></td>
+</tr>
+<tr>
+<td><code>0x0A</code></td>
+<td>10</td>
+<td>8</td>
+<td><code>sub_class_id</code></td>
+</tr>
+<tr>
+<td><code>0x0B</code></td>
+<td>11</td>
+<td>8</td>
+<td><code>class_id</code></td>
+</tr>
+<tr>
+<td><code>0x0E</code></td>
+<td>14</td>
+<td>8</td>
+<td><code>header_type</code> (bit 7 = multifunción)</td>
+</tr>
+<tr>
+<td><code>0x10</code></td>
+<td>16</td>
+<td>32</td>
+<td><code>BAR0</code> (... hasta <code>BAR5</code> en 0x24)</td>
+</tr>
+<tr>
+<td><code>0x3C</code></td>
+<td>60</td>
+<td>8</td>
+<td><code>interrupt</code> (IRQ asignada)</td>
+</tr>
+</tbody>
+</table>
+<h2>Puertos de E/S del x86</h2>
+<p>DemOS configura los registros de configuración escribiendo un <strong>dword de dirección</strong> (32 bits) en el puerto <code>0xCF8</code> y leyendo/escribiendo los <strong>datos</strong> en el puerto <code>0xCFC</code>.</p>
+<pre><code>Dirección (0xCF8):  [31]  [30:24]  [23:16]  [15:11]  [10:8]  [7:2]     [1:0]
+                    Enable  0       Bus      Device   Funct   Reg offset  0
+                                               (0-255)  (0-31)   (0-255)
+</code></pre>
+<ul>
+<li><strong>Bus (8 bits)</strong>: número de bus PCI (0-255).</li>
+<li><strong>Device (5 bits)</strong>: número de dispositivo en el slot (0-31).</li>
+<li><strong>Function (3 bits)</strong>: función del dispositivo (0-7); usado por dispositivos multifunción.</li>
+<li><strong>Register offset (6 bits, alineado a 4)</strong>: registro dentro del dispositivo (0-255, siempre múltiplo de 4).</li>
+</ul>
+<h2>include/kernel/pci.h — Tipos</h2>
+<h3><code>pci_device_descriptor</code></h3>
+<pre><code class="language-c">typedef struct {
+    uint32_t port_base;      // Dirección de puerto de E/S (desde un BAR)
+    uint32_t interrupt;      // IRQ asignada
+    uint16_t bus;
+    uint16_t device;
+    uint16_t funtion;
+    uint16_t vendor_id;
+    uint16_t device_id;
+    uint8_t class_id;
+    uint8_t sub_class_id;
+    uint8_t interface_id;
+    uint8_t revision;
+} pci_device_descriptor;
+</code></pre>
+<h3><code>base_address_register</code></h3>
+<pre><code class="language-c">enum base_address_register_type { memory_mapping = 0, input_output = 1 };
+
+typedef struct {
+    bool prefetchable;
+    uint8_t *address;
+    uint32_t size;
+    enum base_address_register_type type;
+} base_address_register;
+</code></pre>
+<h3>API</h3>
+<table>
+<thead>
+<tr>
+<th>Función</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pci_read()</code></td>
+<td>Lee un dword del espacio de configuración (0xCF8/0xCFC)</td>
+</tr>
+<tr>
+<td><code>pci_write()</code></td>
+<td>Escribe un dword en el espacio de configuración</td>
+</tr>
+<tr>
+<td><code>device_has_functions()</code></td>
+<td>Comprueba si es multifunción (bit 7 de header_type)</td>
+</tr>
+<tr>
+<td><code>get_device_descriptor()</code></td>
+<td>Rellena un <code>pci_device_descriptor</code></td>
+</tr>
+<tr>
+<td><code>get_address_register()</code></td>
+<td>Lee un BAR (0-5), determina tipo y dirección</td>
+</tr>
+<tr>
+<td><code>get_driver()</code></td>
+<td>Identifica el dispositivo y retorna un <code>driver_t*</code> (o NULL)</td>
+</tr>
+<tr>
+<td><code>select_drivers()</code></td>
+<td>Escanea todo el bus PCI y registra drivers</td>
+</tr>
+</tbody>
+</table>
+<h2>src/kernel/pci.c — Implementación</h2>
+<h3><code>pci_read()</code> — Lectura de configuración</h3>
+<pre><code class="language-c">uint32_t pci_read(uint16_t bus, uint16_t device, uint16_t funtion, uint32_t register_offset)
+{
+    uint32_t id = (0x1 &#x3C;&#x3C; 31) | ((bus &#x26; 0xFF) &#x3C;&#x3C; 16) | ((device &#x26; 0x1F) &#x3C;&#x3C; 11) |
+                  ((funtion &#x26; 0x07) &#x3C;&#x3C; 8) | (register_offset &#x26; 0xFC);
+
+    outl(PCI_COMMAND_PORT, id);          // 0xCF8: dirección
+    uint32_t result = inl(PCI_DATA_PORT); // 0xCFC: datos
+    return result >> (8 * (register_offset % 4));
+}
+</code></pre>
+<p>El offset se enmascara con <code>0xFC</code> para alinearlo a 4 bytes. Como se puede pedir cualquier offset (0-255), el resultado se desplaza para extraer el campo solicitado.</p>
+<h3><code>device_has_functions()</code> — Multifunción</h3>
+<pre><code class="language-c">bool device_has_functions(uint32_t bus, uint16_t device)
+{
+    return (pci_read(bus, device, 0, 0x0E) &#x26; (1 &#x3C;&#x3C; 7)) != 0;
+}
+</code></pre>
+<h3><code>get_device_descriptor()</code> — Rellenar descriptor</h3>
+<pre><code class="language-c">void get_device_descriptor(uint16_t bus, uint16_t device, uint16_t funtion,
+                           pci_device_descriptor *out)
+{
+    out->bus = bus;
+    out->device = device;
+    out->funtion = funtion;
+
+    out->vendor_id = pci_read(bus, device, funtion, 0x00);
+    out->device_id = pci_read(bus, device, funtion, 0x02);
+
+    out->class_id = pci_read(bus, device, funtion, 0x0b);
+    out->sub_class_id = pci_read(bus, device, funtion, 0x0a);
+    out->interface_id = pci_read(bus, device, funtion, 0x09);
+
+    out->revision = pci_read(bus, device, funtion, 0x08);
+    out->interrupt = pci_read(bus, device, funtion, 0x3c);
+}
+</code></pre>
+<h3><code>get_address_register()</code> — Base Address Register (BAR)</h3>
+<pre><code class="language-c">void get_address_register(uint16_t bus, uint16_t device, uint16_t funtion,
+                          uint16_t bar, base_address_register *out)
+{
+    out->type = memory_mapping;
+    out->address = (uint8_t *)0;
+    out->size = 0;
+    out->prefetchable = false;
+
+    uint32_t header_type = pci_read(bus, device, funtion, 0x0E) &#x26; 0x7F;
+    uint32_t max_bars = 6 - (4 * header_type);
+    if (bar >= max_bars) {
+        return;
+    }
+
+    uint32_t bar_value = pci_read(bus, device, funtion, 0x10 + (4 * bar));
+    out->type = (bar_value &#x26; 0x1) ? input_output : memory_mapping;
+
+    if (out->type == memory_mapping) {
+        /* TODO: report BAR size/64-bit */
+    } else /* InputOutput */ {
+        out->address = (uint8_t *)(bar_value &#x26; ~0x3U);
+        out->prefetchable = false;
+    }
+}
+</code></pre>
+<ul>
+<li>El <code>header_type</code> (sin el bit multifunción) determina cuántos BARs son válidos. Para dispositivos normales (<code>header_type == 0</code>), hay 6 BARs (0-5); para puentes PCI (<code>header_type == 1</code>), solo 2.</li>
+<li>El <strong>bit 0</strong> del valor del BAR indica el tipo: <code>1</code> = <strong>I/O</strong> (puerto de E/S), <code>0</code> = <strong>memoria mapeada</strong>.</li>
+<li>Para <strong>I/O</strong>, la dirección del puerto es <code>bar_value &#x26; ~0x3</code> (los 2 bits bajos son flags). Este <code>address</code> se propaga a <code>pci_device_descriptor.port_base</code>.</li>
+</ul>
+<h3><code>get_driver()</code> — Identificación de dispositivos</h3>
+<pre><code class="language-c">driver_t *get_driver(pci_device_descriptor *device)
+{
+    driver_t *driver = (driver_t *)0;
+
+    switch (device->vendor_id) {
+    case 0x1022: /* AMD */
+        switch (device->device_id) {
+        case 0x2000: /* am79c973 */
+            serial_write_string(COM1_BASE_ADDRESS, "[PCI] AMD am79c973 ", 19);
+            break;
+        default: break;
+        }
+        break;
+    default: /* Intel (0x8086) y otros: sin driver */
+        break;
+    }
+
+    switch (device->class_id) {
+    case 0x03: /* graphics */
+        switch (device->sub_class_id) {
+        case 0x00: /* VGA */
+            serial_write_string(COM1_BASE_ADDRESS, "[PCI] VGA ", 10);
+            break;
+        default: break;
+        }
+        break;
+    default: break;
+    }
+
+    return driver;   // Siempre NULL por ahora (esqueleto)
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>vendor_id</th>
+<th>Fabricante</th>
+<th>Comentario</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x1022</code></td>
+<td>AMD</td>
+<td>Se reconoce <code>0x2000</code> (am79c973)</td>
+</tr>
+<tr>
+<td><code>0x8086</code></td>
+<td>Intel</td>
+<td>Reservado (sin driver aún)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>class_id</th>
+<th>Subclase (sub_class_id)</th>
+<th>Dispositivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x03</code></td>
+<td><code>0x00</code></td>
+<td>VGA/graphics controller</td>
+</tr>
+<tr>
+<td><code>0x01</code></td>
+<td><code>0x01</code>/<code>0x02</code></td>
+<td>Controlador SATA/IDE</td>
+</tr>
+<tr>
+<td><code>0x0C</code></td>
+<td><code>0x03</code></td>
+<td>USB controller</td>
+</tr>
+</tbody>
+</table>
+<p><code>get_driver()</code> <strong>retorna siempre NULL</strong> por ahora: es un esqueleto que identifica e imprime el dispositivo, pero aún no construye ningún <code>driver_t</code>. Esto permite extenderlo añadiendo casos concretos.</p>
+<h3><code>select_drivers()</code> — Enumeración del bus</h3>
+<pre><code class="language-c">void select_drivers(driver_manager_t *manager)
+{
+    serial_write_string(COM1_BASE_ADDRESS, "[PCI] scan start\n", 17);
+
+    for (uint16_t bus = 0; bus &#x3C; 256; bus++) {
+        for (uint16_t device = 0; device &#x3C; 32; device++) {
+            uint16_t vid = (uint16_t)pci_read(bus, device, 0, 0x00);
+            if (vid == 0x0000 || vid == 0xFFFF) {
+                continue;   // Slot vacío
+            }
+
+            int num_functions = device_has_functions(bus, device) ? 8 : 1;
+            for (int function = 0; function &#x3C; num_functions; function++) {
+                select_drivers_for_function(bus, device, (uint16_t)function, manager);
+            }
+        }
+    }
+    serial_write_string(COM1_BASE_ADDRESS, "[PCI] scan done\n", 16);
+}
+</code></pre>
+<p>El escaneo recorre <strong>todos los buses (0-255)</strong>, <strong>dispositivos (0-31)</strong> y sus <strong>funciones</strong>. La lógica de cada <code>(bus, device, function)</code> se extrajo a <code>select_drivers_for_function()</code> para mantener la legibilidad:</p>
+<div class="diagram diagram-mermaid"><pre class="mermaid">flowchart TD
+    A[select_drivers manager] --> B[Bus 0..255]
+    B --> C[Device 0..31]
+    C --> D[vid = pci_read bus, device, 0, 0x00]
+    D --> E{"¿vid == 0x0000 o 0xFFFF?"}
+    E -->|Sí - slot vacío| C
+    E -->|No| F{"¿device_has_functions?"}
+    F -->|Sí| G[8 funciones]
+    F -->|No| H[1 función]
+    G --> I[select_drivers_for_function&#x3C;br/>por cada función]
+    H --> I
+    I --> J[get_device_descriptor]
+    J --> K{¿vendor_id válido?}
+    K -->|No| C
+    K -->|Sí| L[BAR 0..5]
+    L --> M[get_address_register]
+    M --> N{¿tipo I/O?}
+    N -->|Sí| O[pci_device.port_base = bar.address]
+    N -->|No| P[ignorar]
+    O --> Q[get_driver]
+    P --> Q
+    Q --> R{¿driver?}
+    R -->|Sí| S[driver_manager_add]
+    R -->|No| T[Imprimir info PCI]
+    S --> T
+    T --> C</pre></div>
+<p><strong><code>select_drivers_for_function()</code></strong> imprime la información de cada dispositivo por el puerto serie:</p>
+<pre><code>[PCI] B:0 D:2 F:0 V:8086 DEV:1237
+[PCI] VGA
+</code></pre>
+<p>El formato es: <code>[PCI] B:&#x3C;bus> D:&#x3C;device> F:&#x3C;function> V:&#x3C;vendor> DEV:&#x3C;device_id></code>.</p>
+<h2>Dependencias</h2>
+<table>
+<thead>
+<tr>
+<th>Módulo</th>
+<th>Función usada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>asm.h</code></td>
+<td><code>outl()</code>, <code>inl()</code></td>
+</tr>
+<tr>
+<td><code>drivers/driver.h</code></td>
+<td><code>driver_t</code>, <code>driver_manager_t</code>, <code>driver_manager_add()</code></td>
+</tr>
+<tr>
+<td><code>drivers/serial.h</code></td>
+<td><code>serial_write_string()</code>, <code>serial_write_hex16()</code>, <code>serial_write_u8()</code></td>
+</tr>
+</tbody>
+</table></article>
+    </main>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGradF" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheenF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGradF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2F" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadowF" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClipF">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClipF)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGradF)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheenF)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadowF)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2F)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">W</text>
+    </g>
+  </svg>
+        <span>M2W Documentación</span>
+      </div>
+      <nav class="footer-links">
+        <a href="/demos/">Docs</a>
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" target="_blank" rel="noopener">GitHub</a>
+        <a href="/demos/license">License</a>
+      </nav>
+      <p class="footer-copy">&copy; <span id="footerYear">2025</span> M2W Documentación. Built with docs.</p>
+    </div>
+  </footer>
+  <script src="../../js/main.js" defer></script>
+</body>
+</html>

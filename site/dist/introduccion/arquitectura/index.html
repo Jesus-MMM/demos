@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Arquitectura general · M2W Documentación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation" aria-expanded="false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="/demos/" class="brand">
+          <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheen" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClip">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClip)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGrad)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheen)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadow)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">W</text>
+    </g>
+  </svg>
+          <span class="brand-text">M2W Documentación</span>
+        </a>
+      </div>
+  
+      <div class="header-search">
+        <div class="search-box">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="navSearch" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+          <kbd class="search-kbd">/</kbd>
+        </div>
+      </div>
+  
+      <div class="header-right">
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" class="header-icon-link" aria-label="GitHub repository" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+        </a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar"><nav class="nav" id="docsNav" aria-label="Documentation navigation">
+  <div class="nav-search-mobile">
+    <div class="search-box">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="navSearchMobile" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+    </div>
+  </div>
+  <div class="nav-scroll" id="navScroll">
+    <ul class="nav-menu"><li class="section"><a href="/demos/">DemOS</a></li><li class="has-children"><a href="/demos/introduccion/" class="active section">Introducción</a><ul><li><a href="/demos/introduccion/introduccion/">Introducción a DemOS</a></li><li><a href="/demos/introduccion/entorno-setup/">Entorno y herramientas</a></li><li class="active"><a href="/demos/introduccion/arquitectura/">Arquitectura general</a></li><li><a href="/demos/introduccion/flujo-ejecucion/">Flujo de ejecución</a></li></ul></li><li class="has-children"><a href="/demos/kernel/" class="section">Kernel</a><ul><li><a href="/demos/kernel/loader-ensamblador/">Loader en ensamblador</a></li><li><a href="/demos/kernel/linker-script/">Script de enlace</a></li><li><a href="/demos/kernel/kernel-principal/">Kernel principal</a></li><li><a href="/demos/kernel/gdt/">GDT</a></li><li><a href="/demos/kernel/interrupts/">Sistema de interrupciones</a></li><li><a href="/demos/kernel/driver-manager/">Administrador de drivers</a></li><li><a href="/demos/kernel/librerias/">Librerías del sistema</a></li></ul></li><li class="has-children"><a href="/demos/drivers/" class="section">Drivers</a><ul><li><a href="/demos/drivers/vga-framebuffer/">VGA modo texto</a></li><li><a href="/demos/drivers/vga-grafico/">VGA modo gráfico</a></li><li><a href="/demos/drivers/keyboard/">Driver de teclado</a></li><li><a href="/demos/drivers/mouse/">Driver de mouse</a></li><li><a href="/demos/drivers/serial/">Puerto serie</a></li><li><a href="/demos/drivers/timer/">Temporizador</a></li><li><a href="/demos/drivers/ata/">Disco ATA/IDE</a></li><li><a href="/demos/drivers/pci/">PCI</a></li></ul></li><li class="has-children"><a href="/demos/filesystem/" class="section">Filesystem</a><ul><li><a href="/demos/filesystem/vfs/">VFS</a></li><li><a href="/demos/filesystem/fat32/">FAT32</a></li><li><a href="/demos/filesystem/fstest/">Pruebas del filesystem</a></li></ul></li><li class="has-children"><a href="/demos/gui/" class="section">GUI</a><ul><li><a href="/demos/gui/overview/">GUI: ventanas y escritorio</a></li><li><a href="/demos/gui/widget/">Sistema de widgets</a></li><li><a href="/demos/gui/desktop/">Escritorio</a></li><li><a href="/demos/gui/window/">Ventanas</a></li><li><a href="/demos/gui/graphic-context/">Contexto gráfico</a></li></ul></li><li class="has-children"><a href="/demos/utilidades/" class="section">Utilidades</a><ul><li><a href="/demos/utilidades/png/">Decodificador PNG</a></li><li><a href="/demos/utilidades/big-text/">Texto grande</a></li><li><a href="/demos/utilidades/splash/">Splash</a></li><li><a href="/demos/utilidades/util-lib/">Utilidades varias</a></li><li><a href="/demos/utilidades/types-asm/">Tipos y E/S</a></li></ul></li><li class="has-children"><a href="/demos/build/" class="section">Build</a><ul><li><a href="/demos/build/makefile/">Makefile</a></li></ul></li></ul>
+  </div>
+  <div class="nav-empty" id="navEmpty" hidden>
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <p>No results found</p>
+  </div>
+</nav>
+</aside>
+    <main class="content">
+      <article><h1>Arquitectura general de DemOS</h1>
+<h2>Capas del sistema</h2>
+<div class="diagram diagram-mermaid"><pre class="mermaid">graph TB
+    subgraph "Hardware"
+        VGA_HW[VGA&#x3C;br/>Modo texto 80x25&#x3C;br/>Modo gráfico 320x200x8]
+        PS2_HW[PS/2 Controller&#x3C;br/>Teclado + Mouse]
+        UART_HW[UART 16550&#x3C;br/>Puerto serie]
+        ATA_HW[ATA/IDE&#x3C;br/>Disco]
+        CPU_HW[x86 32-bit&#x3C;br/>CPU]
+    end
+
+    subgraph "Boot"
+        GRUB3[GRUB&#x3C;br/>Bootloader]
+        LOADER3[loader.s&#x3C;br/>Multiboot + Stack]
+    end
+
+    subgraph "Kernel Core"
+        MAIN3[kernel_main&#x3C;br/>Orquestador]
+        GDT3[GDT&#x3C;br/>Segmentación]
+        IDT3[IDT + PIC&#x3C;br/>Interrupciones]
+        DM3[driver_manager&#x3C;br/>Despacho por IRQ]
+    end
+
+    subgraph "Drivers"
+        KB3[keyboard PS/2]
+        MS3[mouse PS/2]
+        SERIAL3[serial UART]
+        VGA_TEXT3[vga_legacy&#x3C;br/>Texto]
+        VGA_GFX3[vga&#x3C;br/>Gráfico 320x200]
+        ATA3[ata&#x3C;br/>Disco PIO]
+        PCI3[pci&#x3C;br/>Enumeración]
+        TIMER3[timer&#x3C;br/>Busy-wait]
+    end
+
+    subgraph "Filesystem"
+        VFS3[VFS&#x3C;br/>Capa abstracta]
+        FAT33[FAT32&#x3C;br/>Driver completo]
+    end
+
+    subgraph "GUI"
+        GC3[graphic_context&#x3C;br/>Double buffer]
+        WIDGET3[widget_t&#x3C;br/>Jerarquía de widgets]
+        DESKTOP3[desktop_t&#x3C;br/>Escritorio raíz]
+        WINDOW3[window_t&#x3C;br/>Ventanas]
+    end
+
+    subgraph "Utilidades"
+        PNG3[png&#x3C;br/>Decodificador]
+        BIG3[big_text&#x3C;br/>Glyphs 5x5]
+        SPLASH3[splash&#x3C;br/>Animación]
+    end
+
+    GRUB3 --> LOADER3
+    LOADER3 --> MAIN3
+    MAIN3 --> GDT3
+    MAIN3 --> IDT3
+    MAIN3 --> DM3
+
+    DM3 --> KB3
+    DM3 --> MS3
+    KB3 --> PS2_HW
+    MS3 --> PS2_HW
+    SERIAL3 --> UART_HW
+    VGA_TEXT3 --> VGA_HW
+    VGA_GFX3 --> VGA_HW
+    ATA3 --> ATA_HW
+    PCI3 -.-> DM3
+
+    MAIN3 --> VFS3
+    VFS3 --> FAT33
+    FAT33 --> ATA3
+
+    MAIN3 --> DESKTOP3
+    DESKTOP3 --> WIDGET3
+    DESKTOP3 --> GC3
+    DESKTOP3 --> WINDOW3
+    GC3 --> VGA_GFX3
+
+    DESKTOP3 --> PNG3
+    PNG3 --> VFS3
+    DESKTOP3 --> SPLASH3
+    SPLASH3 --> BIG3
+    SPLASH3 --> VGA_TEXT3
+    TIMER3 -.-> SPLASH3
+
+    IDT3 -.-> DM3</pre></div>
+<h2>Modo de ejecución</h2>
+<p>DemOS opera en <strong>32 bits (protegido)</strong> desde el inicio. GRUB cambia el CPU a modo protegido antes de transferir el control al kernel.</p>
+<h3>Modos de video soportados</h3>
+<table>
+<thead>
+<tr>
+<th>Modo</th>
+<th>Resolución</th>
+<th>Colores</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Texto 80x25</strong></td>
+<td>80 columnas × 25 filas</td>
+<td>16 colores (4 bits)</td>
+<td>Arranque, splash, depuración</td>
+</tr>
+<tr>
+<td><strong>Gráfico 320x200</strong></td>
+<td>320 × 200 píxeles</td>
+<td>256 colores (8 bits, paleta)</td>
+<td>Escritorio, ventanas, PNG</td>
+</tr>
+</tbody>
+</table>
+<p>El kernel comienza en modo texto para el splash y luego cambia a modo gráfico para el escritorio.</p>
+<h2>Espacio de direccionamiento</h2>
+<div class="diagram diagram-mermaid"><pre class="mermaid">graph LR
+    subgraph "Memoria virtual x86 (32 bits)"
+        A["0x00000000&#x3C;br/>Rango bajo"] --> B["0x00100000&#x3C;br/>Kernel base (1 MB)"]
+        B --> C["0x00101000&#x3C;br/>.text (código)"]
+        C --> D["0x00102000&#x3C;br/>.rodata"]
+        D --> E["0x00103000&#x3C;br/>.data"]
+        E --> F["0x00104000&#x3C;br/>.bss (stack 4KB)"]
+        F --> G["0x00200000&#x3C;br/>Memoria libre"]
+        G --> H["0x000B8000&#x3C;br/>VGA framebuffer (texto)"]
+        H --> I["0x000A0000&#x3C;br/>VGA framebuffer (gráf.)"]
+    end</pre></div>
+<ul>
+<li><strong>Kernel cargado en <code>0x00100000</code></strong> (1 MB) — especificación Multiboot</li>
+<li><strong>Pila del kernel</strong>: 4 KB reservados en BSS (crece hacia abajo)</li>
+<li><strong>VGA framebuffer texto</strong>: <code>0xB8000</code> — modo texto 80x25</li>
+<li><strong>VGA framebuffer gráfico</strong>: segmento <code>0xA0000</code> — modo 320x200x8</li>
+</ul>
+<h2>Sistema de interrupciones</h2>
+<div class="diagram diagram-mermaid"><pre class="mermaid">graph LR
+    subgraph "Hardware"
+        KB_IRQ[Teclado → IRQ 1]
+        MS_IRQ[Mouse → IRQ 12]
+        TIMER_IRQ[Timer → IRQ 0]
+    end
+
+    subgraph "PIC 8259A"
+        MASTER[PIC Maestro&#x3C;br/>0x20-0x27]
+        SLAVE[PIC Esclavo&#x3C;br/>0x28-0x2F]
+    end
+
+    subgraph "IDT"
+        IDT_TAB[256 entradas]
+    end
+
+    subgraph "Kernel"
+        HANDLE[handle_interrupt&#x3C;br/>Despacho central]
+        KB_HANDLER[keyboard_handler]
+        MS_HANDLER[mouse_handler]
+        DM_HANDLER[driver_manager&#x3C;br/>IRQ lookup]
+    end
+
+    KB_IRQ --> MASTER
+    MS_IRQ --> SLAVE
+    SLAVE -->|IRQ 2| MASTER
+    MASTER --> IDT_TAB
+    IDT_TAB --> HANDLE
+    HANDLE --> DM_HANDLER
+    DM_HANDLER --> KB_HANDLER
+    DM_HANDLER --> MS_HANDLER</pre></div>
+<h2>Flujo de datos</h2>
+<div class="diagram diagram-mermaid"><pre class="mermaid">sequenceDiagram
+    participant G as GRUB
+    participant L as loader.s
+    participant K as kernel_main
+    participant D as driver_manager
+    participant HW as Hardware
+
+    G->>L: Carga kernel.elf, cambia a modo protegido
+    L->>L: Configura ESP (pila 4KB)
+    L->>K: call kernel_main()
+
+    K->>K: serial_init() — UART 16550
+    K->>K: init_gdt() — Segmentos
+    K->>K: init_interrupt_manager() — IDT + PIC
+
+    K->>D: driver_manager_init()
+    K->>D: keyboard_driver_init() + mouse_driver_init()
+    K->>D: select_drivers() — Escaneo PCI
+    K->>D: driver_manager_activate_all()
+
+    Note over K: Habilita interrupciones (sti)
+
+    loop Bucle principal
+        K->>K: desktop_draw() + graphic_context_flush()
+        HW-->>K: IRQ 1 (teclado) → handle_interrupt → keyboard_handler
+        HW-->>K: IRQ 12 (mouse) → handle_interrupt → mouse_handler
+    end</pre></div></article>
+    </main>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGradF" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheenF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGradF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2F" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadowF" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClipF">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClipF)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGradF)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheenF)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadowF)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2F)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">W</text>
+    </g>
+  </svg>
+        <span>M2W Documentación</span>
+      </div>
+      <nav class="footer-links">
+        <a href="/demos/">Docs</a>
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" target="_blank" rel="noopener">GitHub</a>
+        <a href="/demos/license">License</a>
+      </nav>
+      <p class="footer-copy">&copy; <span id="footerYear">2025</span> M2W Documentación. Built with docs.</p>
+    </div>
+  </footer>
+  <script src="../../js/main.js" defer></script>
+</body>
+</html>

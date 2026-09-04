@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Administrador de drivers · M2W Documentación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation" aria-expanded="false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="/demos/" class="brand">
+          <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheen" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClip">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClip)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGrad)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheen)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadow)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">W</text>
+    </g>
+  </svg>
+          <span class="brand-text">M2W Documentación</span>
+        </a>
+      </div>
+  
+      <div class="header-search">
+        <div class="search-box">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="navSearch" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+          <kbd class="search-kbd">/</kbd>
+        </div>
+      </div>
+  
+      <div class="header-right">
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" class="header-icon-link" aria-label="GitHub repository" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+        </a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar"><nav class="nav" id="docsNav" aria-label="Documentation navigation">
+  <div class="nav-search-mobile">
+    <div class="search-box">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="navSearchMobile" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+    </div>
+  </div>
+  <div class="nav-scroll" id="navScroll">
+    <ul class="nav-menu"><li class="section"><a href="/demos/">DemOS</a></li><li class="has-children"><a href="/demos/introduccion/" class="section">Introducción</a><ul><li><a href="/demos/introduccion/introduccion/">Introducción a DemOS</a></li><li><a href="/demos/introduccion/entorno-setup/">Entorno y herramientas</a></li><li><a href="/demos/introduccion/arquitectura/">Arquitectura general</a></li><li><a href="/demos/introduccion/flujo-ejecucion/">Flujo de ejecución</a></li></ul></li><li class="has-children"><a href="/demos/kernel/" class="active section">Kernel</a><ul><li><a href="/demos/kernel/loader-ensamblador/">Loader en ensamblador</a></li><li><a href="/demos/kernel/linker-script/">Script de enlace</a></li><li><a href="/demos/kernel/kernel-principal/">Kernel principal</a></li><li><a href="/demos/kernel/gdt/">GDT</a></li><li><a href="/demos/kernel/interrupts/">Sistema de interrupciones</a></li><li class="active"><a href="/demos/kernel/driver-manager/">Administrador de drivers</a></li><li><a href="/demos/kernel/librerias/">Librerías del sistema</a></li></ul></li><li class="has-children"><a href="/demos/drivers/" class="section">Drivers</a><ul><li><a href="/demos/drivers/vga-framebuffer/">VGA modo texto</a></li><li><a href="/demos/drivers/vga-grafico/">VGA modo gráfico</a></li><li><a href="/demos/drivers/keyboard/">Driver de teclado</a></li><li><a href="/demos/drivers/mouse/">Driver de mouse</a></li><li><a href="/demos/drivers/serial/">Puerto serie</a></li><li><a href="/demos/drivers/timer/">Temporizador</a></li><li><a href="/demos/drivers/ata/">Disco ATA/IDE</a></li><li><a href="/demos/drivers/pci/">PCI</a></li></ul></li><li class="has-children"><a href="/demos/filesystem/" class="section">Filesystem</a><ul><li><a href="/demos/filesystem/vfs/">VFS</a></li><li><a href="/demos/filesystem/fat32/">FAT32</a></li><li><a href="/demos/filesystem/fstest/">Pruebas del filesystem</a></li></ul></li><li class="has-children"><a href="/demos/gui/" class="section">GUI</a><ul><li><a href="/demos/gui/overview/">GUI: ventanas y escritorio</a></li><li><a href="/demos/gui/widget/">Sistema de widgets</a></li><li><a href="/demos/gui/desktop/">Escritorio</a></li><li><a href="/demos/gui/window/">Ventanas</a></li><li><a href="/demos/gui/graphic-context/">Contexto gráfico</a></li></ul></li><li class="has-children"><a href="/demos/utilidades/" class="section">Utilidades</a><ul><li><a href="/demos/utilidades/png/">Decodificador PNG</a></li><li><a href="/demos/utilidades/big-text/">Texto grande</a></li><li><a href="/demos/utilidades/splash/">Splash</a></li><li><a href="/demos/utilidades/util-lib/">Utilidades varias</a></li><li><a href="/demos/utilidades/types-asm/">Tipos y E/S</a></li></ul></li><li class="has-children"><a href="/demos/build/" class="section">Build</a><ul><li><a href="/demos/build/makefile/">Makefile</a></li></ul></li></ul>
+  </div>
+  <div class="nav-empty" id="navEmpty" hidden>
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <p>No results found</p>
+  </div>
+</nav>
+</aside>
+    <main class="content">
+      <article><h1>Administrador de drivers (<code>include/drivers/driver.h</code> / <code>src/drivers/driver.c</code>)</h1>
+<h2>Qué es</h2>
+<p>El <strong>administrador de drivers</strong> es el componente central que gestiona todos los controladores de dispositivos del sistema. Proporciona un mecanismo <strong>genérico y polimórfico</strong> para registrar, activar y despachar interrupciones a los drivers, en lugar de hardcodear cada IRQ en el kernel.</p>
+<h2>Interfaz base — <code>driver_t</code></h2>
+<p>Cada driver concreto (teclado, mouse, etc.) contiene una estructura <code>driver_t</code> e implementa punteros a funciones:</p>
+<pre><code class="language-c">typedef struct driver {
+    const char *name;              // Nombre del driver (p.ej. "keyboard")
+    uint8_t irq;                   // Número de IRQ que maneja (0 = sin IRQ)
+
+    void (*activate)(struct driver *self);              // Activar el dispositivo
+    int (*reset)(struct driver *self);                  // Resetear el dispositivo
+    void (*deactivate)(struct driver *self);            // Desactivar el dispositivo
+    uint32_t (*handle_interrupt)(struct driver *self, uint32_t esp);  // Manejar IRQ
+} driver_t;
+</code></pre>
+<h3>Los punteros a función como "métodos virtuales"</h3>
+<div class="diagram diagram-mermaid"><pre class="mermaid">graph TB
+    subgraph "driver_t (base)"
+        A[name]
+        B[irq]
+        C[activate]
+        D[reset]
+        E[deactivate]
+        F[handle_interrupt]
+    end
+
+    subgraph "keyboard_driver_t"
+        K1[base = driver_t]
+        K2[cursor_row/col]
+        K3[on_key_down/up]
+        K4[handler_data]
+    end
+
+    subgraph "mouse_driver_t"
+        M1[base = driver_t]
+        M2["buffer[3], offset"]
+        M3[buttons, x, y]
+        M4[on_mouse_move/button]
+    end
+
+    K1 --> A
+    K1 --> B
+    K1 --> C
+    K1 --> F
+    M1 --> A
+    M1 --> B
+    M1 --> C
+    M1 --> F</pre></div>
+<p>Esto simula <strong>herencia y polimorfismo</strong> en C: cada driver define su propia implementación de <code>handle_interrupt</code>, <code>activate</code>, etc., pero el manager los trata de forma uniforme.</p>
+<h2>Tipos de callback</h2>
+<pre><code class="language-c">typedef void (*on_key_down_fn)(char c, void *data);
+typedef void (*on_key_up_fn)(char c, void *data);
+typedef void (*on_mouse_move_fn)(int8_t x_offset, int8_t y_offset, void *data);
+typedef void (*on_mouse_button_fn)(uint8_t button, int8_t x, int8_t y, bool pressed, void *data);
+</code></pre>
+<p>El parámetro <code>@data</code> permite pasar contexto (por ejemplo, el puntero al <code>desktop_t</code>) para que los eventos se despachen al destino correcto.</p>
+<h2>Administrador — <code>driver_manager_t</code></h2>
+<pre><code class="language-c">#define MAX_DRIVERS 256
+
+typedef struct {
+    driver_t *drivers[MAX_DRIVERS];   // Arreglo de punteros a drivers
+    uint32_t num_drivers;              // Cantidad registrada
+} driver_manager_t;
+</code></pre>
+<h3>Instancia global</h3>
+<pre><code class="language-c">extern driver_manager_t global_driver_manager;  // Definida en interrupts.c
+</code></pre>
+<p>La instancia global es <strong>compartida</strong> entre <code>main.c</code> (que la llena) e <code>interrupts.c</code> (que la consulta para despachar IRQs).</p>
+<h2>Funciones del manager</h2>
+<table>
+<thead>
+<tr>
+<th>Función</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>driver_manager_init()</code></td>
+<td>Inicializa el administrador (num_drivers = 0)</td>
+</tr>
+<tr>
+<td><code>driver_manager_add()</code></td>
+<td>Registra un driver en el arreglo</td>
+</tr>
+<tr>
+<td><code>driver_manager_activate_all()</code></td>
+<td>Invoca <code>activate()</code> en cada driver registrado</td>
+</tr>
+<tr>
+<td><code>driver_manager_get_driver_for_irq()</code></td>
+<td>Busca el driver que maneja un IRQ dado</td>
+</tr>
+</tbody>
+</table>
+<h3><code>driver_manager_get_driver_for_irq()</code></h3>
+<pre><code class="language-c">driver_t *driver_manager_get_driver_for_irq(driver_manager_t *manager, uint8_t irq)
+{
+    for (uint32_t i = 0; i &#x3C; manager->num_drivers; i++) {
+        if (manager->drivers[i]->irq == irq) {
+            return manager->drivers[i];
+        }
+    }
+    return NULL;
+}
+</code></pre>
+<h2>Flujo de registro y despacho</h2>
+<h3>Registro</h3>
+<div class="diagram diagram-mermaid"><pre class="mermaid">flowchart TD
+    A[keyboard_driver_init kb, desktop_on_key_down, &#x26;desktop]
+    B[mouse_driver_init ms, desktop_on_mouse_move, &#x26;desktop]
+    C[driver_manager_add kb.base]
+    D[driver_manager_add ms.base]
+    E[select_drivers PCI - puede añadir más]
+    F[driver_manager_activate_all]
+
+    A --> C
+    B --> D
+    C --> E
+    D --> E
+    E --> F
+    F --> G[keyboard_activate - 0xF4]
+    F --> H[mouse_activate - 0xD4/0xF4]</pre></div>
+<pre><code class="language-c">keyboard_driver_init(&#x26;kb_driver, desktop_on_key_down, &#x26;desktop);
+driver_manager_add(&#x26;global_driver_manager, &#x26;kb_driver.base);
+
+mouse_driver_init(&#x26;ms_driver, desktop_on_mouse_move, &#x26;desktop);
+driver_manager_add(&#x26;global_driver_manager, &#x26;ms_driver.base);
+</code></pre>
+<h3>Despacho de interrupciones</h3>
+<p>Cuando llega una IRQ, <code>handle_interrupt()</code> consulta al manager:</p>
+<div class="diagram diagram-mermaid"><pre class="mermaid">sequenceDiagram
+    participant PIC as PIC
+    participant C as handle_interrupt
+    participant DM as driver_manager
+    participant KB as keyboard_handle_interrupt
+    participant MS as mouse_handle_interrupt
+
+    PIC->>C: INT 0x21 (teclado)
+    C->>DM: driver_manager_get_driver_for_irq(0x21)
+    DM-->>C: kb_driver
+    C->>KB: kb_driver.handle_interrupt(esp)
+    KB->>KB: inb(0x60) → scancode → ASCII
+    KB-->>C: retorna esp
+    C->>C: EOI
+
+    PIC->>C: INT 0x2C (mouse)
+    C->>DM: driver_manager_get_driver_for_irq(0x2C)
+    DM-->>C: ms_driver
+    C->>MS: ms_driver.handle_interrupt(esp)
+    MS->>MS: leer paquetes → callbacks
+    MS-->>C: retorna esp
+    C->>C: EOI maestro + esclavo</pre></div>
+<h2>Ventajas frente al enfoque anterior</h2>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Enfoque anterior (hardcoded)</th>
+<th>Con driver_manager</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Puntos de extensión</td>
+<td>Modificar <code>handle_interrupt()</code> para cada IRQ</td>
+<td>Solo registrar un driver nuevo</td>
+</tr>
+<tr>
+<td>Acoplamiento</td>
+<td>Kernel conoce cada driver</td>
+<td>Kernel solo conoce la interfaz <code>driver_t</code></td>
+</tr>
+<tr>
+<td>Despacho</td>
+<td><code>if (num == 0x21) ... else if (num == 0x2C)</code></td>
+<td>Búsqueda en tabla por IRQ</td>
+</tr>
+<tr>
+<td>Callbacks</td>
+<td>Funciones globales</td>
+<td>Callbacks por driver con contexto (<code>data</code>)</td>
+</tr>
+</tbody>
+</table>
+<h2>Dependencias</h2>
+<table>
+<thead>
+<tr>
+<th>Módulo</th>
+<th>Función usada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>types.h</code></td>
+<td>Tipos enteros, <code>bool</code></td>
+</tr>
+<tr>
+<td><code>util/util_lib.h</code></td>
+<td>(inclusive base)</td>
+</tr>
+<tr>
+<td><code>kernel/interrupts.c</code></td>
+<td>Usa el manager para el despacho</td>
+</tr>
+<tr>
+<td><code>kernel/main.c</code></td>
+<td>Registra drivers en el manager</td>
+</tr>
+</tbody>
+</table></article>
+    </main>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGradF" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheenF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGradF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2F" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadowF" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClipF">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClipF)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGradF)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheenF)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadowF)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2F)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">W</text>
+    </g>
+  </svg>
+        <span>M2W Documentación</span>
+      </div>
+      <nav class="footer-links">
+        <a href="/demos/">Docs</a>
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" target="_blank" rel="noopener">GitHub</a>
+        <a href="/demos/license">License</a>
+      </nav>
+      <p class="footer-copy">&copy; <span id="footerYear">2025</span> M2W Documentación. Built with docs.</p>
+    </div>
+  </footer>
+  <script src="../../js/main.js" defer></script>
+</body>
+</html>

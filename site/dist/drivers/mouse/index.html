@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Driver de mouse · M2W Documentación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation" aria-expanded="false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="/demos/" class="brand">
+          <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheen" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClip">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClip)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGrad)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheen)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadow)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">W</text>
+    </g>
+  </svg>
+          <span class="brand-text">M2W Documentación</span>
+        </a>
+      </div>
+  
+      <div class="header-search">
+        <div class="search-box">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="navSearch" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+          <kbd class="search-kbd">/</kbd>
+        </div>
+      </div>
+  
+      <div class="header-right">
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" class="header-icon-link" aria-label="GitHub repository" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+        </a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar"><nav class="nav" id="docsNav" aria-label="Documentation navigation">
+  <div class="nav-search-mobile">
+    <div class="search-box">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="navSearchMobile" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+    </div>
+  </div>
+  <div class="nav-scroll" id="navScroll">
+    <ul class="nav-menu"><li class="section"><a href="/demos/">DemOS</a></li><li class="has-children"><a href="/demos/introduccion/" class="section">Introducción</a><ul><li><a href="/demos/introduccion/introduccion/">Introducción a DemOS</a></li><li><a href="/demos/introduccion/entorno-setup/">Entorno y herramientas</a></li><li><a href="/demos/introduccion/arquitectura/">Arquitectura general</a></li><li><a href="/demos/introduccion/flujo-ejecucion/">Flujo de ejecución</a></li></ul></li><li class="has-children"><a href="/demos/kernel/" class="section">Kernel</a><ul><li><a href="/demos/kernel/loader-ensamblador/">Loader en ensamblador</a></li><li><a href="/demos/kernel/linker-script/">Script de enlace</a></li><li><a href="/demos/kernel/kernel-principal/">Kernel principal</a></li><li><a href="/demos/kernel/gdt/">GDT</a></li><li><a href="/demos/kernel/interrupts/">Sistema de interrupciones</a></li><li><a href="/demos/kernel/driver-manager/">Administrador de drivers</a></li><li><a href="/demos/kernel/librerias/">Librerías del sistema</a></li></ul></li><li class="has-children"><a href="/demos/drivers/" class="active section">Drivers</a><ul><li><a href="/demos/drivers/vga-framebuffer/">VGA modo texto</a></li><li><a href="/demos/drivers/vga-grafico/">VGA modo gráfico</a></li><li><a href="/demos/drivers/keyboard/">Driver de teclado</a></li><li class="active"><a href="/demos/drivers/mouse/">Driver de mouse</a></li><li><a href="/demos/drivers/serial/">Puerto serie</a></li><li><a href="/demos/drivers/timer/">Temporizador</a></li><li><a href="/demos/drivers/ata/">Disco ATA/IDE</a></li><li><a href="/demos/drivers/pci/">PCI</a></li></ul></li><li class="has-children"><a href="/demos/filesystem/" class="section">Filesystem</a><ul><li><a href="/demos/filesystem/vfs/">VFS</a></li><li><a href="/demos/filesystem/fat32/">FAT32</a></li><li><a href="/demos/filesystem/fstest/">Pruebas del filesystem</a></li></ul></li><li class="has-children"><a href="/demos/gui/" class="section">GUI</a><ul><li><a href="/demos/gui/overview/">GUI: ventanas y escritorio</a></li><li><a href="/demos/gui/widget/">Sistema de widgets</a></li><li><a href="/demos/gui/desktop/">Escritorio</a></li><li><a href="/demos/gui/window/">Ventanas</a></li><li><a href="/demos/gui/graphic-context/">Contexto gráfico</a></li></ul></li><li class="has-children"><a href="/demos/utilidades/" class="section">Utilidades</a><ul><li><a href="/demos/utilidades/png/">Decodificador PNG</a></li><li><a href="/demos/utilidades/big-text/">Texto grande</a></li><li><a href="/demos/utilidades/splash/">Splash</a></li><li><a href="/demos/utilidades/util-lib/">Utilidades varias</a></li><li><a href="/demos/utilidades/types-asm/">Tipos y E/S</a></li></ul></li><li class="has-children"><a href="/demos/build/" class="section">Build</a><ul><li><a href="/demos/build/makefile/">Makefile</a></li></ul></li></ul>
+  </div>
+  <div class="nav-empty" id="navEmpty" hidden>
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <p>No results found</p>
+  </div>
+</nav>
+</aside>
+    <main class="content">
+      <article><h1>Driver de mouse PS/2 (<code>include/drivers/mouse.h</code> / <code>src/drivers/mouse.c</code>)</h1>
+<h2>Qué es el driver de mouse</h2>
+<p>El <strong>driver de mouse</strong> maneja las interrupciones generadas por el mouse PS/2 (IRQ 12, interrupción <code>0x2C</code>), lee los <strong>paquetes de 3 bytes</strong> del puerto de datos <code>0x60</code>, los decodifica en movimiento y botones, y notifica los eventos a través de callbacks registrados (<code>on_mouse_move</code>, <code>on_mouse_button</code>).</p>
+<p>Incluye un handler por defecto que dibuja un cursor VGA por <strong>inversión de colores</strong> (XOR), pero en el sistema actual se usa <code>desktop_on_mouse_move</code> (GUI).</p>
+<h2>El mouse PS/2</h2>
+<p>El mouse PS/2 envía paquetes de <strong>3 bytes</strong> cada vez que se mueve o se presiona/suelta un botón:</p>
+<pre><code>Byte 0: Botones + flags
+  Bit 0: Botón izquierdo
+  Bit 1: Botón derecho
+  Bit 2: Botón central
+  Bit 3: Siempre 1
+  Bit 4: Movimiento X negativo (signo)
+  Bit 5: Movimiento Y negativo (signo)
+  Bit 6: Overflow X
+  Bit 7: Overflow Y
+
+Byte 1: Movimiento X (offset desde último paquete)
+Byte 2: Movimiento Y (offset desde último paquete)
+</code></pre>
+<div class="diagram diagram-mermaid"><pre class="mermaid">graph LR
+    A[Byte 0&#x3C;br/>Botones + signos] --> PACKET[Paquete de 3 bytes]
+    B[Byte 1&#x3C;br/>Mov. X] --> PACKET
+    C[Byte 2&#x3C;br/>Mov. Y] --> PACKET
+    PACKET --> DE[Decodificación]
+    DE --> MOVE[on_mouse_move x_offset, y_offset]
+    DE --> BTN[on_mouse_button]</pre></div>
+<h2>mouse.h — Estructura del driver</h2>
+<pre><code class="language-c">typedef struct {
+    driver_t base;              // Driver base (nombre, IRQ, punteros a función)
+
+    uint8_t buffer[3];          // Buffer de 3 bytes para el paquete
+    uint8_t offset;             // Byte actual del paquete (0-2)
+    uint8_t buttons;            // Estado previo de los botones
+    int8_t x;                   // Posición X (0-79)
+    int8_t y;                   // Posición Y (0-24)
+
+    void *handler_data;         // Contexto del callback
+    on_mouse_move_fn on_mouse_move;
+    on_mouse_button_fn on_mouse_button;
+} mouse_driver_t;
+</code></pre>
+<h3>API</h3>
+<table>
+<thead>
+<tr>
+<th>Función</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mouse_driver_init()</code></td>
+<td>Inicializa el driver y registra el callback</td>
+</tr>
+<tr>
+<td><code>mouse_default_on_move()</code></td>
+<td>Handler por defecto: cursor VGA XOR</td>
+</tr>
+</tbody>
+</table>
+<h2>src/drivers/mouse.c — Implementación</h2>
+<h3><code>mouse_driver_init()</code> — Inicialización del driver</h3>
+<pre><code class="language-c">void mouse_driver_init(mouse_driver_t *drv, on_mouse_move_fn on_move, void *data)
+{
+    drv->base.name = "mouse";
+    drv->base.irq = 0x2C;                       // IRQ 12 → vector 0x2C
+    drv->base.activate = mouse_activate;
+    drv->base.reset = mouse_reset;
+    drv->base.deactivate = mouse_deactivate;
+    drv->base.handle_interrupt = mouse_handle_interrupt;
+
+    drv->offset = 0;
+    drv->buttons = 0;
+    drv->x = 40;                                // Centro de pantalla
+    drv->y = 12;
+    drv->on_mouse_move = on_move;
+    drv->on_mouse_button = NULL;
+    drv->handler_data = data ? data : drv;
+}
+</code></pre>
+<h3><code>mouse_activate()</code> — Activación del hardware</h3>
+<pre><code class="language-c">static void mouse_activate(driver_t *self)
+{
+    mouse_driver_t *ms = (mouse_driver_t *)self;
+
+    ms->offset = 0;
+    ms->buttons = 0;
+    ms->x = 40;
+    ms->y = 12;
+
+    while (inb(MS_COMMAND_PORT) &#x26; 0x1) {        // Drenar buffer
+        inb(MS_DATA_PORT);
+    }
+
+    outb(MS_COMMAND_PORT, 0xA8);                // Habilitar segundo puerto PS/2
+
+    outb(MS_COMMAND_PORT, 0x20);                // Leer configuración
+    while (!(inb(MS_COMMAND_PORT) &#x26; 0x1)) {}
+    uint8_t status = (inb(MS_DATA_PORT) | 2);   // Bit 1: habilitar IRQ12
+    outb(MS_COMMAND_PORT, 0x60);                // Escribir configuración
+    while (inb(MS_COMMAND_PORT) &#x26; 0x2) {}
+    outb(MS_DATA_PORT, status);
+
+    outb(MS_COMMAND_PORT, 0xD4);                // Preparar comando para mouse
+    while (inb(MS_COMMAND_PORT) &#x26; 0x2) {}
+    outb(MS_DATA_PORT, 0xF4);                   // Habilitar escaneo del mouse
+
+    active_mouse = ms;
+
+    serial_write_string(COM1_BASE_ADDRESS, "[MS] Mouse activated\n", 22);
+}
+</code></pre>
+<p><strong>Paso a paso:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Paso</th>
+<th>Qué hace</th>
+<th>Por qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Drenar buffer</td>
+<td>Leer y descartar datos pendientes</td>
+<td>Evitar paquetes residuales</td>
+</tr>
+<tr>
+<td>2. <code>0xA8</code> al <code>0x64</code></td>
+<td>Habilitar el segundo puerto PS/2 (mouse)</td>
+<td>Activar hardware del mouse</td>
+</tr>
+<tr>
+<td>3. <code>0x20</code> al <code>0x64</code></td>
+<td>Leer byte de configuración del controlador</td>
+<td>Obtener estado actual</td>
+</tr>
+<tr>
+<td>4. <code>| 2</code></td>
+<td>Bit 1 = 1 (habilitar IRQ12)</td>
+<td>Permitir que el mouse genere interrupciones</td>
+</tr>
+<tr>
+<td>5. Escribir configuración</td>
+<td>Aplicar los cambios</td>
+<td></td>
+</tr>
+<tr>
+<td>6. <code>0xD4</code> al <code>0x64</code></td>
+<td>Indicar que el siguiente dato es para el mouse</td>
+<td>Los comandos del mouse van vía 0xD4</td>
+</tr>
+<tr>
+<td>7. <code>0xF4</code> al <code>0x60</code></td>
+<td>Habilitar escaneo del mouse</td>
+<td>El mouse empezará a enviar paquetes</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Nota</strong>: El comando <code>0xD4</code> es necesario porque el puerto de datos <code>0x60</code> está compartido entre teclado y mouse. Sin <code>0xD4</code>, el <code>0xF4</code> se enviaría al teclado en lugar del mouse.</p>
+</blockquote>
+<h3><code>mouse_handle_interrupt()</code> — Manejo de interrupciones</h3>
+<pre><code class="language-c">static uint32_t mouse_handle_interrupt(driver_t *self, uint32_t esp)
+{
+    mouse_driver_t *ms = (mouse_driver_t *)self;
+
+    uint8_t status = inb(MS_COMMAND_PORT);
+    if (!(status &#x26; 0x20)) {         // Bit 5: datos disponibles para mouse
+        return esp;
+    }
+
+    ms->buffer[ms->offset] = inb(MS_DATA_PORT);
+    ms->offset = (ms->offset + 1) % 3;
+
+    if (ms->offset == 0) {          // Paquete completo (3 bytes)
+        if (ms->on_mouse_move) {
+            ms->on_mouse_move((int8_t)ms->buffer[1], (int8_t)ms->buffer[2], ms->handler_data);
+        }
+    }
+
+    // Detectar cambios en botones
+    for (uint8_t i = 0; i &#x3C; 3; i++) {
+        if ((ms->buffer[0] &#x26; (0x01 &#x3C;&#x3C; i)) != (ms->buttons &#x26; (0x01 &#x3C;&#x3C; i))) {
+            if (ms->on_mouse_button) {
+                bool pressed = (ms->buffer[0] &#x26; (0x01 &#x3C;&#x3C; i)) != 0;
+                ms->on_mouse_button(i, ms->x, ms->y, pressed, ms->handler_data);
+            }
+        }
+    }
+    ms->buttons = ms->buffer[0];
+
+    return esp;
+}
+</code></pre>
+<div class="diagram diagram-mermaid"><pre class="mermaid">flowchart TD
+    A[mouse_handle_interrupt] --> B{Leer status de 0x64}
+    B -->|"bit 5 no set - no hay datos"| Z[Retornar esp]
+    B -->|bit 5 set| C[Leer byte del paquete de 0x60]
+    C --> D["offset = (offset + 1) % 3"]
+    D --> E{"¿offset == 0?&#x3C;br/>(paquete completo)"}
+    E -->|Sí| F[on_mouse_move byte1, byte2]
+    E -->|No| G[Continuar]
+    F --> G
+    G --> H[Detectar cambios de botones]
+    H --> I[on_mouse_button si cambió]
+    I --> Z</pre></div>
+<h3>Detección de botones</h3>
+<p>Cada botón se compara con el estado anterior (<code>buttons</code>). Cuando hay un cambio, se llama <code>on_mouse_button</code> indicando si fue presionado o soltado:</p>
+<table>
+<thead>
+<tr>
+<th>Bit</th>
+<th>Botón</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Izquierdo</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Derecho</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Central</td>
+</tr>
+</tbody>
+</table>
+<h3><code>mouse_default_on_move()</code> — Handler por defecto (cursor VGA)</h3>
+<p>Este handler dibuja un cursor visual <strong>invirtiendo los colores</strong> (foreground ↔ background) de la celda VGA en la posición del mouse:</p>
+<pre><code class="language-c">void mouse_default_on_move(int8_t x_offset, int8_t y_offset, void *data)
+{
+    mouse_driver_t *ms = (mouse_driver_t *)data;
+    static uint16_t *video_memory = (uint16_t *)0xB8000;
+
+    // Restaurar celda anterior (swap de colores inverso)
+    video_memory[(80 * ms->y) + ms->x] = ...;
+
+    // Actualizar posición con clamping
+    ms->x = (int8_t)(ms->x + x_offset);
+    if (ms->x &#x3C; 0) ms->x = 0;
+    if (ms->x >= 80) ms->x = 79;
+
+    ms->y = (int8_t)(ms->y - y_offset);
+    if (ms->y &#x3C; 0) ms->y = 0;
+    if (ms->y >= 25) ms->y = 24;
+
+    // Resaltar nueva celda (swap de colores)
+    video_memory[(80 * ms->y) + ms->x] = ...;
+}
+</code></pre>
+<h4>Clamping de posición</h4>
+<p>Las coordenadas <code>x</code> e <code>y</code> son <code>int8_t</code> (rango -128 a 127) para manejar movimientos negativos. Se clampean a los límites de la pantalla:</p>
+<table>
+<thead>
+<tr>
+<th>Coordenada</th>
+<th>Mínimo</th>
+<th>Máximo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code> (columna)</td>
+<td>0</td>
+<td>79</td>
+</tr>
+<tr>
+<td><code>y</code> (fila)</td>
+<td>0</td>
+<td>24</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Nota</strong>: Este handler es el <em>default</em>. En el sistema actual, <code>main.c</code> registra <code>desktop_on_mouse_move</code> (que dibuja el cursor en modo gráfico 320x200) en lugar de este.</p>
+</blockquote>
+<h2>Flujo completo: mouse movido</h2>
+<div class="diagram diagram-mermaid"><pre class="mermaid">sequenceDiagram
+    participant U as Usuario
+    participant HW as Mouse PS/2
+    participant PIC as PIC esclavo
+    participant STUB as Stub asm
+    participant C as handle_interrupt
+    participant DM as driver_manager
+    participant MS as mouse_handle_interrupt
+    participant CB as callback (desktop)
+
+    U->>HW: Mueve el mouse
+    HW->>PIC: Envía paquete de 3 bytes
+    PIC->>C: INT 0x2C (IRQ 12)
+    C->>DM: driver_manager_get_driver_for_irq(0x2C)
+    DM-->>C: ms_driver
+    C->>MS: ms_driver.handle_interrupt(esp)
+    MS->>HW: Lee status (0x64), lee bytes
+    MS->>MS: Acumula 3 bytes → paquete completo
+    MS->>CB: on_mouse_move(x_offset, y_offset, &#x26;desktop)
+    MS-->>C: retorna esp
+    C->>PIC: EOI maestro + esclavo</pre></div>
+<h2>Dependencias</h2>
+<table>
+<thead>
+<tr>
+<th>Módulo</th>
+<th>Función usada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>asm.h</code></td>
+<td><code>inb()</code>, <code>outb()</code></td>
+</tr>
+<tr>
+<td><code>drivers/driver.h</code></td>
+<td><code>driver_t</code>, callbacks</td>
+</tr>
+<tr>
+<td><code>drivers/serial.h</code></td>
+<td><code>serial_write_string()</code></td>
+</tr>
+<tr>
+<td><code>drivers/vga_legacy.h</code></td>
+<td>Acceso directo a framebuffer VGA (default handler)</td>
+</tr>
+</tbody>
+</table></article>
+    </main>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGradF" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheenF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGradF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2F" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadowF" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClipF">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClipF)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGradF)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheenF)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadowF)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2F)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">W</text>
+    </g>
+  </svg>
+        <span>M2W Documentación</span>
+      </div>
+      <nav class="footer-links">
+        <a href="/demos/">Docs</a>
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" target="_blank" rel="noopener">GitHub</a>
+        <a href="/demos/license">License</a>
+      </nav>
+      <p class="footer-copy">&copy; <span id="footerYear">2025</span> M2W Documentación. Built with docs.</p>
+    </div>
+  </footer>
+  <script src="../../js/main.js" defer></script>
+</body>
+</html>

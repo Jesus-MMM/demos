@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Loader en ensamblador · M2W Documentación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation" aria-expanded="false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="/demos/" class="brand">
+          <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheen" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClip">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClip)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGrad)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheen)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadow)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">W</text>
+    </g>
+  </svg>
+          <span class="brand-text">M2W Documentación</span>
+        </a>
+      </div>
+  
+      <div class="header-search">
+        <div class="search-box">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="navSearch" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+          <kbd class="search-kbd">/</kbd>
+        </div>
+      </div>
+  
+      <div class="header-right">
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" class="header-icon-link" aria-label="GitHub repository" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+        </a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar"><nav class="nav" id="docsNav" aria-label="Documentation navigation">
+  <div class="nav-search-mobile">
+    <div class="search-box">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="navSearchMobile" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+    </div>
+  </div>
+  <div class="nav-scroll" id="navScroll">
+    <ul class="nav-menu"><li class="section"><a href="/demos/">DemOS</a></li><li class="has-children"><a href="/demos/introduccion/" class="section">Introducción</a><ul><li><a href="/demos/introduccion/introduccion/">Introducción a DemOS</a></li><li><a href="/demos/introduccion/entorno-setup/">Entorno y herramientas</a></li><li><a href="/demos/introduccion/arquitectura/">Arquitectura general</a></li><li><a href="/demos/introduccion/flujo-ejecucion/">Flujo de ejecución</a></li></ul></li><li class="has-children"><a href="/demos/kernel/" class="active section">Kernel</a><ul><li class="active"><a href="/demos/kernel/loader-ensamblador/">Loader en ensamblador</a></li><li><a href="/demos/kernel/linker-script/">Script de enlace</a></li><li><a href="/demos/kernel/kernel-principal/">Kernel principal</a></li><li><a href="/demos/kernel/gdt/">GDT</a></li><li><a href="/demos/kernel/interrupts/">Sistema de interrupciones</a></li><li><a href="/demos/kernel/driver-manager/">Administrador de drivers</a></li><li><a href="/demos/kernel/librerias/">Librerías del sistema</a></li></ul></li><li class="has-children"><a href="/demos/drivers/" class="section">Drivers</a><ul><li><a href="/demos/drivers/vga-framebuffer/">VGA modo texto</a></li><li><a href="/demos/drivers/vga-grafico/">VGA modo gráfico</a></li><li><a href="/demos/drivers/keyboard/">Driver de teclado</a></li><li><a href="/demos/drivers/mouse/">Driver de mouse</a></li><li><a href="/demos/drivers/serial/">Puerto serie</a></li><li><a href="/demos/drivers/timer/">Temporizador</a></li><li><a href="/demos/drivers/ata/">Disco ATA/IDE</a></li><li><a href="/demos/drivers/pci/">PCI</a></li></ul></li><li class="has-children"><a href="/demos/filesystem/" class="section">Filesystem</a><ul><li><a href="/demos/filesystem/vfs/">VFS</a></li><li><a href="/demos/filesystem/fat32/">FAT32</a></li><li><a href="/demos/filesystem/fstest/">Pruebas del filesystem</a></li></ul></li><li class="has-children"><a href="/demos/gui/" class="section">GUI</a><ul><li><a href="/demos/gui/overview/">GUI: ventanas y escritorio</a></li><li><a href="/demos/gui/widget/">Sistema de widgets</a></li><li><a href="/demos/gui/desktop/">Escritorio</a></li><li><a href="/demos/gui/window/">Ventanas</a></li><li><a href="/demos/gui/graphic-context/">Contexto gráfico</a></li></ul></li><li class="has-children"><a href="/demos/utilidades/" class="section">Utilidades</a><ul><li><a href="/demos/utilidades/png/">Decodificador PNG</a></li><li><a href="/demos/utilidades/big-text/">Texto grande</a></li><li><a href="/demos/utilidades/splash/">Splash</a></li><li><a href="/demos/utilidades/util-lib/">Utilidades varias</a></li><li><a href="/demos/utilidades/types-asm/">Tipos y E/S</a></li></ul></li><li class="has-children"><a href="/demos/build/" class="section">Build</a><ul><li><a href="/demos/build/makefile/">Makefile</a></li></ul></li></ul>
+  </div>
+  <div class="nav-empty" id="navEmpty" hidden>
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <p>No results found</p>
+  </div>
+</nav>
+</aside>
+    <main class="content">
+      <article><h1>Loader en ensamblador (asm/loader.s)</h1>
+<h2>Propósito</h2>
+<p>El archivo <code>asm/loader.s</code> es el <strong>verdadero punto de entrada</strong> del kernel. Está escrito en ensamblador x86 (NASM) porque necesitamos control directo sobre:</p>
+<ol>
+<li>La <strong>cabecera Multiboot</strong> que GRUB requiere para identificar el kernel.</li>
+<li>La configuración de la <strong>pila (stack)</strong> antes de llamar a código C.</li>
+</ol>
+<h2>Contenido completo</h2>
+<pre><code class="language-nasm">BITS 32
+
+global loader
+extern kernel_main
+
+MAGIC_NUMBER equ 0x1BADB002
+FLAGS        equ 0x0
+CHECKSUM     equ -(MAGIC_NUMBER + FLAGS)
+KERNEL_STACK_SIZE equ 4096
+
+section .multiboot
+align 4
+    dd MAGIC_NUMBER
+    dd FLAGS
+    dd CHECKSUM
+
+section .text
+loader:
+    mov esp, kernel_stack + KERNEL_STACK_SIZE
+    call kernel_main
+.hang:
+    jmp .hang
+
+section .bss
+align 4
+kernel_stack:
+    resb KERNEL_STACK_SIZE
+
+section .note.GNU-stack noalloc
+</code></pre>
+<h2>Explicación detallada</h2>
+<h3>Directivas iniciales</h3>
+<table>
+<thead>
+<tr>
+<th>Directiva</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BITS 32</code></td>
+<td>El CPU está en modo protegido de 32 bits (GRUB ya lo configuró así)</td>
+</tr>
+<tr>
+<td><code>global loader</code></td>
+<td>Hace visible la etiqueta <code>loader</code> para el enlazador (<code>ld</code>)</td>
+</tr>
+<tr>
+<td><code>extern kernel_main</code></td>
+<td>Declara que <code>kernel_main</code> está definida en otro archivo (C)</td>
+</tr>
+</tbody>
+</table>
+<h3>Cabecera Multiboot</h3>
+<pre><code class="language-nasm">MAGIC_NUMBER equ 0x1BADB002
+FLAGS        equ 0x0
+CHECKSUM     equ -(MAGIC_NUMBER + FLAGS)
+
+section .multiboot
+align 4
+    dd MAGIC_NUMBER
+    dd FLAGS
+    dd CHECKSUM
+</code></pre>
+<p>GRUB busca esta cabecera en los primeros 8 KB del kernel. Debe estar alineada a 4 bytes.</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Valor</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MAGIC_NUMBER</code></td>
+<td><code>0x1BADB002</code></td>
+<td>Número mágico que identifica un kernel Multiboot</td>
+</tr>
+<tr>
+<td><code>FLAGS</code></td>
+<td><code>0x0</code></td>
+<td>Sin requisitos especiales (no necesita información de memoria ni modo gráfico)</td>
+</tr>
+<tr>
+<td><code>CHECKSUM</code></td>
+<td><code>-(0x1BADB002 + 0x0)</code></td>
+<td>La suma de los 3 campos debe ser 0 para que GRUB valide la cabecera</td>
+</tr>
+</tbody>
+</table>
+<h3>Sección <code>.text</code> — Código</h3>
+<pre><code class="language-nasm">loader:
+    mov esp, kernel_stack + KERNEL_STACK_SIZE
+    call kernel_main
+.hang:
+    jmp .hang
+</code></pre>
+<ol>
+<li><strong><code>mov esp, kernel_stack + KERNEL_STACK_SIZE</code></strong>: Configura el puntero de pila (<code>ESP</code>) apuntando al <strong>final</strong> del área reservada para la pila (la pila crece hacia abajo en x86).</li>
+<li><strong><code>call kernel_main</code></strong>: Llama a la función C <code>kernel_main()</code>.</li>
+<li><strong><code>.hang: jmp .hang</code></strong>: Bucle infinito por si <code>kernel_main</code> retorna (en un SO real, aquí se apagaría el sistema).</li>
+</ol>
+<h3>Sección <code>.bss</code> — Pila del kernel</h3>
+<pre><code class="language-nasm">kernel_stack:
+    resb KERNEL_STACK_SIZE
+</code></pre>
+<ul>
+<li><code>resb</code> (Reserve Byte) reserva 4096 bytes (4 KB) para la pila.</li>
+<li>Estos bytes no ocupan espacio en la ISO; el cargador los asigna a cero en memoria.</li>
+</ul>
+<h3>Sección <code>.note.GNU-stack</code></h3>
+<pre><code class="language-nasm">section .note.GNU-stack noalloc
+</code></pre>
+<p>Directiva para el enlazador GNU que indica que la pila <strong>no</strong> debe ser ejecutable (seguridad).</p>
+<h2>Diagrama de arranque</h2>
+<div class="diagram diagram-mermaid"><pre class="mermaid">flowchart TD
+    A[BIOS] --> B[GRUB busca kernel.elf]
+    B --> C["GRUB valida cabecera Multiboot&#x3C;br/>(magic 0x1BADB002)"]
+    C --> D["GRUB cambia a modo protegido 32-bit"]
+    D --> E["Salta a: loader&#x3C;br/>(asm/loader.s)"]
+    E --> F["loader: mov esp, kernel_stack+4096"]
+    F --> G["loader: call kernel_main"]
+    G --> H["kernel_main() ejecuta en C"]
+    H --> I["Si retorna..."]
+    I --> J[".hang: jmp .hang (bucle infinito)"]</pre></div>
+<h2>Sintaxis NASM vs AT&#x26;T</h2>
+<p>DemOS usa <strong>NASM</strong> (sintaxis Intel), que es más legible que la sintaxis AT&#x26;T de GAS:</p>
+<table>
+<thead>
+<tr>
+<th>Operación</th>
+<th>NASM (Intel)</th>
+<th>AT&#x26;T (GAS)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mover</td>
+<td><code>mov esp, stack</code></td>
+<td><code>movl $stack, %esp</code></td>
+</tr>
+<tr>
+<td>Llamar</td>
+<td><code>call kernel_main</code></td>
+<td><code>call kernel_main</code></td>
+</tr>
+<tr>
+<td>Saltar</td>
+<td><code>jmp .hang</code></td>
+<td><code>jmp .hang</code></td>
+</tr>
+</tbody>
+</table></article>
+    </main>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGradF" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheenF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGradF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2F" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadowF" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClipF">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClipF)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGradF)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheenF)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadowF)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2F)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">W</text>
+    </g>
+  </svg>
+        <span>M2W Documentación</span>
+      </div>
+      <nav class="footer-links">
+        <a href="/demos/">Docs</a>
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" target="_blank" rel="noopener">GitHub</a>
+        <a href="/demos/license">License</a>
+      </nav>
+      <p class="footer-copy">&copy; <span id="footerYear">2025</span> M2W Documentación. Built with docs.</p>
+    </div>
+  </footer>
+  <script src="../../js/main.js" defer></script>
+</body>
+</html>

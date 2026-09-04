@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Flujo de ejecución · M2W Documentación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation" aria-expanded="false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="/demos/" class="brand">
+          <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheen" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClip">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClip)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGrad)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheen)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadow)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">W</text>
+    </g>
+  </svg>
+          <span class="brand-text">M2W Documentación</span>
+        </a>
+      </div>
+  
+      <div class="header-search">
+        <div class="search-box">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="navSearch" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+          <kbd class="search-kbd">/</kbd>
+        </div>
+      </div>
+  
+      <div class="header-right">
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" class="header-icon-link" aria-label="GitHub repository" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+        </a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar"><nav class="nav" id="docsNav" aria-label="Documentation navigation">
+  <div class="nav-search-mobile">
+    <div class="search-box">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="navSearchMobile" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+    </div>
+  </div>
+  <div class="nav-scroll" id="navScroll">
+    <ul class="nav-menu"><li class="section"><a href="/demos/">DemOS</a></li><li class="has-children"><a href="/demos/introduccion/" class="active section">Introducción</a><ul><li><a href="/demos/introduccion/introduccion/">Introducción a DemOS</a></li><li><a href="/demos/introduccion/entorno-setup/">Entorno y herramientas</a></li><li><a href="/demos/introduccion/arquitectura/">Arquitectura general</a></li><li class="active"><a href="/demos/introduccion/flujo-ejecucion/">Flujo de ejecución</a></li></ul></li><li class="has-children"><a href="/demos/kernel/" class="section">Kernel</a><ul><li><a href="/demos/kernel/loader-ensamblador/">Loader en ensamblador</a></li><li><a href="/demos/kernel/linker-script/">Script de enlace</a></li><li><a href="/demos/kernel/kernel-principal/">Kernel principal</a></li><li><a href="/demos/kernel/gdt/">GDT</a></li><li><a href="/demos/kernel/interrupts/">Sistema de interrupciones</a></li><li><a href="/demos/kernel/driver-manager/">Administrador de drivers</a></li><li><a href="/demos/kernel/librerias/">Librerías del sistema</a></li></ul></li><li class="has-children"><a href="/demos/drivers/" class="section">Drivers</a><ul><li><a href="/demos/drivers/vga-framebuffer/">VGA modo texto</a></li><li><a href="/demos/drivers/vga-grafico/">VGA modo gráfico</a></li><li><a href="/demos/drivers/keyboard/">Driver de teclado</a></li><li><a href="/demos/drivers/mouse/">Driver de mouse</a></li><li><a href="/demos/drivers/serial/">Puerto serie</a></li><li><a href="/demos/drivers/timer/">Temporizador</a></li><li><a href="/demos/drivers/ata/">Disco ATA/IDE</a></li><li><a href="/demos/drivers/pci/">PCI</a></li></ul></li><li class="has-children"><a href="/demos/filesystem/" class="section">Filesystem</a><ul><li><a href="/demos/filesystem/vfs/">VFS</a></li><li><a href="/demos/filesystem/fat32/">FAT32</a></li><li><a href="/demos/filesystem/fstest/">Pruebas del filesystem</a></li></ul></li><li class="has-children"><a href="/demos/gui/" class="section">GUI</a><ul><li><a href="/demos/gui/overview/">GUI: ventanas y escritorio</a></li><li><a href="/demos/gui/widget/">Sistema de widgets</a></li><li><a href="/demos/gui/desktop/">Escritorio</a></li><li><a href="/demos/gui/window/">Ventanas</a></li><li><a href="/demos/gui/graphic-context/">Contexto gráfico</a></li></ul></li><li class="has-children"><a href="/demos/utilidades/" class="section">Utilidades</a><ul><li><a href="/demos/utilidades/png/">Decodificador PNG</a></li><li><a href="/demos/utilidades/big-text/">Texto grande</a></li><li><a href="/demos/utilidades/splash/">Splash</a></li><li><a href="/demos/utilidades/util-lib/">Utilidades varias</a></li><li><a href="/demos/utilidades/types-asm/">Tipos y E/S</a></li></ul></li><li class="has-children"><a href="/demos/build/" class="section">Build</a><ul><li><a href="/demos/build/makefile/">Makefile</a></li></ul></li></ul>
+  </div>
+  <div class="nav-empty" id="navEmpty" hidden>
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <p>No results found</p>
+  </div>
+</nav>
+</aside>
+    <main class="content">
+      <article><h1>Flujo de ejecución completo</h1>
+<p>Este documento traza el recorrido del código desde que el CPU se enciende hasta que el escritorio gráfico aparece en pantalla.</p>
+<h2>Diagrama de secuencia completo</h2>
+<div class="diagram diagram-mermaid"><pre class="mermaid">sequenceDiagram
+    participant BIOS as BIOS/Firmware
+    participant GRUB as GRUB
+    participant ASM as loader.s
+    participant C as kernel_main()
+    participant GDT as GDT
+    participant IDT as IDT + PIC
+    participant DM as driver_manager
+    participant KB as keyboard
+    participant MS as mouse
+    participant PCI as PCI scan
+    participant VGA as VGA (Mode 13h)
+    participant VFS as VFS + FAT32
+    participant PNG as PNG decoder
+    participant GUI as Desktop + Windows
+
+    BIOS->>GRUB: POST, buscar dispositivo booteable
+    GRUB->>GRUB: Lee grub.cfg, busca cabecera Multiboot
+    GRUB->>ASM: Salta a loader (modo protegido 32-bit)
+
+    ASM->>ASM: mov esp, kernel_stack + 4096
+    ASM->>C: call kernel_main()
+
+    C->>C: serial_init(COM1) — UART 16550
+    C->>GDT: init_gdt() — 4 descriptores
+    GDT-->>C: LGDT + ljmp (recargar CS)
+
+    C->>IDT: init_interrupt_manager() — 256 entradas
+    C->>IDT: PIC ICW1-ICW4 (remapeo IRQs)
+    Note over IDT: IRQ 0→0x20, IRQ 1→0x21, IRQ 12→0x2C
+
+    C->>DM: driver_manager_init()
+    C->>DM: keyboard_driver_init(kb_driver)
+    C->>DM: mouse_driver_init(ms_driver)
+    C->>DM: driver_manager_add(kb_driver)
+    C->>DM: driver_manager_add(ms_driver)
+
+    C->>PCI: select_drivers() — escaneo 256 buses × 32 devices
+    PCI-->>DM: driver_manager_add() por cada dispositivo
+
+    C->>DM: driver_manager_activate_all()
+    DM->>KB: keyboard_activate() — drenar buffer, 0xF4
+    DM->>MS: mouse_activate() — habilitar puerto 2, 0xF4
+
+    C->>VGA: vga_set_mode(320, 200, 8)
+    VGA-->>VGA: Escribir registros Mode 13h
+
+    C->>VFS: fs_test_run() — montar FAT32
+    VFS->>VFS: ATA read sectors → parse BPB → montar /
+    C->>PNG: background_load_from_disk()
+    PNG->>VFS: vfs_open("/FONDO.PNG")
+    PNG->>PNG: png_decode_indexed() → background_pixels
+    C->>GUI: desktop_set_background(pixels, w, h)
+
+    C->>GUI: window_init(win1) + window_init(win2)
+    C->>GUI: composite_widget_add_child() × 2
+
+    Note over C: asm volatile("sti") — habilitar interrupciones
+
+    loop Bucle principal (for-ever)
+        C->>GUI: desktop_draw(&#x26;desktop, &#x26;gc)
+        GUI->>GUI: Composite: draw background → windows → cursor
+        C->>VGA: graphic_context_flush() — back buffer → framebuffer
+        Note over VGA: Espera retrace vertical (vsync)
+    end</pre></div>
+<h2>Paso a paso detallado</h2>
+<h3>1. Encendido / Reset</h3>
+<ul>
+<li>CPU comienza ejecutando la BIOS en <code>0xFFFFFFF0</code>.</li>
+<li>POST (Power-On Self Test) y búsqueda de dispositivo booteable.</li>
+</ul>
+<h3>2. GRUB (bootloader)</h3>
+<ul>
+<li>GRUB lee <code>grub.cfg</code>:
+<pre><code class="language-cfg">set timeout=5
+set default=0
+
+menuentry "DemOS" {
+    multiboot /boot/kernel.elf
+    boot
+}
+</code></pre>
+</li>
+<li>Localiza la cabecera Multiboot en <code>0x00100000</code>:
+<ul>
+<li>Magic: <code>0x1BADB002</code>, Flags: <code>0x0</code>, Checksum: <code>-(0x1BADB002)</code>.</li>
+</ul>
+</li>
+<li>Cambia a <strong>modo protegido 32 bits</strong> y salta a <code>loader</code>.</li>
+</ul>
+<h3>3. asm/loader.s (Assembly)</h3>
+<pre><code class="language-nasm">loader:
+    mov esp, kernel_stack + KERNEL_STACK_SIZE  ; Pila al final del buffer de 4KB
+    call kernel_main                           ; Salta a C
+.hang:
+    jmp .hang                                  ; Bucle infinito
+</code></pre>
+<h3>4. src/kernel/main.c (C)</h3>
+<p>El punto de entrada en C orquesta toda la inicialización:</p>
+<pre><code class="language-c">int kernel_main()
+{
+    static global_descriptor_table gdt;
+
+    serial_init(COM1_BASE_ADDRESS);            // UART para depuración
+    init_gdt(&#x26;gdt);                            // Segmentos de memoria
+    init_interrupt_manager(&#x26;gdt);              // IDT + PIC 8259A
+
+    driver_manager_init(&#x26;global_driver_manager);
+
+    // Modo gráfico: el escritorio recibe eventos
+    graphic_context_init(&#x26;gc);
+    desktop_init(&#x26;desktop, &#x26;gc);
+
+    keyboard_driver_init(&#x26;kb_driver, desktop_on_key_down, &#x26;desktop);
+    kb_driver.on_key_up = desktop_on_key_up;
+    driver_manager_add(&#x26;global_driver_manager, &#x26;kb_driver.base);
+
+    mouse_driver_init(&#x26;ms_driver, desktop_on_mouse_move, &#x26;desktop);
+    ms_driver.on_mouse_button = desktop_on_mouse_button;
+    driver_manager_add(&#x26;global_driver_manager, &#x26;ms_driver.base);
+
+    select_drivers(&#x26;global_driver_manager);    // Escaneo PCI
+    driver_manager_activate_all(&#x26;global_driver_manager);
+
+    fs_test_run();                             // Montar FAT32
+
+    vga_set_mode(320, 200, 8);                // Cambiar a modo gráfico
+    vga_fill_rectangle(0, 0, 320, 200, 0x09);
+    background_load_from_disk();               // Cargar PNG de fondo
+
+    // Crear ventanas de ejemplo
+    window_init(&#x26;win1, &#x26;desktop.base.base, 10, 10, 20, 20, 0x04, NULL);
+    composite_widget_add_child(&#x26;desktop.base, &#x26;win1.base.base);
+    window_init(&#x26;win2, &#x26;desktop.base.base, 40, 15, 30, 30, 0x02, NULL);
+    composite_widget_add_child(&#x26;desktop.base, &#x26;win2.base.base);
+
+    asm volatile("sti");                       // Habilitar interrupciones
+
+    for (;;) {
+        desktop_draw(&#x26;desktop, &#x26;gc);           // Dibujar todo
+        graphic_context_flush(&#x26;gc);            // Copiar a pantalla
+    }
+    return 0;
+}
+</code></pre>
+<h3>5. Inicialización de drivers</h3>
+<div class="diagram diagram-mermaid"><pre class="mermaid">flowchart TD
+    A[driver_manager_init] --> B[keyboard_driver_init]
+    A --> C[mouse_driver_init]
+    B --> D[driver_manager_add kb]
+    C --> E[driver_manager_add ms]
+    D --> F[select_drivers - PCI scan]
+    E --> F
+    F --> G[driver_manager_activate_all]
+    G --> H[keyboard_activate - PS/2 init]
+    G --> I[mouse_activate - PS/2 init]
+    H --> J[Teclado listo: IRQ 0x21]
+    I --> K[Mouse listo: IRQ 0x2C]</pre></div>
+<p>Cada driver registra sus callbacks de interrupción. El <code>driver_manager</code> despacha IRQs al driver correcto usando <code>driver_manager_get_driver_for_irq()</code>.</p>
+<h3>6. Cambio a modo gráfico</h3>
+<p>Después de la inicialización de drivers, el kernel cambia al <strong>modo gráfico 320x200x256</strong> (Mode 13h) escribiendo los registros VGA apropiados. Luego carga el fondo PNG del disco FAT32 y crea las ventanas de ejemplo.</p>
+<h3>7. Bucle principal</h3>
+<div class="diagram diagram-mermaid"><pre class="mermaid">flowchart LR
+    A[desktop_draw] --> B[graphic_context_flush]
+    B --> C[VGA framebuffer]
+    C --> D[Pantalla]
+    D --> E[ IRQs: keyboard/mouse ]
+    E --> A</pre></div>
+<p>El kernel queda en un bucle infinito que:</p>
+<ol>
+<li><strong>Dibuja</strong> el escritorio (fondo + ventanas + cursor) en el back buffer</li>
+<li><strong>Hace flush</strong> del back buffer al framebuffer VGA (esperando vsync)</li>
+<li><strong>Recibe interrupciones</strong> de teclado y mouse que actualizan el estado</li>
+</ol>
+<h2>Resumen de tecnologías involucradas</h2>
+<table>
+<thead>
+<tr>
+<th>Tecnología</th>
+<th>Uso en DemOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>x86 Assembly (NASM)</strong></td>
+<td>Cabecera Multiboot, configuración de pila, interrupt stubs</td>
+</tr>
+<tr>
+<td><strong>C (GCC -m32)</strong></td>
+<td>Lógica del kernel, drivers, GUI, filesystem, PNG</td>
+</tr>
+<tr>
+<td><strong>GRUB</strong></td>
+<td>Gestor de arranque Multiboot</td>
+</tr>
+<tr>
+<td><strong>VGA Text Mode (CP-437)</strong></td>
+<td>Modo texto 80x25 para splash y depuración</td>
+</tr>
+<tr>
+<td><strong>VGA Mode 13h</strong></td>
+<td>Modo gráfico 320x200x256 para el escritorio</td>
+</tr>
+<tr>
+<td><strong>GDT</strong></td>
+<td>Segmentos de memoria en modo protegido</td>
+</tr>
+<tr>
+<td><strong>IDT / PIC 8259A</strong></td>
+<td>Manejo de interrupciones y excepciones</td>
+</tr>
+<tr>
+<td><strong>Driver Manager</strong></td>
+<td>Despacho centralizado de IRQs con polimorfismo</td>
+</tr>
+<tr>
+<td><strong>PS/2 Controller</strong></td>
+<td>Driver de teclado y mouse (scancodes/paquetes → pantalla)</td>
+</tr>
+<tr>
+<td><strong>UART 16550</strong></td>
+<td>Puerto serie para depuración</td>
+</tr>
+<tr>
+<td><strong>PCI</strong></td>
+<td>Enumeración de dispositivos y detección de hardware</td>
+</tr>
+<tr>
+<td><strong>ATA/IDE PIO</strong></td>
+<td>Lectura de sectores del disco para FAT32</td>
+</tr>
+<tr>
+<td><strong>VFS + FAT32</strong></td>
+<td>Sistema de archivos virtual con soporte FAT32</td>
+</tr>
+<tr>
+<td><strong>PNG decoder</strong></td>
+<td>Decodificador completo desde cero (DEFLATE + filtros)</td>
+</tr>
+<tr>
+<td><strong>GUI widgets</strong></td>
+<td>Sistema de ventanas con double-buffering y vsync</td>
+</tr>
+<tr>
+<td><strong>Framebuffer (0xB8000/0xA0000)</strong></td>
+<td>Escritura directa en memoria de video</td>
+</tr>
+<tr>
+<td><strong>Linker Script</strong></td>
+<td>Organización de secciones en memoria</td>
+</tr>
+<tr>
+<td><strong>Makefile</strong></td>
+<td>Automatización de compilación + disco virtual</td>
+</tr>
+<tr>
+<td><strong>QEMU</strong></td>
+<td>Emulación para pruebas</td>
+</tr>
+<tr>
+<td><strong>Multiboot spec</strong></td>
+<td>Estándar de interfaz kernel-bootloader</td>
+</tr>
+</tbody>
+</table></article>
+    </main>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGradF" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheenF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGradF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2F" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadowF" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClipF">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClipF)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGradF)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheenF)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadowF)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2F)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">W</text>
+    </g>
+  </svg>
+        <span>M2W Documentación</span>
+      </div>
+      <nav class="footer-links">
+        <a href="/demos/">Docs</a>
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" target="_blank" rel="noopener">GitHub</a>
+        <a href="/demos/license">License</a>
+      </nav>
+      <p class="footer-copy">&copy; <span id="footerYear">2025</span> M2W Documentación. Built with docs.</p>
+    </div>
+  </footer>
+  <script src="../../js/main.js" defer></script>
+</body>
+</html>

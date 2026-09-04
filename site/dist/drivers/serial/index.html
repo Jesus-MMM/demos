@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Puerto serie · M2W Documentación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation" aria-expanded="false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="/demos/" class="brand">
+          <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheen" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClip">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClip)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGrad)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheen)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadow)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGrad)">W</text>
+    </g>
+  </svg>
+          <span class="brand-text">M2W Documentación</span>
+        </a>
+      </div>
+  
+      <div class="header-search">
+        <div class="search-box">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="navSearch" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+          <kbd class="search-kbd">/</kbd>
+        </div>
+      </div>
+  
+      <div class="header-right">
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" class="header-icon-link" aria-label="GitHub repository" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+        </a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar"><nav class="nav" id="docsNav" aria-label="Documentation navigation">
+  <div class="nav-search-mobile">
+    <div class="search-box">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="navSearchMobile" placeholder="Search docs..." aria-label="Search documentation" autocomplete="off" />
+    </div>
+  </div>
+  <div class="nav-scroll" id="navScroll">
+    <ul class="nav-menu"><li class="section"><a href="/demos/">DemOS</a></li><li class="has-children"><a href="/demos/introduccion/" class="section">Introducción</a><ul><li><a href="/demos/introduccion/introduccion/">Introducción a DemOS</a></li><li><a href="/demos/introduccion/entorno-setup/">Entorno y herramientas</a></li><li><a href="/demos/introduccion/arquitectura/">Arquitectura general</a></li><li><a href="/demos/introduccion/flujo-ejecucion/">Flujo de ejecución</a></li></ul></li><li class="has-children"><a href="/demos/kernel/" class="section">Kernel</a><ul><li><a href="/demos/kernel/loader-ensamblador/">Loader en ensamblador</a></li><li><a href="/demos/kernel/linker-script/">Script de enlace</a></li><li><a href="/demos/kernel/kernel-principal/">Kernel principal</a></li><li><a href="/demos/kernel/gdt/">GDT</a></li><li><a href="/demos/kernel/interrupts/">Sistema de interrupciones</a></li><li><a href="/demos/kernel/driver-manager/">Administrador de drivers</a></li><li><a href="/demos/kernel/librerias/">Librerías del sistema</a></li></ul></li><li class="has-children"><a href="/demos/drivers/" class="active section">Drivers</a><ul><li><a href="/demos/drivers/vga-framebuffer/">VGA modo texto</a></li><li><a href="/demos/drivers/vga-grafico/">VGA modo gráfico</a></li><li><a href="/demos/drivers/keyboard/">Driver de teclado</a></li><li><a href="/demos/drivers/mouse/">Driver de mouse</a></li><li class="active"><a href="/demos/drivers/serial/">Puerto serie</a></li><li><a href="/demos/drivers/timer/">Temporizador</a></li><li><a href="/demos/drivers/ata/">Disco ATA/IDE</a></li><li><a href="/demos/drivers/pci/">PCI</a></li></ul></li><li class="has-children"><a href="/demos/filesystem/" class="section">Filesystem</a><ul><li><a href="/demos/filesystem/vfs/">VFS</a></li><li><a href="/demos/filesystem/fat32/">FAT32</a></li><li><a href="/demos/filesystem/fstest/">Pruebas del filesystem</a></li></ul></li><li class="has-children"><a href="/demos/gui/" class="section">GUI</a><ul><li><a href="/demos/gui/overview/">GUI: ventanas y escritorio</a></li><li><a href="/demos/gui/widget/">Sistema de widgets</a></li><li><a href="/demos/gui/desktop/">Escritorio</a></li><li><a href="/demos/gui/window/">Ventanas</a></li><li><a href="/demos/gui/graphic-context/">Contexto gráfico</a></li></ul></li><li class="has-children"><a href="/demos/utilidades/" class="section">Utilidades</a><ul><li><a href="/demos/utilidades/png/">Decodificador PNG</a></li><li><a href="/demos/utilidades/big-text/">Texto grande</a></li><li><a href="/demos/utilidades/splash/">Splash</a></li><li><a href="/demos/utilidades/util-lib/">Utilidades varias</a></li><li><a href="/demos/utilidades/types-asm/">Tipos y E/S</a></li></ul></li><li class="has-children"><a href="/demos/build/" class="section">Build</a><ul><li><a href="/demos/build/makefile/">Makefile</a></li></ul></li></ul>
+  </div>
+  <div class="nav-empty" id="navEmpty" hidden>
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <p>No results found</p>
+  </div>
+</nav>
+</aside>
+    <main class="content">
+      <article><h1>Puerto serie — UART 16550 (<code>include/drivers/serial.h</code> / <code>src/drivers/serial.c</code>)</h1>
+<h2>Qué es el puerto serie</h2>
+<p>El <strong>puerto serie</strong> (UART — Universal Asynchronous Receiver/Transmitter) es un canal de comunicación bidireccional que transmite datos un bit a la vez. En desarrollo de kernels, el puerto serie es la herramienta de depuración más fiable porque funciona sin drivers de video ni sistemas de archivos.</p>
+<p>DemOS usa el chip <strong>16550</strong> (o compatible) en el puerto <strong>COM1</strong> (<code>0x3F8</code>) para enviar mensajes de depuración a través de QEMU (<code>-serial stdio</code>).</p>
+<h2>Por qué usar el puerto serie</h2>
+<table>
+<thead>
+<tr>
+<th>Ventaja</th>
+<th>Explicación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sin dependencias</td>
+<td>No necesita framebuffer, drivers de video ni sistema de archivos</td>
+</tr>
+<tr>
+<td>Siempre disponible</td>
+<td>El hardware UART existe en todas las placas x86</td>
+</tr>
+<tr>
+<td>Output visible</td>
+<td>QEMU redirige el serie a la terminal con <code>-serial stdio</code></td>
+</tr>
+<tr>
+<td>Simple</td>
+<td>Solo escribe bytes a un puerto de E/S</td>
+</tr>
+</tbody>
+</table>
+<h2>Mapa de memoria del UART</h2>
+<p>DemOS usa <strong>COM1</strong> (base <code>0x3F8</code>) y <strong>COM2</strong> (base <code>0x2F8</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Puerto COM1</th>
+<th>Puerto COM2</th>
+<th>Registro</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x3F8</code></td>
+<td><code>0x2F8</code></td>
+<td>Data (TX/RX)</td>
+</tr>
+<tr>
+<td><code>0x3F9</code></td>
+<td><code>0x2F9</code></td>
+<td>Interrupt Enable</td>
+</tr>
+<tr>
+<td><code>0x3FA</code></td>
+<td><code>0x2FA</code></td>
+<td>FIFO Control</td>
+</tr>
+<tr>
+<td><code>0x3FB</code></td>
+<td><code>0x2FB</code></td>
+<td>Line Control</td>
+</tr>
+<tr>
+<td><code>0x3FD</code></td>
+<td><code>0x2FD</code></td>
+<td>Line Status</td>
+</tr>
+</tbody>
+</table>
+<h3>Registros</h3>
+<table>
+<thead>
+<tr>
+<th>Registro</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Data</strong></td>
+<td>Envía/recibe un byte</td>
+</tr>
+<tr>
+<td><strong>Interrupt Enable</strong></td>
+<td>Habilita/deshabilita interrupciones del UART</td>
+</tr>
+<tr>
+<td><strong>FIFO Control</strong></td>
+<td>Activa/deshabilita la cola FIFO de 16 bytes</td>
+</tr>
+<tr>
+<td><strong>Line Control</strong></td>
+<td>Configura formato: bits de datos, paridad, stop bits</td>
+</tr>
+<tr>
+<td><strong>Line Status</strong></td>
+<td>Estado de transmisión y recepción</td>
+</tr>
+</tbody>
+</table>
+<h2>serial.h — Definiciones</h2>
+<pre><code class="language-c">#define COM1_BASE_ADDRESS 0x3F8
+#define COM2_BASE_ADDRESS 0x2F8
+
+#define SERIAL_DATA_PORT(base_address)        ((base_address))
+#define SERIAL_INTERRUPT_PORT(base_address)   ((base_address) + 1)
+#define SERIAL_FIFO_CMD_PORT(base_address)    ((base_address) + 2)
+#define SERIAL_LINE_CMD_PORT(base_address)    ((base_address) + 3)
+#define SERIAL_LINE_STATUS_PORT(base_address) ((base_address) + 5)
+
+static const char hex_chars[] = "0123456789ABCDEF";
+</code></pre>
+<p>Las macros calculan la dirección de cada registro a partir de la base del puerto.</p>
+<h3>API</h3>
+<table>
+<thead>
+<tr>
+<th>Función</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>serial_init(com)</code></td>
+<td>Inicializa el UART en 8N1</td>
+</tr>
+<tr>
+<td><code>serial_write(com, data)</code></td>
+<td>Envía un byte</td>
+</tr>
+<tr>
+<td><code>serial_write_string(com, buf, len)</code></td>
+<td>Envía una cadena</td>
+</tr>
+<tr>
+<td><code>serial_write_hex16(com, value)</code></td>
+<td>Envía un valor de 16 bits en hex</td>
+</tr>
+<tr>
+<td><code>serial_write_u8(com, value)</code></td>
+<td>Envía un valor de 8 bits en decimal</td>
+</tr>
+<tr>
+<td><code>serial_read(com)</code></td>
+<td>Lee un byte (bloqueante)</td>
+</tr>
+<tr>
+<td><code>is_transmition_buffer_empty(com)</code></td>
+<td>Verifica si el buffer TX está vacío</td>
+</tr>
+<tr>
+<td><code>is_data_received(com)</code></td>
+<td>Verifica si hay datos RX</td>
+</tr>
+</tbody>
+</table>
+<h2>serial.c — Implementación</h2>
+<h3><code>serial_init()</code> — Inicialización del UART</h3>
+<pre><code class="language-c">void serial_init(uint16_t com)
+{
+    outb(SERIAL_INTERRUPT_PORT(com), 0x00);           // Desactivar interrupciones
+    outb(SERIAL_LINE_CMD_PORT(com), 0x80);            // DLAB = 1 (acceder a divisor)
+    outb(SERIAL_DATA_PORT(com), divisor &#x26; 0x00FF);    // Divisor bajo (baud rate)
+    outb(SERIAL_DATA_PORT(com) + 1, (divisor >> 8) &#x26; 0x00FF); // Divisor alto
+    outb(SERIAL_LINE_CMD_PORT(com), 0x03);            // 8N1
+    outb(SERIAL_FIFO_CMD_PORT(com), 0xC7);            // Habilitar FIFO, umbral 14
+}
+</code></pre>
+<p><strong>Pasos de inicialización:</strong></p>
+<div class="diagram diagram-mermaid"><pre class="mermaid">flowchart TD
+    A[1. Desactivar interrupciones&#x3C;br/>0x00 al registro de interrupciones] --> B[2. Activar DLAB&#x3C;br/>bit 7 Line Control = 1]
+    B --> C[3. Establecer baud rate&#x3C;br/>divisor = 1 → 115200 baud]
+    C --> D[4. Configurar Line&#x3C;br/>0x03 = 8N1]
+    D --> E[5. Habilitar FIFO&#x3C;br/>0xC7 = FIFO, umbral 14 bytes]</pre></div>
+<table>
+<thead>
+<tr>
+<th>Paso</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Desactivar interrupciones</td>
+<td>Escribe <code>0x00</code> al registro de interrupciones</td>
+</tr>
+<tr>
+<td>2. Activar DLAB</td>
+<td>Bit 7 del registro Line Control = 1 para acceder al divisor de baudios</td>
+</tr>
+<tr>
+<td>3. Establecer baud rate</td>
+<td>Divisor = 1 → 115200 baudios (velocidad máxima)</td>
+</tr>
+<tr>
+<td>4. Configurar Line</td>
+<td><code>0x03</code> = 8 bits de datos, sin paridad, 1 bit de stop (8N1)</td>
+</tr>
+<tr>
+<td>5. Habilitar FIFO</td>
+<td><code>0xC7</code> = activar FIFO, umbral de 14 bytes</td>
+</tr>
+</tbody>
+</table>
+<h3>Formato 8N1</h3>
+<pre><code>[Start][D0][D1][D2][D3][D4][D5][D6][D7][Stop]
+   1b    ---- 8 bits de datos ----       1b
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data bits</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Parity</td>
+<td>Ninguna</td>
+</tr>
+<tr>
+<td>Stop bits</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h3><code>serial_write()</code> — Envío de un byte</h3>
+<pre><code class="language-c">void serial_write(uint16_t com, uint8_t data)
+{
+    while (!is_transmition_buffer_empty(com)) {}
+    outb(SERIAL_DATA_PORT(com), data);
+}
+</code></pre>
+<p><strong>Espera activa</strong> hasta que el buffer de transmisión esté vacío, luego escribe el byte en el registro Data.</p>
+<h3><code>serial_write_string()</code> — Envío de cadena</h3>
+<pre><code class="language-c">void serial_write_string(uint16_t com, const char *buffer, uint32_t len)
+{
+    for (uint32_t i = 0; i &#x3C; len; i++)
+        serial_write(com, buffer[i]);
+}
+</code></pre>
+<h3><code>serial_write_hex16()</code> — Formato hexadecimal</h3>
+<pre><code class="language-c">void serial_write_hex16(uint16_t com, uint16_t value)
+{
+    serial_write(com, hex_chars[(value >> 12) &#x26; 0xF]);
+    serial_write(com, hex_chars[(value >> 8) &#x26; 0xF]);
+    serial_write(com, hex_chars[(value >> 4) &#x26; 0xF]);
+    serial_write(com, hex_chars[value &#x26; 0xF]);
+}
+</code></pre>
+<h3><code>serial_write_u8()</code> — Formato decimal</h3>
+<pre><code class="language-c">void serial_write_u8(uint16_t com, uint8_t value)
+{
+    if (value >= 100) serial_write(com, '0' + (value / 100));
+    if (value >= 10)  serial_write(com, '0' + ((value / 10) % 10));
+    serial_write(com, '0' + (value % 10));
+}
+</code></pre>
+<h3><code>serial_read()</code> — Recepción de un byte</h3>
+<pre><code class="language-c">char serial_read(uint16_t com)
+{
+    while (!is_data_received(com)) {}
+    return (char)inb(SERIAL_DATA_PORT(com));
+}
+</code></pre>
+<p><strong>Bloqueante</strong>: espera hasta que haya datos disponibles en el buffer de recepción.</p>
+<h3>Funciones de estado</h3>
+<pre><code class="language-c">int8_t is_transmition_buffer_empty(uint16_t com)
+{
+    return (int8_t)((inb(SERIAL_LINE_STATUS_PORT(com)) &#x26; 0x20) == 0x20);
+}
+
+int8_t is_data_received(uint16_t com)
+{
+    return (int8_t)((inb(SERIAL_LINE_STATUS_PORT(com)) &#x26; 0x01) == 0x01);
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Función</th>
+<th>Bit del LSR</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_transmition_buffer_empty</code></td>
+<td>Bit 5 (THRE)</td>
+<td>Buffer TX listo para recibir datos</td>
+</tr>
+<tr>
+<td><code>is_data_received</code></td>
+<td>Bit 0 (DR)</td>
+<td>Hay datos esperando ser leídos</td>
+</tr>
+</tbody>
+</table>
+<h2>Registro Line Status (LSR)</h2>
+<table>
+<thead>
+<tr>
+<th>Bit</th>
+<th>Nombre</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>DR</td>
+<td>Data Ready - hay datos para leer</td>
+</tr>
+<tr>
+<td>1</td>
+<td>OE</td>
+<td>Overrun Error - dato perdido</td>
+</tr>
+<tr>
+<td>2</td>
+<td>PE</td>
+<td>Parity Error</td>
+</tr>
+<tr>
+<td>3</td>
+<td>FE</td>
+<td>Framing Error</td>
+</tr>
+<tr>
+<td>4</td>
+<td>BI</td>
+<td>Break Interrupt</td>
+</tr>
+<tr>
+<td>5</td>
+<td>THRE</td>
+<td>Transmitter Holding Register Empty</td>
+</tr>
+<tr>
+<td>6</td>
+<td>TEMT</td>
+<td>Transmitter Empty</td>
+</tr>
+</tbody>
+</table>
+<h2>Uso según el módulo</h2>
+<p>El puerto serie se usa ampliamente en todo el kernel para depuración:</p>
+<div class="diagram diagram-mermaid"><pre class="mermaid">graph TB
+    MAIN[main.c&#x3C;br/>[KERNEL] Stage messages]
+    GDT[gdt.c&#x3C;br/>[GDT] Descriptors filled]
+    KB[keyboard.c&#x3C;br/>[KB] Keyboard activated]
+    MS[mouse.c&#x3C;br/>[MS] Mouse activated]
+    PCI[pci.c&#x3C;br/>[PCI] B:/D:/F:/V:/DEV:]
+    FS[fat32/fstest&#x3C;br/>[FS] mount/read]
+
+    MAIN --> DEB[Puerto serie COM1]
+    GDT --> DEB
+    KB --> DEB
+    MS --> DEB
+    PCI --> DEB
+    FS --> DEB
+    DEB --> QEMU[qemu -serial stdio]</pre></div>
+<h2>Uso desde QEMU</h2>
+<p>Para ver la salida del serie en la terminal:</p>
+<pre><code class="language-bash">qemu-system-i386 -cdrom DemOS.iso -drive file=demos.img,format=raw,if=ide -serial stdio
+</code></pre>
+<p>Todos los <code>serial_write_string()</code> se imprimen en la terminal donde se ejecutó QEMU.</p></article>
+    </main>
+  </div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg class="brand-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18" role="img" aria-label="M2W app icon">
+    <defs>
+      <linearGradient id="bgGradF" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1E293B"/>
+        <stop offset="55%" stop-color="#0F172A"/>
+        <stop offset="100%" stop-color="#020617"/>
+      </linearGradient>
+      <linearGradient id="sheenF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+        <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+      </linearGradient>
+      <linearGradient id="textGradF" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#F8FAFC"/>
+        <stop offset="100%" stop-color="#CBD5E1"/>
+      </linearGradient>
+      <linearGradient id="accent2F" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+      <filter id="textShadowF" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.45"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <clipPath id="iconClipF">
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#iconClipF)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#bgGradF)"/>
+      <rect x="0" y="0" width="512" height="512" fill="url(#sheenF)"/>
+      <circle cx="420" cy="100" r="160" fill="#3B82F6" opacity="0.05"/>
+      <circle cx="80" cy="430" r="140" fill="#FFFFFF" opacity="0.03"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.06"/>
+    </g>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="110.5" ry="110.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+    <g filter="url(#textShadowF)" text-anchor="middle">
+      <text x="150" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">M</text>
+      <text x="262" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#accent2F)">2</text>
+      <text x="378" y="332" font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="190" font-weight="800" letter-spacing="-6" fill="url(#textGradF)">W</text>
+    </g>
+  </svg>
+        <span>M2W Documentación</span>
+      </div>
+      <nav class="footer-links">
+        <a href="/demos/">Docs</a>
+        <a href="https://github.com/Jesus-MMM/markdown-to-website" target="_blank" rel="noopener">GitHub</a>
+        <a href="/demos/license">License</a>
+      </nav>
+      <p class="footer-copy">&copy; <span id="footerYear">2025</span> M2W Documentación. Built with docs.</p>
+    </div>
+  </footer>
+  <script src="../../js/main.js" defer></script>
+</body>
+</html>
