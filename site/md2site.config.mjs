@@ -1,7 +1,7 @@
 export default {
-  title: "M2W Documentación",
+  title: "DemOs Documentacion",
   lang: "es",
-  base: "",
+  base: "demos",
   outDir: "dist",
   docsDir: "docs",
   templatesDir: "templates",

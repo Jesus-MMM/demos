@@ -21,11 +21,14 @@ El **framebuffer VGA** es un área de memoria en la dirección física `0xB8000`
 
 ## Formato de cada celda
 
-```
-+--------+--------+
-| CHAR   | ATTR   |
-+--------+--------+
-byte 0   byte 1
+```mermaid
+flowchart LR
+    subgraph CELL["Celda de 2 bytes (4000 por pantalla)"]
+        direction LR
+        CHAR["Byte 0<br/><b>CHAR</b><br/>carácter"]
+        attr1["Byte 1<br/><b>ATTR</b><br/>atributo de color"]
+    end
+    CHAR --- attr1
 ```
 
 ### Byte 0 — Carácter
@@ -45,11 +48,15 @@ Código del carácter a mostrar (ASCII extendido, CP-437). Ejemplos usados en De
 
 ### Byte 1 — Atributo (color)
 
-```
-Bit:    7   6   5   4  |  3   2   1   0
-       +-------+-------+-------+-------+
-       |  BLINK   |  BG COLOR | FG COLOR |
-       +-------+-------+-------+-------+
+```mermaid
+flowchart LR
+    subgraph ATTR["Byte de atributo"]
+        direction LR
+        B7["Bit 7<br/><b>BLINK</b><br/>parpadeo"]
+        B654["Bits 6-4<br/><b>BG COLOR</b><br/>fondo"]
+        B30["Bits 3-0<br/><b>FG COLOR</b><br/>frente"]
+    end
+    B7 --- B654 --- B30
 ```
 
 | Bits | Significado |
