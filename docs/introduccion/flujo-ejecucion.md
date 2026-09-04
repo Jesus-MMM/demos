@@ -3,42 +3,78 @@ title: "Flujo de ejecución"
 order: 4
 ---
 
-# Flujo de ejecucion completo
+# Flujo de ejecución completo
 
-Este documento traza el recorrido del codigo desde que el CPU se enciende hasta que la animacion aparece en pantalla.
+Este documento traza el recorrido del código desde que el CPU se enciende hasta que el escritorio gráfico aparece en pantalla.
 
-## Diagrama de secuencia
+## Diagrama de secuencia completo
 
-```
-ENCENDIDO
-    |
-    v
-BIOS (firmware)
-    |  Busca dispositivo booteable
-    v
-GRUB (bootloader)
-    |  Lee grub.cfg, busca cabecera Multiboot en kernel.elf
-    |  Cambia a modo protegido (32 bits)
-    v
-asm/loader.s (ensamblador)
-    |  Configura la pila (ESP)
-    |  Llama a kernel_main()
-    v
-src/kernel/main.c (entry point)
-    |  serial_init()          → inicializa UART 16550
-    |  init_gdt()             → configura segmentos de memoria
-    |  init_interrupt_manager() → configura IDT + PIC 8259A
-    |  driver_manager_init()  → inicializa el administrador de drivers
-    |  select_drivers()       → escanea bus PCI, detecta dispositivos y registra drivers
-    |  keyboard_init()        → activa driver de teclado PS/2
-    |  mouse_init()           → activa driver de mouse PS/2
-    |  asm sti()              → habilita interrupciones del CPU
-    v
-keyboard y mouse listos
-    |  Tecla → IRQ 1 → keyboard_handler() → caracter en pantalla
-    |  Mouse → IRQ 12 → mouse_handler() → cursor visual se mueve
-    v
-BUCLE INFINITO (asm/loader.s .hang)
+```mermaid
+sequenceDiagram
+    participant BIOS as BIOS/Firmware
+    participant GRUB as GRUB
+    participant ASM as loader.s
+    participant C as kernel_main()
+    participant GDT as GDT
+    participant IDT as IDT + PIC
+    participant DM as driver_manager
+    participant KB as keyboard
+    participant MS as mouse
+    participant PCI as PCI scan
+    participant VGA as VGA (Mode 13h)
+    participant VFS as VFS + FAT32
+    participant PNG as PNG decoder
+    participant GUI as Desktop + Windows
+
+    BIOS->>GRUB: POST, buscar dispositivo booteable
+    GRUB->>GRUB: Lee grub.cfg, busca cabecera Multiboot
+    GRUB->>ASM: Salta a loader (modo protegido 32-bit)
+
+    ASM->>ASM: mov esp, kernel_stack + 4096
+    ASM->>C: call kernel_main()
+
+    C->>C: serial_init(COM1) — UART 16550
+    C->>GDT: init_gdt() — 4 descriptores
+    GDT-->>C: LGDT + ljmp (recargar CS)
+
+    C->>IDT: init_interrupt_manager() — 256 entradas
+    C->>IDT: PIC ICW1-ICW4 (remapeo IRQs)
+    Note over IDT: IRQ 0→0x20, IRQ 1→0x21, IRQ 12→0x2C
+
+    C->>DM: driver_manager_init()
+    C->>DM: keyboard_driver_init(kb_driver)
+    C->>DM: mouse_driver_init(ms_driver)
+    C->>DM: driver_manager_add(kb_driver)
+    C->>DM: driver_manager_add(ms_driver)
+
+    C->>PCI: select_drivers() — escaneo 256 buses × 32 devices
+    PCI-->>DM: driver_manager_add() por cada dispositivo
+
+    C->>DM: driver_manager_activate_all()
+    DM->>KB: keyboard_activate() — drenar buffer, 0xF4
+    DM->>MS: mouse_activate() — habilitar puerto 2, 0xF4
+
+    C->>VGA: vga_set_mode(320, 200, 8)
+    VGA-->>VGA: Escribir registros Mode 13h
+
+    C->>VFS: fs_test_run() — montar FAT32
+    VFS->>VFS: ATA read sectors → parse BPB → montar /
+    C->>PNG: background_load_from_disk()
+    PNG->>VFS: vfs_open("/FONDO.PNG")
+    PNG->>PNG: png_decode_indexed() → background_pixels
+    C->>GUI: desktop_set_background(pixels, w, h)
+
+    C->>GUI: window_init(win1) + window_init(win2)
+    C->>GUI: composite_widget_add_child() × 2
+
+    Note over C: asm volatile("sti") — habilitar interrupciones
+
+    loop Bucle principal (for-ever)
+        C->>GUI: desktop_draw(&desktop, &gc)
+        GUI->>GUI: Composite: draw background → windows → cursor
+        C->>VGA: graphic_context_flush() — back buffer → framebuffer
+        Note over VGA: Espera retrace vertical (vsync)
+    end
 ```
 
 ## Paso a paso detallado
@@ -46,12 +82,15 @@ BUCLE INFINITO (asm/loader.s .hang)
 ### 1. Encendido / Reset
 
 - CPU comienza ejecutando la BIOS en `0xFFFFFFF0`.
-- POST (Power-On Self Test) y busqueda de dispositivo booteable.
+- POST (Power-On Self Test) y búsqueda de dispositivo booteable.
 
 ### 2. GRUB (bootloader)
 
 - GRUB lee `grub.cfg`:
   ```cfg
+  set timeout=5
+  set default=0
+
   menuentry "DemOS" {
       multiboot /boot/kernel.elf
       boot
@@ -65,134 +104,124 @@ BUCLE INFINITO (asm/loader.s .hang)
 
 ```nasm
 loader:
-    mov esp, kernel_stack + 4096    ; Pila al final del buffer de 4KB
-    call kernel_main                 ; Salta a C
+    mov esp, kernel_stack + KERNEL_STACK_SIZE  ; Pila al final del buffer de 4KB
+    call kernel_main                           ; Salta a C
 .hang:
-    jmp .hang                        ; Bucle infinito
+    jmp .hang                                  ; Bucle infinito
 ```
 
 ### 4. src/kernel/main.c (C)
 
- ```c
+El punto de entrada en C orquesta toda la inicialización:
+
+```c
 int kernel_main()
 {
     static global_descriptor_table gdt;
 
-    serial_init(COM1_BASE_ADDRESS);          // Inicializar UART
-    init_gdt(&gdt);                          // Configurar segmentos
-    init_interrupt_manager(&gdt);            // Configurar IDT + PIC
+    serial_init(COM1_BASE_ADDRESS);            // UART para depuración
+    init_gdt(&gdt);                            // Segmentos de memoria
+    init_interrupt_manager(&gdt);              // IDT + PIC 8259A
 
-    driver_manager_init(&global_driver_manager);  // Inicializar administ. de drivers
+    driver_manager_init(&global_driver_manager);
 
-    keyboard_driver_init(&kb_driver, keyboard_default_on_key_down, &kb_driver);
+    // Modo gráfico: el escritorio recibe eventos
+    graphic_context_init(&gc);
+    desktop_init(&desktop, &gc);
+
+    keyboard_driver_init(&kb_driver, desktop_on_key_down, &desktop);
+    kb_driver.on_key_up = desktop_on_key_up;
     driver_manager_add(&global_driver_manager, &kb_driver.base);
 
-    mouse_driver_init(&ms_driver, mouse_default_on_move, &ms_driver);
+    mouse_driver_init(&ms_driver, desktop_on_mouse_move, &desktop);
+    ms_driver.on_mouse_button = desktop_on_mouse_button;
     driver_manager_add(&global_driver_manager, &ms_driver.base);
 
-    select_drivers(&global_driver_manager);  // Escanear bus PCI y registrar drivers
+    select_drivers(&global_driver_manager);    // Escaneo PCI
+    driver_manager_activate_all(&global_driver_manager);
 
-    driver_manager_activate_all(&global_driver_manager); // Activar drivers
+    fs_test_run();                             // Montar FAT32
 
-    keyboard_set_cursor(0, 0);               // Cursor en esquina superior izquierda
-    style_cursor(SMALL);                     // Habilitar cursor visible
+    vga_set_mode(320, 200, 8);                // Cambiar a modo gráfico
+    vga_fill_rectangle(0, 0, 320, 200, 0x09);
+    background_load_from_disk();               // Cargar PNG de fondo
 
-    asm volatile("sti");                     // Habilitar interrupciones
+    // Crear ventanas de ejemplo
+    window_init(&win1, &desktop.base.base, 10, 10, 20, 20, 0x04, NULL);
+    composite_widget_add_child(&desktop.base, &win1.base.base);
+    window_init(&win2, &desktop.base.base, 40, 15, 30, 30, 0x02, NULL);
+    composite_widget_add_child(&desktop.base, &win2.base.base);
+
+    asm volatile("sti");                       // Habilitar interrupciones
+
+    for (;;) {
+        desktop_draw(&desktop, &gc);           // Dibujar todo
+        graphic_context_flush(&gc);            // Copiar a pantalla
+    }
     return 0;
 }
 ```
 
-### 5. src/util/splash.c — Animacion
+### 5. Inicialización de drivers
 
-```c
-void animate_splash(void)
-{
-    // 1. Caja centrada (fila 8, col 21, 37x9)
-    draw_box(21, 8, 37, 9, GREEN);
-
-    // 2. Letra por letra con transicion de color
-    for (i = 0; i < 5; i++)
-    {
-        lc = 25 + i * 6;
-        draw_big_char(glyph[i], 10, lc, DARKGREY);   // fantasma
-        delay(30000000);
-        draw_big_char(glyph[i], 10, lc, GREEN);      // verde
-        delay(15000000);
-        draw_big_char(glyph[i], 10, lc, LIGHTGREEN); // brillante
-        delay(15000000);
-    }
-
-    // 3. Pulso colectivo (2 ciclos)
-    for (p = 0; p < 2; p++)
-    {
-        // Todas las letras en verde
-        // delay
-        // Todas en verde brillante
-        // delay
-    }
-}
+```mermaid
+flowchart TD
+    A[driver_manager_init] --> B[keyboard_driver_init]
+    A --> C[mouse_driver_init]
+    B --> D[driver_manager_add kb]
+    C --> E[driver_manager_add ms]
+    D --> F[select_drivers - PCI scan]
+    E --> F
+    F --> G[driver_manager_activate_all]
+    G --> H[keyboard_activate - PS/2 init]
+    G --> I[mouse_activate - PS/2 init]
+    H --> J[Teclado listo: IRQ 0x21]
+    I --> K[Mouse listo: IRQ 0x2C]
 ```
 
-### 6. src/util/big_text.c — Renderizado
+Cada driver registra sus callbacks de interrupción. El `driver_manager` despacha IRQs al driver correcto usando `driver_manager_get_driver_for_irq()`.
 
-**draw_box()** escribe estos caracteres en el framebuffer:
+### 6. Cambio a modo gráfico
 
-```
-Col: 21   22   23  ...  56   57
-     ╔    ═    ═   ...  ═    ╗    ← fila 8
-     ║    (espacios)    ║    ← filas 9-15
-     ╚    ═    ═   ...  ═    ╝    ← fila 16
-```
+Después de la inicialización de drivers, el kernel cambia al **modo gráfico 320x200x256** (Mode 13h) escribiendo los registros VGA apropiados. Luego carga el fondo PNG del disco FAT32 y crea las ventanas de ejemplo.
 
-**draw_big_char()** recorre la matriz 5x5 del glyph y escribe `█` (0xDB) donde hay un 1, y espacio donde hay un 0.
+### 7. Bucle principal
 
-Por ejemplo, `glyph_D[0]` = `{1,1,1,1,0}` produce `████` en la fila 10, columnas 25-29.
-
-### 7. vga.c — Framebuffer VGA
-
-Cada llamada a `write_letter_to_buffer()` calcula:
-
-```
-framebuffer[fila * 80 + columna] = (atributo << 8) | caracter
+```mermaid
+flowchart LR
+    A[desktop_draw] --> B[graphic_context_flush]
+    B --> C[VGA framebuffer]
+    C --> D[Pantalla]
+    D --> E[ IRQs: keyboard/mouse ]
+    E --> A
 ```
 
-Donde `atributo = (fondo << 4) | frente`, que para verde sobre negro es `0x02`.
+El kernel queda en un bucle infinito que:
+1. **Dibuja** el escritorio (fondo + ventanas + cursor) en el back buffer
+2. **Hace flush** del back buffer al framebuffer VGA (esperando vsync)
+3. **Recibe interrupciones** de teclado y mouse que actualizan el estado
 
-### 8. Estado final
+## Resumen de tecnologías involucradas
 
-```
-         ┌─────────────────────────────────────┐
-         │                                     │
-         │   █████ █████ █   █ █████ █████     │
-         │   █   █ █     ██ ██ █   █ █         │
-         │   █   █ █████ █ █ █ █   █ █████     │
-         │   █   █     █ █   █ █   █     █     │
-         │   █████ █████ █   █ █████ █████     │
-         │                                     │
-         └─────────────────────────────────────┘
-
-Cursor: SMALL (visible en fila 0, columna 0)
-Keyboard: habilitado (IRQ 1 → keyboard_handler)
-Mouse: habilitado (IRQ 12 → mouse_handler, cursor visual activo)
-CPU: bucle infinito en asm/loader.s:.hang, interrupciones activas
-```
-
-## Resumen de tecnologias involucradas
-
-| Tecnologia | Uso en DemOS |
+| Tecnología | Uso en DemOS |
 |------------|--------------|
-| **x86 Assembly (NASM)** | Cabecera Multiboot, configuracion de pila, interrupt stubs |
-| **C (GCC)** | Logica del kernel, modulos splash/big_text/timer/vga/keyboard/serial |
-| **GRUB** | Gestor de arranque |
-| **VGA Text Mode (CP-437)** | Caracteres, bloques, bordes dobles en pantalla |
+| **x86 Assembly (NASM)** | Cabecera Multiboot, configuración de pila, interrupt stubs |
+| **C (GCC -m32)** | Lógica del kernel, drivers, GUI, filesystem, PNG |
+| **GRUB** | Gestor de arranque Multiboot |
+| **VGA Text Mode (CP-437)** | Modo texto 80x25 para splash y depuración |
+| **VGA Mode 13h** | Modo gráfico 320x200x256 para el escritorio |
 | **GDT** | Segmentos de memoria en modo protegido |
 | **IDT / PIC 8259A** | Manejo de interrupciones y excepciones |
-| **PCIe bus** | Enumeracion de dispositivos, lectura de BARs, seleccion de drivers |
-| **UART 16550** | Puerto serie para depuracion |
+| **Driver Manager** | Despacho centralizado de IRQs con polimorfismo |
 | **PS/2 Controller** | Driver de teclado y mouse (scancodes/paquetes → pantalla) |
-| **Puertos E/S (x86)** | Control de cursor y scroll via CRTC |
-| **Framebuffer (0xB8000)** | Escritura directa en memoria de video |
-| **Linker Script** | Organizacion de secciones en memoria |
-| **Makefile** | Automatizacion de compilacion |
-| **QEMU** | Emulacion para pruebas |
-| **Multiboot spec** | Estandar de interfaz kernel-bootloader |
+| **UART 16550** | Puerto serie para depuración |
+| **PCI** | Enumeración de dispositivos y detección de hardware |
+| **ATA/IDE PIO** | Lectura de sectores del disco para FAT32 |
+| **VFS + FAT32** | Sistema de archivos virtual con soporte FAT32 |
+| **PNG decoder** | Decodificador completo desde cero (DEFLATE + filtros) |
+| **GUI widgets** | Sistema de ventanas con double-buffering y vsync |
+| **Framebuffer (0xB8000/0xA0000)** | Escritura directa en memoria de video |
+| **Linker Script** | Organización de secciones en memoria |
+| **Makefile** | Automatización de compilación + disco virtual |
+| **QEMU** | Emulación para pruebas |
+| **Multiboot spec** | Estándar de interfaz kernel-bootloader |

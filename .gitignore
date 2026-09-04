@@ -1,6 +1,9 @@
 *.iso
-build/
 .vscode
 iso/
 compile_commands.json
 demos.img
+
+# mv2site binary (se descarga en CI y no debe commitearse)
+/md2site
+/site/md2site

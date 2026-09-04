@@ -1,219 +1,273 @@
 ---
 title: "Driver de mouse"
-order: 3
+order: 4
 ---
 
-# Driver de mouse PS/2 (include/drivers/mouse.h / src/drivers/mouse.c)
+# Driver de mouse PS/2 (`include/drivers/mouse.h` / `src/drivers/mouse.c`)
 
-## Que es el driver de mouse?
+## Qué es el driver de mouse
 
-El **driver de mouse** maneja las interrupciones generadas por el mouse PS/2 (IRQ 12, interrupcion `0x2C`), lee los **paquetes de 3 bytes** del puerto de datos `0x60` y los traduce a movimiento y botones. Actualmente implementa un cursor visual que invierte los colores de la pantalla en la posicion del mouse.
+El **driver de mouse** maneja las interrupciones generadas por el mouse PS/2 (IRQ 12, interrupción `0x2C`), lee los **paquetes de 3 bytes** del puerto de datos `0x60`, los decodifica en movimiento y botones, y notifica los eventos a través de callbacks registrados (`on_mouse_move`, `on_mouse_button`).
+
+Incluye un handler por defecto que dibuja un cursor VGA por **inversión de colores** (XOR), pero en el sistema actual se usa `desktop_on_mouse_move` (GUI).
 
 ## El mouse PS/2
 
-El mouse PS/2 envia paquetes de **3 bytes** cada vez que se mueve o se presiona/suelta un boton:
+El mouse PS/2 envía paquetes de **3 bytes** cada vez que se mueve o se presiona/suelta un botón:
 
 ```
 Byte 0: Botones + flags
-  Bit 0: Boton izquierdo
-  Bit 1: Boton derecho
-  Bit 2: Boton central
+  Bit 0: Botón izquierdo
+  Bit 1: Botón derecho
+  Bit 2: Botón central
   Bit 3: Siempre 1
   Bit 4: Movimiento X negativo (signo)
   Bit 5: Movimiento Y negativo (signo)
   Bit 6: Overflow X
   Bit 7: Overflow Y
 
-Byte 1: Movimiento X (offset desde ultimo paquete)
-Byte 2: Movimiento Y (offset desde ultimo paquete)
+Byte 1: Movimiento X (offset desde último paquete)
+Byte 2: Movimiento Y (offset desde último paquete)
 ```
 
-## mouse.h - API
+```mermaid
+graph LR
+    A[Byte 0<br/>Botones + signos] --> PACKET[Paquete de 3 bytes]
+    B[Byte 1<br/>Mov. X] --> PACKET
+    C[Byte 2<br/>Mov. Y] --> PACKET
+    PACKET --> DE[Decodificación]
+    DE --> MOVE[on_mouse_move x_offset, y_offset]
+    DE --> BTN[on_mouse_button]
+```
+
+## mouse.h — Estructura del driver
 
 ```c
-void mouse_init(void);
-uint32_t mouse_handler(uint32_t esp);
+typedef struct {
+    driver_t base;              // Driver base (nombre, IRQ, punteros a función)
+
+    uint8_t buffer[3];          // Buffer de 3 bytes para el paquete
+    uint8_t offset;             // Byte actual del paquete (0-2)
+    uint8_t buttons;            // Estado previo de los botones
+    int8_t x;                   // Posición X (0-79)
+    int8_t y;                   // Posición Y (0-24)
+
+    void *handler_data;         // Contexto del callback
+    on_mouse_move_fn on_mouse_move;
+    on_mouse_button_fn on_mouse_button;
+} mouse_driver_t;
 ```
 
-| Funcion | Proposito |
+### API
+
+| Función | Propósito |
 |---------|-----------|
-| `mouse_init()` | Habilita el mouse PS/2 y configura el controlador |
-| `mouse_handler()` | Manejador de IRQ 12, llamado desde `handle_interrupt()` |
+| `mouse_driver_init()` | Inicializa el driver y registra el callback |
+| `mouse_default_on_move()` | Handler por defecto: cursor VGA XOR |
 
-## mouse.c - Implementacion
+## src/drivers/mouse.c — Implementación
 
-### Variables globales
+### `mouse_driver_init()` — Inicialización del driver
 
 ```c
-static uint8_t buffer[3];    // Buffer de 3 bytes para el paquete
-static uint8_t offset;       // Byte actual del paquete (0-2)
-static uint8_t buttons;      // Estado previo de los botones
+void mouse_driver_init(mouse_driver_t *drv, on_mouse_move_fn on_move, void *data)
+{
+    drv->base.name = "mouse";
+    drv->base.irq = 0x2C;                       // IRQ 12 → vector 0x2C
+    drv->base.activate = mouse_activate;
+    drv->base.reset = mouse_reset;
+    drv->base.deactivate = mouse_deactivate;
+    drv->base.handle_interrupt = mouse_handle_interrupt;
+
+    drv->offset = 0;
+    drv->buttons = 0;
+    drv->x = 40;                                // Centro de pantalla
+    drv->y = 12;
+    drv->on_mouse_move = on_move;
+    drv->on_mouse_button = NULL;
+    drv->handler_data = data ? data : drv;
+}
 ```
 
-### `mouse_init()` - Activacion del mouse
+### `mouse_activate()` — Activación del hardware
 
 ```c
-void mouse_init(void)
+static void mouse_activate(driver_t *self)
 {
-    offset = 0;
-    buttons = 0;
+    mouse_driver_t *ms = (mouse_driver_t *)self;
 
-    // 1. Drenar buffer de datos
-    while (inb(MS_COMMAND_PORT) & 0x1)
+    ms->offset = 0;
+    ms->buttons = 0;
+    ms->x = 40;
+    ms->y = 12;
+
+    while (inb(MS_COMMAND_PORT) & 0x1) {        // Drenar buffer
         inb(MS_DATA_PORT);
+    }
 
-    // 2. Habilitar mouse PS/2
-    outb(MS_COMMAND_PORT, 0xA8);
+    outb(MS_COMMAND_PORT, 0xA8);                // Habilitar segundo puerto PS/2
 
-    // 3. Leer byte de configuracion del controlador
-    outb(MS_COMMAND_PORT, 0x20);
+    outb(MS_COMMAND_PORT, 0x20);                // Leer configuración
     while (!(inb(MS_COMMAND_PORT) & 0x1)) {}
-    uint8_t status = (inb(MS_DATA_PORT) | 2);
-
-    // 4. Escribir nueva configuracion
-    outb(MS_COMMAND_PORT, 0x60);
+    uint8_t status = (inb(MS_DATA_PORT) | 2);   // Bit 1: habilitar IRQ12
+    outb(MS_COMMAND_PORT, 0x60);                // Escribir configuración
     while (inb(MS_COMMAND_PORT) & 0x2) {}
     outb(MS_DATA_PORT, status);
 
-    // 5. Habilitar escaneo del mouse (0xF4 via puerto 0xD4)
-    outb(MS_COMMAND_PORT, 0xD4);
+    outb(MS_COMMAND_PORT, 0xD4);                // Preparar comando para mouse
     while (inb(MS_COMMAND_PORT) & 0x2) {}
-    outb(MS_DATA_PORT, 0xF4);
+    outb(MS_DATA_PORT, 0xF4);                   // Habilitar escaneo del mouse
+
+    active_mouse = ms;
+
+    serial_write_string(COM1_BASE_ADDRESS, "[MS] Mouse activated\n", 22);
 }
 ```
 
 **Paso a paso:**
 
-| Paso | Que hace | Por que |
+| Paso | Qué hace | Por qué |
 |------|----------|---------|
 | 1. Drenar buffer | Leer y descartar datos pendientes | Evitar paquetes residuales |
 | 2. `0xA8` al `0x64` | Habilitar el segundo puerto PS/2 (mouse) | Activar hardware del mouse |
-| 3. `0x20` al `0x64` | Leer byte de configuracion del controlador | Obtener estado actual |
+| 3. `0x20` al `0x64` | Leer byte de configuración del controlador | Obtener estado actual |
 | 4. `\| 2` | Bit 1 = 1 (habilitar IRQ12) | Permitir que el mouse genere interrupciones |
-| 5. `0x60` al `0x64` | Seleccionar registro de configuracion | Indicar que el siguiente dato es configuracion |
-| 6. `status` al `0x60` | Escribir nueva configuracion | Aplicar los cambios |
-| 7. `0xD4` al `0x64` | Indicar que el siguiente dato es para el mouse | Los comandos del mouse van via 0xD4 |
-| 8. `0xF4` al `0x60` | Habilitar escaneo del mouse | El mouse empezara a enviar paquetes |
+| 5. Escribir configuración | Aplicar los cambios | |
+| 6. `0xD4` al `0x64` | Indicar que el siguiente dato es para el mouse | Los comandos del mouse van vía 0xD4 |
+| 7. `0xF4` al `0x60` | Habilitar escaneo del mouse | El mouse empezará a enviar paquetes |
 
-> **Nota**: El comando `0xD4` es necesario porque el puerto de datos `0x60` esta compartido entre teclado y mouse. Sin `0xD4`, el `0xF4` se enviaria al teclado en lugar del mouse.
+> **Nota**: El comando `0xD4` es necesario porque el puerto de datos `0x60` está compartido entre teclado y mouse. Sin `0xD4`, el `0xF4` se enviaría al teclado en lugar del mouse.
 
-### `mouse_handler()` - Manejo de interrupciones
+### `mouse_handle_interrupt()` — Manejo de interrupciones
 
 ```c
-uint32_t mouse_handler(uint32_t esp)
+static uint32_t mouse_handle_interrupt(driver_t *self, uint32_t esp)
 {
+    mouse_driver_t *ms = (mouse_driver_t *)self;
+
     uint8_t status = inb(MS_COMMAND_PORT);
-    if (!(status & 0x20))        // Bit 5: datos disponibles para mouse
+    if (!(status & 0x20)) {         // Bit 5: datos disponibles para mouse
         return esp;
-
-    static int8_t x = 0;
-    static int8_t y = 0;
-
-    buffer[offset] = inb(MS_DATA_PORT);
-    offset = (offset + 1) % 3;
-
-    if (offset == 0) {           // Paquete completo (3 bytes)
-        // Invertir colores en posicion anterior (cursor visual)
-        video_memory[(80 * y) + x] = /* swap fg/bg */;
-
-        // Actualizar posicion
-        x = (int8_t)(x + buffer[1]);    // Byte 1: movimiento X
-        y = (int8_t)(y - buffer[2]);    // Byte 2: movimiento Y
-
-        // Clamping a limites de pantalla
-        if (x < 0) x = 0;
-        if (x >= 80) x = 79;
-        if (y < 0) y = 0;
-        if (y >= 25) y = 24;
-
-        // Invertir colores en nueva posicion (cursor visual)
-        video_memory[(80 * y) + x] = /* swap fg/bg */;
     }
 
-    // Detectar cambios en botones (para futuro uso)
-    for (uint8_t i = 0; i < 3; i++) {
-        if ((buffer[0] & (0x01 << i)) != (buttons & (0x01 << i))) {
-            /* TODO: CREATE ALL THE MOUSE CLICK LOGICS */
+    ms->buffer[ms->offset] = inb(MS_DATA_PORT);
+    ms->offset = (ms->offset + 1) % 3;
+
+    if (ms->offset == 0) {          // Paquete completo (3 bytes)
+        if (ms->on_mouse_move) {
+            ms->on_mouse_move((int8_t)ms->buffer[1], (int8_t)ms->buffer[2], ms->handler_data);
         }
     }
-    buttons = buffer[0];
+
+    // Detectar cambios en botones
+    for (uint8_t i = 0; i < 3; i++) {
+        if ((ms->buffer[0] & (0x01 << i)) != (ms->buttons & (0x01 << i))) {
+            if (ms->on_mouse_button) {
+                bool pressed = (ms->buffer[0] & (0x01 << i)) != 0;
+                ms->on_mouse_button(i, ms->x, ms->y, pressed, ms->handler_data);
+            }
+        }
+    }
+    ms->buttons = ms->buffer[0];
 
     return esp;
 }
 ```
 
-**Flujo:**
-
-```
-mouse_handler(esp)
-    │
-    ├─ Leer status del controlador (0x64)
-    ├─ Si bit 5 no esta set: no hay datos → retornar esp
-    ├─ Leer byte del paquete de 0x60
-    ├─ offset = (offset + 1) % 3
-    ├─ Si offset == 0 (paquete completo):
-    │   ├─ Invertir colores en posicion anterior
-    │   ├─ Actualizar x/y con buffer[1] y buffer[2]
-    │   ├─ Clampear a limites de pantalla (80x25)
-    │   └─ Invertir colores en nueva posicion
-    ├─ Detectar cambios de botones (futuro)
-    └─ Retornar esp
+```mermaid
+flowchart TD
+    A[mouse_handle_interrupt] --> B{Leer status de 0x64}
+    B -->|"bit 5 no set - no hay datos"| Z[Retornar esp]
+    B -->|bit 5 set| C[Leer byte del paquete de 0x60]
+    C --> D["offset = (offset + 1) % 3"]
+    D --> E{"¿offset == 0?<br/>(paquete completo)"}
+    E -->|Sí| F[on_mouse_move byte1, byte2]
+    E -->|No| G[Continuar]
+    F --> G
+    G --> H[Detectar cambios de botones]
+    H --> I[on_mouse_button si cambió]
+    I --> Z
 ```
 
-### Cursor visual
+### Detección de botones
 
-El driver implementa un cursor visual simple que **invierte los colores** (foreground ↔ background) de la celda VGA en la posicion del mouse:
+Cada botón se compara con el estado anterior (`buttons`). Cuando hay un cambio, se llama `on_mouse_button` indicando si fue presionado o soltado:
 
+| Bit | Botón |
+|-----|-------|
+| 0 | Izquierdo |
+| 1 | Derecho |
+| 2 | Central |
+
+### `mouse_default_on_move()` — Handler por defecto (cursor VGA)
+
+Este handler dibuja un cursor visual **invirtiendo los colores** (foreground ↔ background) de la celda VGA en la posición del mouse:
+
+```c
+void mouse_default_on_move(int8_t x_offset, int8_t y_offset, void *data)
+{
+    mouse_driver_t *ms = (mouse_driver_t *)data;
+    static uint16_t *video_memory = (uint16_t *)0xB8000;
+
+    // Restaurar celda anterior (swap de colores inverso)
+    video_memory[(80 * ms->y) + ms->x] = ...;
+
+    // Actualizar posición con clamping
+    ms->x = (int8_t)(ms->x + x_offset);
+    if (ms->x < 0) ms->x = 0;
+    if (ms->x >= 80) ms->x = 79;
+
+    ms->y = (int8_t)(ms->y - y_offset);
+    if (ms->y < 0) ms->y = 0;
+    if (ms->y >= 25) ms->y = 24;
+
+    // Resaltar nueva celda (swap de colores)
+    video_memory[(80 * ms->y) + ms->x] = ...;
+}
 ```
-Posicion anterior: swap fg/bg → restaurar celda original
-Nueva posicion:    swap fg/bg → resaltar celda actual
-```
 
-Esto crea un efecto de "cursor" sin usar un caracter especial.
+#### Clamping de posición
 
-### Clamping de posicion
+Las coordenadas `x` e `y` son `int8_t` (rango -128 a 127) para manejar movimientos negativos. Se clampean a los límites de la pantalla:
 
-Las coordenadas `x` e `y` son `int8_t` (rango -128 a 127) para manejar movimientos negativos. Se clampean a los limites de la pantalla:
-
-| Coordenada | Minimo | Maximo |
+| Coordenada | Mínimo | Máximo |
 |------------|--------|--------|
 | `x` (columna) | 0 | 79 |
 | `y` (fila) | 0 | 24 |
 
-### Deteccion de botones (futuro)
-
-El driver detecta cambios en los botones comparando el estado actual con el anterior:
-
-```c
-for (uint8_t i = 0; i < 3; i++) {
-    if ((buffer[0] & (0x01 << i)) != (buttons & (0x01 << i))) {
-        /* TODO: CREATE ALL THE MOUSE CLICK LOGICS */
-    }
-}
-buttons = buffer[0];
-```
-
-Bit 0 = izquierdo, Bit 1 = derecho, Bit 2 = central. Actualmente no realiza ninguna accion (TODO).
+> **Nota**: Este handler es el *default*. En el sistema actual, `main.c` registra `desktop_on_mouse_move` (que dibuja el cursor en modo gráfico 320x200) en lugar de este.
 
 ## Flujo completo: mouse movido
 
-```
-1. Usuario mueve el mouse
-2. Mouse PS/2 envia paquete de 3 bytes
-3. PIC esclavo genera IRQ 12
-4. CPU ejecuta handle_interrupt_request0x0C
-5. handle_interrupt(0x2C, esp) llama a mouse_handler(esp)
-6. mouse_handler lee bytes del puerto 0x60
-7. Con 3 bytes completos: actualizar posicion, invertir colores
-8. handle_interrupt envia EOI al PIC maestro y esclavo
-9. CPU reanuda codigo interrumpido
-10. Cursor visual se mueve en la pantalla
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant HW as Mouse PS/2
+    participant PIC as PIC esclavo
+    participant STUB as Stub asm
+    participant C as handle_interrupt
+    participant DM as driver_manager
+    participant MS as mouse_handle_interrupt
+    participant CB as callback (desktop)
+
+    U->>HW: Mueve el mouse
+    HW->>PIC: Envía paquete de 3 bytes
+    PIC->>C: INT 0x2C (IRQ 12)
+    C->>DM: driver_manager_get_driver_for_irq(0x2C)
+    DM-->>C: ms_driver
+    C->>MS: ms_driver.handle_interrupt(esp)
+    MS->>HW: Lee status (0x64), lee bytes
+    MS->>MS: Acumula 3 bytes → paquete completo
+    MS->>CB: on_mouse_move(x_offset, y_offset, &desktop)
+    MS-->>C: retorna esp
+    C->>PIC: EOI maestro + esclavo
 ```
 
 ## Dependencias
 
-| Modulo | Funcion usada |
+| Módulo | Función usada |
 |--------|---------------|
 | `asm.h` | `inb()`, `outb()` |
-| `drivers/vga.h` | Acceso directo a framebuffer VGA (`0xB8000`) |
-| `drivers/serial.h` | `serial_write_string()` (mensaje de activacion) |
+| `drivers/driver.h` | `driver_t`, callbacks |
+| `drivers/serial.h` | `serial_write_string()` |
+| `drivers/vga_legacy.h` | Acceso directo a framebuffer VGA (default handler) |

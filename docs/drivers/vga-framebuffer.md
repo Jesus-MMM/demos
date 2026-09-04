@@ -1,13 +1,13 @@
 ---
-title: "VGA y framebuffer"
+title: "VGA modo texto"
 order: 1
 ---
 
-# VGA y Framebuffer (src/drivers/vga.c / include/drivers/vga.h)
+# VGA modo texto — Framebuffer 80x25 (`src/drivers/vga_legacy.c` / `include/drivers/vga_legacy.h`)
 
-## ¿Que es el framebuffer VGA?
+## ¿Qué es el framebuffer VGA en modo texto?
 
-El **framebuffer VGA** es un area de memoria en la direccion fisica `0xB8000` que el hardware VGA mapea directamente a la pantalla en modo texto. Escribir en esta memoria produce texto visible al instante.
+El **framebuffer VGA** es un área de memoria en la dirección física `0xB8000` que el hardware VGA mapea directamente a la pantalla en modo texto. Escribir en esta memoria produce texto visible al instante.
 
 ## Modo texto VGA (80x25)
 
@@ -15,8 +15,8 @@ El **framebuffer VGA** es un area de memoria en la direccion fisica `0xB8000` qu
 |-----------|-------|
 | Columnas | 80 |
 | Filas | 25 |
-| Direccion base | `0xB8000` |
-| Bytes por celda | 2 (1 caracter + 1 atributo) |
+| Dirección base | `0xB8000` |
+| Bytes por celda | 2 (1 carácter + 1 atributo) |
 | Total pantalla | 80 x 25 x 2 = 4000 bytes |
 
 ## Formato de cada celda
@@ -28,22 +28,22 @@ El **framebuffer VGA** es un area de memoria en la direccion fisica `0xB8000` qu
 byte 0   byte 1
 ```
 
-### Byte 0 - Caracter
+### Byte 0 — Carácter
 
-Codigo del caracter a mostrar (ASCII extendido, CP-437). Ejemplos usados en DemOS:
+Código del carácter a mostrar (ASCII extendido, CP-437). Ejemplos usados en DemOS:
 
-| Hex | Caracter | Uso |
+| Hex | Carácter | Uso |
 |-----|----------|-----|
-| `0x20` | (espacio) | Vacio/fondo |
-| `0xDB` | `█` | Bloque relleno (pixeles de letras grandes) |
+| `0x20` | (espacio) | Vacío/fondo |
+| `0xDB` | `█` | Bloque relleno (píxeles de letras grandes) |
 | `0xC9` | `╔` | Esquina superior izquierda de caja |
 | `0xBB` | `╗` | Esquina superior derecha |
 | `0xC8` | `╚` | Esquina inferior izquierda |
 | `0xBC` | `╝` | Esquina inferior derecha |
-| `0xCD` | `═` | Linea horizontal doble |
-| `0xBA` | `║` | Linea vertical doble |
+| `0xCD` | `═` | Línea horizontal doble |
+| `0xBA` | `║` | Línea vertical doble |
 
-### Byte 1 - Atributo (color)
+### Byte 1 — Atributo (color)
 
 ```
 Bit:    7   6   5   4  |  3   2   1   0
@@ -60,7 +60,7 @@ Bit:    7   6   5   4  |  3   2   1   0
 
 ### Colores disponibles
 
-| Codigo | Color | Codigo | Color |
+| Código | Color | Código | Color |
 |--------|-------|--------|-------|
 | `BLACK` (0x0) | Negro | `DARKGREY` (0x8) | Gris oscuro |
 | `BLUE` (0x1) | Azul | `LIGHTBLUE` (0x9) | Azul claro |
@@ -68,10 +68,10 @@ Bit:    7   6   5   4  |  3   2   1   0
 | `CYAN` (0x3) | Cian | `LIGHTCYAN` (0xB) | Cian claro |
 | `RED` (0x4) | Rojo | `LIGHTRED` (0xC) | Rojo claro |
 | `MAGENTA` (0x5) | Magenta | `LIGHTMAGENTA` (0xD) | Magenta claro |
-| `BROWN` (0x6) | Marron | `LIGHTBROWN` (0xE) | Marron claro |
+| `BROWN` (0x6) | Marrón | `LIGHTBROWN` (0xE) | Marrón claro |
 | `LIGHTGREY` (0x7) | Gris claro | `WHITE` (0xF) | Blanco |
 
-## vga.h - Definiciones y constantes
+## vga_legacy.h — Definiciones y constantes
 
 ```c
 #define FRAMEBUFFER 0x000B8000
@@ -81,24 +81,25 @@ Bit:    7   6   5   4  |  3   2   1   0
 
 ### Puertos CRTC
 
-| Puerto | Proposito |
+| Puerto | Propósito |
 |--------|-----------|
-| `0x3D4` | Registro de comando (selecciona que registro CRTC modificar) |
+| `0x3D4` | Registro de comando (selecciona qué registro CRTC modificar) |
 | `0x3D5` | Registro de datos (lee/escribe el valor) |
 
 ### Registros CRTC usados
 
 | Comando | Significado |
 |---------|-------------|
-| `0x0E` | Byte alto de la posicion del cursor |
-| `0x0F` | Byte bajo de la posicion del cursor |
+| `0x0E` | Byte alto de la posición del cursor |
+| `0x0F` | Byte bajo de la posición del cursor |
+| `0x0A` | Registro de inicio de cursor (estilo) |
+| `0x0B` | Registro de fin de cursor (estilo) |
 | `0x0C` | Byte alto del inicio de pantalla (scroll) |
 | `0x0D` | Byte bajo del inicio de pantalla (scroll) |
-| `0x0A` | Registro de inicio de cursor (estilo) |
 
-## vga.c - Implementacion
+## vga_legacy.c — Implementación
 
-### `write_letter_to_buffer()` — funcion base
+### `write_letter_to_buffer()` — función base
 
 ```c
 void write_letter_to_buffer(uint8_t letter, uint16_t row, uint16_t col,
@@ -113,10 +114,19 @@ void write_letter_to_buffer(uint8_t letter, uint16_t row, uint16_t col,
 ```
 
 **Paso a paso:**
+
+```mermaid
+flowchart TD
+    A["Puntero volatile al framebuffer (0xB8000)"] --> B["Atributo = (fondo << 4) | frente"]
+    B --> C["Celda = (atributo << 8) | carácter"]
+    C --> D["Posición = fila * 80 + columna"]
+    D --> E["framebuffer[posición] = celda"]
+```
+
 1. Puntero `volatile` al framebuffer para evitar optimizaciones del compilador.
 2. Atributo: `(fondo << 4) | frente`.
-3. Combina: `(atributo << 8) | caracter`.
-4. Posicion lineal: `fila * 80 + columna`.
+3. Combina: `(atributo << 8) | carácter`.
+4. Posición lineal: `fila * 80 + columna`.
 5. Escribe en memoria de video.
 
 ### `write_letter_to_screen()` — atajo para fila 0, color blanco
@@ -127,8 +137,6 @@ void write_letter_to_screen(const char c, uint16_t pos)
     write_letter_to_buffer(c, 0, pos, WHITE, BLACK);
 }
 ```
-
-Escribe un caracter en la fila 0 con color blanco sobre negro. Usada internamente por `print_byte()`.
 
 ### `write_to_screen()` — cadena completa
 
@@ -141,21 +149,21 @@ void write_to_screen(const char *buf, uint16_t len)
 }
 ```
 
-### `move_cursor()` — posicion del cursor
+### `move_cursor()` — posición del cursor
 
 ```c
 void move_cursor(uint16_t pos)
 {
     uint16_t low = pos & 0x00FF;
     uint16_t high = (pos >> 8) & 0x00FF;
-    outb(CRTC_CMD_PORT, CURSOR_POS_HIGH_BYTE_CMD);
+    outb(CRTC_CMD_PORT, CURSOR_POS_HIGH_BYTE_CMD);  // 0x0E
     outb(CRTC_DATA_PORT, high);
-    outb(CRTC_CMD_PORT, CURSOR_POS_LOW_BYTE_CMD);
+    outb(CRTC_CMD_PORT, CURSOR_POS_LOW_BYTE_CMD);   // 0x0F
     outb(CRTC_DATA_PORT, low);
 }
 ```
 
-Escribe los 2 bytes de la posicion en los registros CRTC (posicion 0-1999 para 80x25).
+Escribe los 2 bytes de la posición en los registros CRTC (posición 0-1999 para 80x25).
 
 ### `scroll()` — desplazamiento de pantalla
 
@@ -172,17 +180,16 @@ Desplaza la pantalla hacia arriba ajustando el registro de inicio de pantalla de
 ### `print_byte()` — binario visual
 
 ```c
-void print_byte(uint8_t *pbyte, uint32_t pos)
+void print_byte(const uint8_t *pbyte, uint32_t pos)
 {
-    for (int16_t bit = 0; bit < 8; bit++)
-    {
+    for (int16_t bit = 0; bit < 8; bit++) {
         uint8_t mask = (uint8_t) 0x1 << (7 - bit);
         write_letter_to_screen(*pbyte & mask ? '1' : '0', pos + bit);
     }
 }
 ```
 
-Muestra los 8 bits de un byte como '1' y '0' en pantalla. Utiles para depuracion de registros de hardware.
+Muestra los 8 bits de un byte como `'1'` y `'0'` en pantalla. Útiles para depuración de registros de hardware.
 
 ### `style_cursor()` — control de cursor
 
@@ -192,12 +199,28 @@ typedef enum { BIG, SMALL, DISABLE, ENABLE } CursorStyle;
 void style_cursor(CursorStyle cstyle)
 {
     switch (cstyle) {
-    case BIG:     // cursor grueso (linea 0-15)
-    case SMALL:   // cursor fino (linea 12-15)
+    case BIG:     // cursor grueso (línea 0-15)
+    case SMALL:   // cursor fino (línea 12-15)
     case DISABLE: // oculta el cursor
     case ENABLE:  // restaura el cursor
     }
 }
 ```
 
-Controla el registro `0x0A` (Cursor Start) del CRTC. Para desactivar, escribe `start | 0x20` (bit 5 = deshabilitar). Para habilitar, escribe `start & 0xBF` (bit 6 = habilitar).
+Controla los registros `0x0A` (Cursor Start) y `0x0B` (Cursor End) del CRTC.
+
+## Relación con otros módulos
+
+```mermaid
+graph TB
+    KB[keyboard_handle_interrupt] -->|keyboard_default_on_key_down| WLB[write_letter_to_buffer]
+    KB -->|kb_newline/backspace| MC[move_cursor]
+    KB -->|scroll| SCR[scroll]
+    SPLASH[animate_splash] --> DBX[draw_box / draw_big_char]
+    DBX --> WLB
+    SPLASH --> DELAY[delay]
+    OUT[keyboard_set_cursor] --> MC
+    WLB --> FB[Framebuffer 0xB8000]
+    MC --> CRTC[CRTC ports]
+    SCR --> CRTC
+```

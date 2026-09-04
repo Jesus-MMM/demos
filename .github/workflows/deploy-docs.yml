@@ -1,62 +1,94 @@
-name: Deploy docs
+name: Deploy docs to gh-pages
 
 on:
   push:
     branches: [main]
     paths:
       - 'docs/**'
+      - 'site/**'
       - '.github/workflows/deploy-docs.yml'
+    # Los cambios en 'site/**' (la página ya construida/editada) también
+    # disparan el despliegue del contenido construido sin regenerarlo.
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: docs-gh-pages
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Download md2site binary
+      # Descarga la última versión de md2site y captura su número de versión.
+      - name: Download latest md2site and get version
         run: |
-          curl -fsSL \
-            -o md2site \
+          curl -fsSL -o md2site \
             https://github.com/Jesus-MMM/markdown-to-website/releases/latest/download/md2site-linux-x64
           chmod +x md2site
-          ./md2site --version
+          echo "CUR_VERSION=$(./md2site --version 2>&1)" >> "$GITHUB_ENV"
 
-      - name: Init md2site project
+      # Versión de md2site con la que se construyó el site actual (si existe).
+      - name: Read previously used md2site version
+        id: prevver
         run: |
+          if [ -f site/.md2site-version ]; then
+            echo "PREV_VERSION=$(cat site/.md2site-version)" >> "$GITHUB_ENV"
+          else
+            echo "PREV_VERSION=none" >> "$GITHUB_ENV"
+          fi
+          echo "md2site versión: anterior=$PREV_VERSION / actual=$CUR_VERSION"
+
+      # ------------------------------------------------------------------
+      # md2site SOLO se invoca si hay una NUEVA VERSIÓN de la herramienta
+      # (o si todavía no hay sitio construido). En caso contrario se conserva
+      # el site/ ya construido —que tú puedes editar— y solo se despliega.
+      # ------------------------------------------------------------------
+      - name: Rebuild site (only on new md2site version)
+        if: env.PREV_VERSION != env.CUR_VERSION
+        run: |
+          rm -rf site
           ./md2site init -o site
-
-      - name: Replace sample docs with project docs
-        run: |
           rm -rf site/docs
           cp -r docs site/docs
-
-      - name: Build static site
-        env:
-          MD2SITE_BASE: /demos
-        run: |
-          cp ./md2site site/md2site
           cd site
-          ./md2site build
+          MD2SITE_BASE=/demos ../md2site build
+          cd ..
+          echo "${{ env.CUR_VERSION }}" > site/.md2site-version
+          echo "REBUILT=true" >> "$GITHUB_ENV"
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      # Si se regeneró, se guarda el site/ y la nueva versión en main para
+      # que quede disponible en futuras ejecuciones y para que puedas
+      # modificarlo. (No se incluye el binario de md2site: está en .gitignore.)
+      - name: Commit regenerated site to main
+        if: env.REBUILT == 'true'
+        run: |
+          git add site
+          if git diff --cached --quiet; then
+            echo "site sin cambios tras regenerar; nada que commitear"
+          else
+            git commit -m "docs: regenerate site with md2site ${{ env.CUR_VERSION }}"
+            git push origin main
+          fi
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      # ------------------------------------------------------------------
+      # Despliegue a la rama gh-pages. La acción peaceiris se encarga de:
+      #   - crear la rama gh-pages si no existe,
+      #   - copiar el contenido de site/dist a gh-pages, y
+      #   - NO generar commit/push si no hay cambios (solo copia si cambió).
+      # Como la rama gh-pages se modifica en el sitio, puedes editar la
+      # página publicada directamente ahí después de cada despliegue.
+      # ------------------------------------------------------------------
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: site/dist
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: site/dist
+          publish_branch: gh-pages
