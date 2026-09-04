@@ -108,6 +108,19 @@ bool vga_set_mode(uint32_t width, uint32_t height, uint32_t color_depth)
     return 1;
 };
 
+/* Lee la paleta activa del DAC (256 entradas de 6 bits: R,G,B en 0..63).
+   En el arranque, con el modo 320x200x8 recien activado, devuelve la paleta
+   VGA por defecto. */
+void vga_read_palette(uint8_t (*dac)[3])
+{
+    for (uint16_t i = 0; i < 256; i++) {
+        outb(DAC_READ_INDEX_PORT, (uint8_t)i);
+        dac[i][0] = inb(DAC_DATA_PORT);
+        dac[i][1] = inb(DAC_DATA_PORT);
+        dac[i][2] = inb(DAC_DATA_PORT);
+    }
+}
+
 void vga_write_pixel(int32_t x, int32_t y, uint8_t color)
 {
     if (x < 0 || 320 <= x || y < 0 || 200 <= y) {

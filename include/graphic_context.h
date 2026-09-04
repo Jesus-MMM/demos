@@ -39,6 +39,17 @@ void graphic_context_put_pixel(graphic_context_t *gc, uint32_t x, uint32_t y, ui
 void graphic_context_fill_rectangle(graphic_context_t *gc, uint32_t x, uint32_t y, uint32_t w,
                                     uint32_t h, uint8_t color);
 
+/** graphic_context_blit_image - Copia una imagen indexada de 8 bits al
+   back buffer en la posicion indicada. No recorta contra el borde de
+   pantalla (el caller garantiza que la imagen cabe). Usado para dibujar el
+   fondo persistente del escritorio de forma eficiente.
+   @gc:      contexto grafico
+   @x,y:     esquina superior izquierda del destino
+   @w,h:     dimensiones de la imagen
+   @pixels:  pixels indexados de 8 bits (fila a fila, w*h bytes) */
+void graphic_context_blit_image(graphic_context_t *gc, uint32_t x, uint32_t y, uint32_t w,
+                                uint32_t h, const uint8_t *pixels);
+
 /** graphic_context_flush - Copia el back buffer completo a la pantalla.
    Debe llamarse al final de cada frame, despues de haber dibujado todo el
    contenido (widgets + cursor) sobre el contexto. Espera al retrace vertical

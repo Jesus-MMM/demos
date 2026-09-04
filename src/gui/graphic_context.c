@@ -79,6 +79,24 @@ void graphic_context_fill_rectangle(graphic_context_t *gc, uint32_t x, uint32_t 
     }
 }
 
+void graphic_context_blit_image(graphic_context_t *gc, uint32_t x, uint32_t y, uint32_t w,
+                                uint32_t h, const uint8_t *pixels)
+{
+    (void)gc;
+    if (pixels == NULL || w == 0 || h == 0) {
+        return;
+    }
+    /* El caller garantiza que la imagen cabe en pantalla desde (x,y); se
+       copian w bytes por fila al back buffer, fila a fila. */
+    for (uint32_t row = 0; row < h; row++) {
+        uint32_t src = row * w;
+        uint32_t dst = ((y + row) * SCREEN_WIDTH) + x;
+        for (uint32_t col = 0; col < w; col++) {
+            back_buffer[dst + col] = pixels[src + col];
+        }
+    }
+}
+
 void graphic_context_flush(graphic_context_t *gc)
 {
     (void)gc;

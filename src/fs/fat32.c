@@ -29,6 +29,11 @@ typedef struct {
     uint32_t size;
     uint32_t position;
     bool is_dir;
+    /* Estado de lectura secuencial: evita re-recorrer la cadena FAT desde
+       el cluster inicial en cada llamada a vfs_read. */
+    uint32_t cur_cluster;
+    uint32_t cur_within;
+    bool valid;
 } fat32_file_t;
 
 /* Lee un sector via el callback del dispositivo. */
@@ -83,37 +88,35 @@ uint32_t fat32_next_cluster(fat32_fs_t *fs, uint32_t current)
     return (uint32_t)next;
 }
 
-/* Lee bytes de un archivo representado como cadena de clusters. */
+/* Lee bytes de un archivo representado como cadena de clusters.
+   Recorre la cadena una sola vez: avanza hasta el cluster que contiene
+   @offset y lee @size bytes de forma secuencial y lineal. */
 // clang-format off
 static uint32_t fat32_read_chain(fat32_fs_t *fs, uint32_t first_cluster, // NOLINT(bugprone-easily-swappable-parameters)
                                  uint32_t offset, uint8_t *buffer, uint32_t size)
 // clang-format on
 {
-    if (first_cluster < FAT32_FIRST_CLUSTER) {
+    if (first_cluster < FAT32_FIRST_CLUSTER || size == 0) {
         return 0;
     }
 
-    uint32_t cluster = first_cluster;
     uint32_t cluster_size = fs->cluster_size;
+
+    /* Avanza al cluster que contiene el offset (sin releer clusters previos). */
+    uint32_t cluster = first_cluster;
+    uint32_t skip = offset / cluster_size;
+    while (skip > 0 && cluster < FAT32_EOC) {
+        cluster = fat32_next_cluster(fs, cluster);
+        skip--;
+    }
+    if (cluster >= FAT32_EOC) {
+        return 0;
+    }
+
+    uint32_t within = offset % cluster_size;
     uint32_t done = 0;
-    uint32_t pos = offset;
-
     while (cluster < FAT32_EOC && done < size) {
-        /* Avanza clusters vacios previos al offset. */
-        uint32_t cluster_index = pos / cluster_size;
-
-        while (cluster_index > 0 && cluster < FAT32_EOC) {
-            cluster = fat32_next_cluster(fs, cluster);
-            cluster_index--;
-        }
-
-        if (cluster >= FAT32_EOC) {
-            break;
-        }
-
-        uint32_t within = pos % cluster_size;
         uint32_t to_read = cluster_size - within;
-
         if (to_read > (size - done)) {
             to_read = size - done;
         }
@@ -141,8 +144,11 @@ static uint32_t fat32_read_chain(fat32_fs_t *fs, uint32_t first_cluster, // NOLI
             buffer[done++] = tmp[in_sector + i];
         }
 
-        pos += to_read;
-        cluster = fat32_next_cluster(fs, cluster);
+        within += to_read;
+        if (within >= cluster_size) {
+            within = 0;
+            cluster = fat32_next_cluster(fs, cluster);
+        }
     }
     return done;
 }
@@ -356,11 +362,64 @@ static int fat32_ops_open(void *fs_ptr, vfs_node_t *node, uint32_t mode, void **
             f->size = size;
             f->position = 0;
             f->is_dir = is_dir;
+            f->valid = false;
             *handle = f;
             return 0;
         }
     }
     return -5;
+}
+
+/* Lee @size bytes de forma secuencial usando el estado cacheado del archivo.
+   Recorre la cadena una sola vez, sin releer la FAT desde el cluster inicial. */
+static uint32_t fat32_read_file(fat32_file_t *f, uint8_t *buffer, uint32_t size)
+{
+    fat32_fs_t *fs = f->fs;
+    uint32_t cluster_size = fs->cluster_size;
+    uint32_t done = 0;
+
+    if (!f->valid) {
+        f->cur_cluster = f->first_cluster;
+        f->cur_within = 0;
+        f->valid = true;
+    }
+
+    while (f->cur_cluster < FAT32_EOC && done < size) {
+        uint32_t to_read = cluster_size - f->cur_within;
+        if (to_read > (size - done)) {
+            to_read = size - done;
+        }
+
+        uint32_t sector = fat32_cluster_to_sector(fs, f->cur_cluster) +
+                          (f->cur_within / fs->bpb.bytes_per_sector);
+
+        uint32_t in_sector = f->cur_within % fs->bpb.bytes_per_sector;
+
+        uint32_t sector_count =
+            (in_sector + to_read + fs->bpb.bytes_per_sector - 1) / fs->bpb.bytes_per_sector;
+
+        uint8_t tmp[4096];
+
+        if (sector_count * fs->bpb.bytes_per_sector > sizeof(tmp)) {
+            sector_count = sizeof(tmp) / fs->bpb.bytes_per_sector;
+            to_read = (sector_count * fs->bpb.bytes_per_sector) - in_sector;
+        }
+
+        if (fs->read_sector == NULL || fs->read_sector(sector, tmp, sector_count) < 0) {
+            return done;
+        }
+
+        for (uint32_t i = 0; i < to_read; i++) {
+            buffer[done++] = tmp[in_sector + i];
+        }
+
+        f->cur_within += to_read;
+        if (f->cur_within >= cluster_size) {
+            f->cur_within = 0;
+            f->cur_cluster = fat32_next_cluster(fs, f->cur_cluster);
+        }
+    }
+    return done;
 }
 
 static int fat32_ops_read(void *fs_ptr, // NOLINT(bugprone-easily-swappable-parameters)
@@ -381,7 +440,7 @@ static int fat32_ops_read(void *fs_ptr, // NOLINT(bugprone-easily-swappable-para
     if (size > remaining) {
         size = remaining;
     }
-    uint32_t got = fat32_read_chain(f->fs, f->first_cluster, f->position, (uint8_t *)buffer, size);
+    uint32_t got = fat32_read_file(f, (uint8_t *)buffer, size);
     f->position += got;
     return (int)got;
 }
@@ -409,6 +468,7 @@ static int fat32_ops_seek(void *fs_ptr, // NOLINT(bugprone-easily-swappable-para
     } else {
         f->position = base + (uint32_t)offset;
     }
+    f->valid = false;
     return (int)f->position;
 }
 

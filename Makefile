@@ -42,6 +42,7 @@ $(DEMOS_IMG): $(wildcard $(DISKDIR)/* $(DISKDIR)/*/*)
 	mkfs.fat -F 32 $(DEMOS_IMG) >/dev/null
 	mmd -i $(DEMOS_IMG) ::/docs
 	mcopy -i $(DEMOS_IMG) $(DISKDIR)/HELLO.TXT ::/HELLO.TXT
+	mcopy -i $(DEMOS_IMG) $(DISKDIR)/FONDO.PNG ::/FONDO.PNG
 	mcopy -i $(DEMOS_IMG) $(DISKDIR)/docs/README.TXT ::/docs/README.TXT
 
 $(BUILDDIR)/kernel.elf: $(OBJECTS)

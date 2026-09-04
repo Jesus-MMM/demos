@@ -24,9 +24,28 @@ void desktop_init(desktop_t *desktop, graphic_context_t *gc)
     (void)gc;
 }
 
+void desktop_set_background(desktop_t *desktop, const uint8_t *pixels, uint32_t w, uint32_t h)
+{
+    desktop->background = pixels;
+    desktop->background_w = w;
+    desktop->background_h = h;
+}
+
 void desktop_draw(desktop_t *desktop, graphic_context_t *gc)
 {
-    composite_widget_draw(&desktop->base, gc);
+    /* Fondo persistente: la imagen se compone al back buffer detras de las
+       ventanas. Si no hay imagen, se rellena con el color base del desktop. */
+    if (desktop->background != NULL) {
+        graphic_context_blit_image(gc, 0, 0, desktop->background_w, desktop->background_h,
+                                   desktop->background);
+    } else {
+        graphic_context_fill_rectangle(gc, 0, 0, desktop->width, desktop->height,
+                                       desktop->base.base.color);
+    }
+
+    for (int i = desktop->base.num_children - 1; i >= 0; --i) {
+        widget_draw(desktop->base.children[i], gc);
+    }
 
     for (int32_t i = 0; i < 4; i++) {
         graphic_context_put_pixel(gc, desktop->mouse_x - i, desktop->mouse_y, 0x0F);

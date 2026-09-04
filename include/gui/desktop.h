@@ -9,7 +9,8 @@
 #include "types.h"
 
 /** desktop_t - Escritorio de la interfaz grafica.
-   Guarda la posicion del cursor y las dimensiones de pantalla. */
+   Guarda la posicion del cursor, las dimensiones de pantalla y el fondo
+   persistente que se compone detras de las ventanas en cada frame. */
 typedef struct {
     composite_widget_t base;
 
@@ -17,6 +18,10 @@ typedef struct {
     int32_t mouse_y;
     int32_t width;
     int32_t height;
+
+    const uint8_t *background; /* pixels indexados 8 bits (fila a fila) */
+    uint32_t background_w;
+    uint32_t background_h;
 } desktop_t;
 
 /** desktop_init - Inicializa el escritorio a pantalla completa.
@@ -26,6 +31,15 @@ void desktop_init(desktop_t *desktop, graphic_context_t *gc);
 
 /** desktop_draw - Dibuja el escritorio, sus hijos y el cursor del raton. */
 void desktop_draw(desktop_t *desktop, graphic_context_t *gc);
+
+/** desktop_set_background - Establece el fondo persistente del escritorio.
+   El fondo se copia al back buffer (via graphic_context_blit_image) en cada
+   frame, detras de las ventanas, por lo que no se sobrescribe con el flujo
+   de dibujo. Se espera que @pixels sea una imagen indexada de w*h bytes.
+   @desktop:  escritorio
+   @pixels:   buffer de la imagen
+   @w,@h:     dimensiones de la imagen */
+void desktop_set_background(desktop_t *desktop, const uint8_t *pixels, uint32_t w, uint32_t h);
 
 /* --- Callbacks que se registran en los drivers --- */
 
